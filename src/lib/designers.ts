@@ -24,7 +24,7 @@ export const designers: Designer[] = [
     imageUrl:
       "https://assets.cdn.filesafe.space/cObQXIqcbjUWRdqwM6aq/media/69c6cf20cd897ad64ef750d8.jpg",
     calendarUrl:
-      "https://api.leadconnectorhq.com/widget/booking/PLACEHOLDER_kaegan-sweeney",
+      "https://api.leadconnectorhq.com/widget/booking/zJhQa1OgSFxbW2ulmclx",
   },
   {
     slug: "madison-batchelder",
@@ -40,7 +40,7 @@ export const designers: Designer[] = [
     imageUrl:
       "https://assets.cdn.filesafe.space/cObQXIqcbjUWRdqwM6aq/media/69c6cf200c63d5611d3cc770.jpg",
     calendarUrl:
-      "https://api.leadconnectorhq.com/widget/booking/PLACEHOLDER_madison-batchelder",
+      "https://api.leadconnectorhq.com/widget/booking/MhIGLo3CVdCbhvmatleo",
   },
   {
     slug: "carmie-morton",
@@ -56,7 +56,7 @@ export const designers: Designer[] = [
     imageUrl:
       "https://assets.cdn.filesafe.space/cObQXIqcbjUWRdqwM6aq/media/69c6cf2031ffeb2000e723f5.jpg",
     calendarUrl:
-      "https://api.leadconnectorhq.com/widget/booking/PLACEHOLDER_carmie-morton",
+      "https://api.leadconnectorhq.com/widget/booking/BDsC6vt2PO9F7xbn3iUF",
   },
   {
     slug: "heather-marcet-henderson",
@@ -72,7 +72,7 @@ export const designers: Designer[] = [
     imageUrl:
       "https://assets.cdn.filesafe.space/cObQXIqcbjUWRdqwM6aq/media/69c6cf201d9054af3e63a43d.jpg",
     calendarUrl:
-      "https://api.leadconnectorhq.com/widget/booking/PLACEHOLDER_heather-marcet-henderson",
+      "https://api.leadconnectorhq.com/widget/booking/P2SXa7K4zduXq9jmgfMo",
   },
 ];
 
