@@ -3,20 +3,26 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import LeadForm from "@/components/LeadForm";
 import ScrollTopButton from "@/components/ScrollTopButton";
-import { heroImage, sectionBgImages } from "@/lib/images";
+import { kitchenImages, heroImage, sectionBgImages } from "@/lib/images";
 import {
   ShieldCheck,
   Star,
-  Hammer,
-  Ruler,
+  Truck,
+  Handshake,
 } from "@phosphor-icons/react/dist/ssr";
 
-export default function OptInPage() {
+export const metadata = {
+  title: "Contractor Cabinet Supply | Jessen Cabinets",
+  description:
+    "White shaker cabinets for contractors and builders. Volume pricing, reliable supply, and a dedicated design team for your projects.",
+};
+
+export default function ContractorOptInPage() {
   return (
     <>
       <Header />
       <main>
-        {/* Hero Section - white overlay at 65% opacity */}
+        {/* Hero Section */}
         <section className="relative overflow-hidden">
           <div
             className="absolute inset-0 bg-cover bg-center"
@@ -29,32 +35,32 @@ export default function OptInPage() {
               <div className="pt-4">
                 <div className="inline-block bg-brand-gold/20 border border-brand-gold/40 rounded-full px-4 py-1.5 mb-6">
                   <span className="text-brand-charcoal text-sm font-medium">
-                    Limited Time: Free Design Consultation
+                    For Contractors & Builders
                   </span>
                 </div>
 
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-tight text-balance mb-6 text-brand-text-primary">
-                  Your Dream Kitchen Starts with the Right Cabinets
+                  White Shaker Cabinets Your Clients Will Love
                 </h1>
 
                 <p className="text-brand-text-secondary text-lg leading-relaxed mb-8 max-w-lg">
-                  White shaker cabinets. Solid wood. Expert craftsmanship. A
-                  design team that listens. Get a personalized consultation and
-                  see exactly how your space can transform.
+                  Solid wood construction. Consistent quality across every
+                  order. A design team that coordinates directly with your crew
+                  so your projects stay on schedule.
                 </p>
 
                 {/* Trust Signals */}
                 <div className="grid grid-cols-2 gap-4 mb-8">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg bg-brand-gold/15 flex items-center justify-center flex-shrink-0">
-                      <Star
+                      <Truck
                         size={20}
                         weight="fill"
                         className="text-brand-gold-dark"
                       />
                     </div>
                     <span className="text-brand-text-secondary text-sm">
-                      4.9 Google Rating
+                      Reliable Supply Chain
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
@@ -71,26 +77,26 @@ export default function OptInPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg bg-brand-gold/15 flex items-center justify-center flex-shrink-0">
-                      <Hammer
+                      <Handshake
                         size={20}
                         weight="fill"
                         className="text-brand-gold-dark"
                       />
                     </div>
                     <span className="text-brand-text-secondary text-sm">
-                      Solid Wood Construction
+                      Volume Pricing Available
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg bg-brand-gold/15 flex items-center justify-center flex-shrink-0">
-                      <Ruler
+                      <Star
                         size={20}
                         weight="fill"
                         className="text-brand-gold-dark"
                       />
                     </div>
                     <span className="text-brand-text-secondary text-sm">
-                      Free In-Home Measure
+                      4.9 Google Rating
                     </span>
                   </div>
                 </div>
@@ -100,13 +106,17 @@ export default function OptInPage() {
               <div className="bg-brand-charcoal/90 backdrop-blur-sm border border-brand-charcoal/20 rounded-2xl p-6 sm:p-8 shadow-xl">
                 <div className="text-center mb-6">
                   <h2 className="text-white text-xl font-semibold mb-2">
-                    Claim Your Free Design Consultation
+                    Set Up Your Contractor Account
                   </h2>
                   <p className="text-white/60 text-sm">
-                    Normally $450. Yours free for a limited time.
+                    Get volume pricing and a dedicated design contact for your
+                    projects.
                   </p>
                 </div>
-                <LeadForm />
+                <LeadForm
+                  funnelSource="jessen_facebook"
+                  funnelPage="contractor_optin"
+                />
               </div>
             </div>
           </div>
@@ -117,12 +127,12 @@ export default function OptInPage() {
           <div className="max-w-6xl mx-auto px-4">
             <div className="text-center mb-14">
               <h2 className="text-2xl md:text-3xl font-bold text-brand-text-primary mb-4">
-                Why Homeowners Choose Jessen
+                Why Contractors Partner with Jessen
               </h2>
               <p className="text-brand-text-secondary text-base max-w-2xl mx-auto">
-                From your first consultation to the final installation, we
-                handle every detail so you can enjoy the transformation without
-                the stress.
+                We supply white shaker cabinets exclusively. That focus means
+                consistent quality, predictable lead times, and a team that
+                knows exactly how to support your builds.
               </p>
             </div>
 
@@ -130,8 +140,8 @@ export default function OptInPage() {
               {/* Left - Real Kitchen Image */}
               <div className="relative rounded-2xl overflow-hidden h-80 md:h-[460px]">
                 <Image
-                  src={sectionBgImages.valueProps}
-                  alt="White shaker cabinet kitchen by Jessen Cabinets"
+                  src={kitchenImages[4].src}
+                  alt={kitchenImages[4].alt}
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 50vw"
@@ -146,12 +156,12 @@ export default function OptInPage() {
                   </div>
                   <div>
                     <h3 className="text-brand-text-primary font-semibold text-lg mb-1">
-                      Expert Design Consultation
+                      Volume Pricing for Builders
                     </h3>
                     <p className="text-brand-text-secondary text-sm leading-relaxed">
-                      Work directly with a dedicated designer who listens to
-                      your vision and guides you through materials, layouts, and
-                      finishes.
+                      Competitive pricing on bulk orders means better margins
+                      for your projects. The more kitchens you build, the more
+                      you save.
                     </p>
                   </div>
                 </div>
@@ -162,12 +172,11 @@ export default function OptInPage() {
                   </div>
                   <div>
                     <h3 className="text-brand-text-primary font-semibold text-lg mb-1">
-                      Solid Wood, Built to Last
+                      Reliable Supply, On Schedule
                     </h3>
                     <p className="text-brand-text-secondary text-sm leading-relaxed">
-                      No particle board. No shortcuts. Every cabinet is crafted
-                      from solid wood with dovetail joints and soft-close
-                      hardware.
+                      Predictable lead times and dependable inventory so your
+                      job sites never stall waiting on cabinets.
                     </p>
                   </div>
                 </div>
@@ -178,12 +187,12 @@ export default function OptInPage() {
                   </div>
                   <div>
                     <h3 className="text-brand-text-primary font-semibold text-lg mb-1">
-                      Professional Installation
+                      Project Coordination Built In
                     </h3>
                     <p className="text-brand-text-secondary text-sm leading-relaxed">
-                      Our certified install teams handle everything, leaving you
-                      with a kitchen that looks exactly like the design, down to
-                      every detail.
+                      Our designers work directly with your team on layouts,
+                      measurements, and specifications. Less back and forth,
+                      fewer mistakes.
                     </p>
                   </div>
                 </div>
@@ -194,12 +203,12 @@ export default function OptInPage() {
                   </div>
                   <div>
                     <h3 className="text-brand-text-primary font-semibold text-lg mb-1">
-                      Backed by a Lifetime Warranty
+                      Solid Wood, Every Time
                     </h3>
                     <p className="text-brand-text-secondary text-sm leading-relaxed">
-                      We stand behind our work. Your cabinets are protected with
-                      a comprehensive lifetime warranty on materials and
-                      craftsmanship.
+                      White shaker cabinets built from solid wood with dovetail
+                      joints and soft-close hardware. No particle board. No
+                      shortcuts.
                     </p>
                   </div>
                 </div>
@@ -213,11 +222,11 @@ export default function OptInPage() {
           <div className="max-w-6xl mx-auto px-4">
             <div className="text-center mb-10">
               <h2 className="text-2xl md:text-3xl font-bold text-brand-text-primary mb-3">
-                Real Kitchens. Real Results.
+                Projects Built with Jessen Cabinets
               </h2>
               <p className="text-brand-text-secondary text-base max-w-xl mx-auto">
-                Every project features our signature white shaker cabinets,
-                crafted from solid wood and installed by our expert team.
+                White shaker cabinets only. Consistent quality across every
+                build, every time.
               </p>
             </div>
 
@@ -226,7 +235,9 @@ export default function OptInPage() {
                 <div
                   key={i}
                   className={`relative rounded-xl overflow-hidden ${
-                    i === 0 ? "col-span-2 row-span-2 h-64 md:h-[400px]" : "h-40 md:h-48"
+                    i === 0
+                      ? "col-span-2 row-span-2 h-64 md:h-[400px]"
+                      : "h-40 md:h-48"
                   }`}
                 >
                   <Image
@@ -246,68 +257,6 @@ export default function OptInPage() {
           </div>
         </section>
 
-        {/* Social Proof */}
-        <section className="py-16 bg-white">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="text-center mb-10">
-              <h2 className="text-2xl md:text-3xl font-bold text-brand-text-primary mb-3">
-                Trusted by Hundreds of Homeowners
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-brand-cream rounded-xl p-6 shadow-sm">
-                <div className="flex gap-1 mb-3">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      size={16}
-                      weight="fill"
-                      className="text-brand-gold"
-                    />
-                  ))}
-                </div>
-                <p className="text-brand-text-secondary text-sm leading-relaxed mb-4">
-                  &quot;From the first meeting to the final walkthrough,
-                  everything was handled with care. The cabinets are gorgeous and
-                  the soft-close drawers are a game changer. Our kitchen feels
-                  brand new.&quot;
-                </p>
-                <div className="text-brand-text-primary text-sm font-medium">
-                  Jennifer R.
-                </div>
-                <div className="text-brand-text-muted text-xs">
-                  Kitchen Remodel, 2024
-                </div>
-              </div>
-
-              <div className="bg-brand-cream rounded-xl p-6 shadow-sm">
-                <div className="flex gap-1 mb-3">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      size={16}
-                      weight="fill"
-                      className="text-brand-gold"
-                    />
-                  ))}
-                </div>
-                <p className="text-brand-text-secondary text-sm leading-relaxed mb-4">
-                  &quot;We compared five companies before choosing Jessen. The
-                  quality of their solid wood cabinets blew everything else out
-                  of the water. Worth every penny.&quot;
-                </p>
-                <div className="text-brand-text-primary text-sm font-medium">
-                  Mark & Lisa T.
-                </div>
-                <div className="text-brand-text-muted text-xs">
-                  Full Kitchen Renovation, 2024
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* Bottom CTA */}
         <section className="py-16 md:py-20 relative overflow-hidden">
           <div
@@ -317,11 +266,11 @@ export default function OptInPage() {
           <div className="absolute inset-0 bg-brand-charcoal/80" />
           <div className="relative max-w-2xl mx-auto px-4 text-center">
             <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-              Ready to Transform Your Kitchen?
+              Ready to Streamline Your Cabinet Supply?
             </h2>
             <p className="text-white/70 mb-8 max-w-lg mx-auto">
-              Your free design consultation is just a scroll away. Fill out the
-              form above and pick the designer who fits your project best.
+              Fill out the form above to get started with volume pricing and a
+              dedicated design contact for your projects.
             </p>
             <ScrollTopButton />
           </div>

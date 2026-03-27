@@ -27,6 +27,22 @@ export const designers: Designer[] = [
       "https://api.leadconnectorhq.com/widget/booking/PLACEHOLDER_kaegan-sweeney",
   },
   {
+    slug: "madison-batchelder",
+    name: "Madison Batchelder",
+    firstName: "Madison",
+    bio: "Madison brings fresh energy and a keen eye for detail to the Jessen Cabinets design team. She works closely with clients to create spaces that balance style and function, making every project feel personal and polished.",
+    specialties: [
+      "Modern Design",
+      "Detail-Oriented Planning",
+      "Client Collaboration",
+    ],
+    experience: "Design Specialist",
+    imageUrl:
+      "https://assets.cdn.filesafe.space/cObQXIqcbjUWRdqwM6aq/media/69c6cf200c63d5611d3cc770.jpg",
+    calendarUrl:
+      "https://api.leadconnectorhq.com/widget/booking/PLACEHOLDER_madison-batchelder",
+  },
+  {
     slug: "carmie-morton",
     name: "Carmie Morton",
     firstName: "Carmie",
@@ -57,22 +73,6 @@ export const designers: Designer[] = [
       "https://assets.cdn.filesafe.space/cObQXIqcbjUWRdqwM6aq/media/69c6cf201d9054af3e63a43d.jpg",
     calendarUrl:
       "https://api.leadconnectorhq.com/widget/booking/PLACEHOLDER_heather-marcet-henderson",
-  },
-  {
-    slug: "madison-batchelder",
-    name: "Madison Batchelder",
-    firstName: "Madison",
-    bio: "Madison brings fresh energy and a keen eye for detail to the Jessen Cabinets design team. She works closely with clients to create spaces that balance style and function, making every project feel personal and polished.",
-    specialties: [
-      "Modern Design",
-      "Detail-Oriented Planning",
-      "Client Collaboration",
-    ],
-    experience: "Design Specialist",
-    imageUrl:
-      "https://assets.cdn.filesafe.space/cObQXIqcbjUWRdqwM6aq/media/69c6cf200c63d5611d3cc770.jpg",
-    calendarUrl:
-      "https://api.leadconnectorhq.com/widget/booking/PLACEHOLDER_madison-batchelder",
   },
 ];
 

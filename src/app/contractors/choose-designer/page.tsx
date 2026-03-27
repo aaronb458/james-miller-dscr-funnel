@@ -5,12 +5,12 @@ import DesignerTabs from "@/components/DesignerTabs";
 import { designers } from "@/lib/designers";
 
 export const metadata = {
-  title: "Choose Your Designer | Jessen Cabinets",
+  title: "Choose Your Designer | Jessen Cabinets - Contractors",
   description:
-    "Pick the kitchen designer who fits your project. Each brings unique expertise to make your vision a reality.",
+    "Pick the designer who will coordinate your cabinet supply. Each brings unique expertise to keep your projects on track.",
 };
 
-export default function ChooseDesignerPage() {
+export default function ContractorChooseDesignerPage() {
   return (
     <>
       <Header />
@@ -21,21 +21,21 @@ export default function ChooseDesignerPage() {
             <div className="inline-flex items-center gap-2 bg-green-500/20 border border-green-500/30 rounded-full px-4 py-1.5 mb-3">
               <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
               <span className="text-green-300 text-sm font-medium">
-                Your consultation request has been received
+                Your request has been received
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight mb-2">
-              Choose the Designer Who Fits Your Project
+              Pick Your Dedicated Design Contact
             </h1>
             <p className="text-white/60 max-w-xl mx-auto text-sm sm:text-base">
-              Each designer brings a different background and approach. Pick the
-              one who resonates with your vision, then book your consultation
-              directly with them.
+              Each designer works directly with contractors on project
+              coordination, layouts, and specifications. Pick the one whose
+              background fits your work best, then book an intro call.
             </p>
           </div>
         </section>
 
-        {/* Designer Cards - Desktop: wider grid, Mobile: tab navigation */}
+        {/* Designer Cards */}
         <section className="py-14 md:py-20 bg-brand-cream">
           <div className="max-w-7xl mx-auto px-4">
             {/* Desktop: 4-column grid with wider cards */}
@@ -56,8 +56,8 @@ export default function ChooseDesignerPage() {
 
             <div className="mt-12 text-center">
               <p className="text-brand-text-muted text-sm">
-                Not sure who to pick? Any of our designers will take great care
-                of your project. Just choose the one whose background speaks to
+                Not sure who to pick? Any of our designers can serve as your
+                project contact. Just choose the one whose background speaks to
                 you.
               </p>
             </div>

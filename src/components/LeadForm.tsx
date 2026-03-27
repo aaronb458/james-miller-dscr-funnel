@@ -4,6 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, CircleNotch } from "@phosphor-icons/react";
 
+const WEBHOOK_URL =
+  "https://services.leadconnectorhq.com/hooks/cObQXIqcbjUWRdqwM6aq/webhook-trigger/6a8a72a8-04be-42c8-a827-857eb88f44b5";
+
 const projectTypes = [
   "Kitchen Remodel",
   "Bathroom Remodel",
@@ -12,7 +15,15 @@ const projectTypes = [
   "Other",
 ];
 
-export default function LeadForm() {
+interface LeadFormProps {
+  funnelSource?: string;
+  funnelPage?: string;
+}
+
+export default function LeadForm({
+  funnelSource = "jessen_facebook",
+  funnelPage = "homeowner_optin",
+}: LeadFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [smsConsent, setSmsConsent] = useState(false);
@@ -27,7 +38,8 @@ export default function LeadForm() {
 
   function validate() {
     const newErrors: Record<string, string> = {};
-    if (!formData.firstName.trim()) newErrors.firstName = "First name is required";
+    if (!formData.firstName.trim())
+      newErrors.firstName = "First name is required";
     if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
     if (!formData.email.trim()) newErrors.email = "Email is required";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
@@ -35,7 +47,8 @@ export default function LeadForm() {
     if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
     else if (!/^\+?[\d\s\-().]{7,}$/.test(formData.phone))
       newErrors.phone = "Please enter a valid phone number";
-    if (!formData.projectType) newErrors.projectType = "Please select a project type";
+    if (!formData.projectType)
+      newErrors.projectType = "Please select a project type";
     if (!smsConsent) newErrors.smsConsent = "Please agree to receive messages";
     return newErrors;
   }
@@ -53,10 +66,34 @@ export default function LeadForm() {
       sessionStorage.setItem("leadData", JSON.stringify(formData));
     }
 
-    // Simulate form submission delay (replace with actual GHL webhook)
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    // POST to GHL webhook
+    const payload = {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      name: `${formData.firstName} ${formData.lastName}`,
+      email: formData.email,
+      phone: formData.phone,
+      projectType: formData.projectType,
+      funnel_source: funnelSource,
+      funnel_page: funnelPage,
+      sms_consent: smsConsent,
+      submitted_at: new Date().toISOString(),
+      page_url: typeof window !== "undefined" ? window.location.href : "",
+    };
 
-    router.push("/choose-designer");
+    try {
+      await fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        mode: "no-cors",
+      });
+    } catch {
+      // Fire and forget - don't block navigation on webhook failure
+    }
+
+    const basePath = funnelPage === "contractor_optin" ? "/contractors/choose-designer" : "/choose-designer";
+    router.push(basePath);
   }
 
   function handleChange(
