@@ -3,21 +3,40 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #FAF8F2;
+  --foreground: #1A1A1A;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Form input focus states */
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #F7CE1F;
+  box-shadow: 0 0 0 3px rgba(247, 206, 31, 0.15);
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom checkbox styling */
+input[type="checkbox"] {
+  accent-color: #F7CE1F;
+}
+
+/* Calendar iframe responsive */
+.calendar-embed iframe {
+  width: 100%;
+  min-height: 650px;
+  border: none;
+  border-radius: 12px;
 }
 
 @layer utilities {
