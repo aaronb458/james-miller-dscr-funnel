@@ -1,8 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { X, CircleNotch } from "@phosphor-icons/react";
+import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { X, CircleNotch, CheckCircle } from "@phosphor-icons/react";
 import type { Designer } from "@/lib/designers";
+
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void;
+  }
+}
 
 interface BookingModalProps {
   designer: Designer;
@@ -15,19 +22,87 @@ export default function BookingModal({
   isOpen,
   onClose,
 }: BookingModalProps) {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
+  const [showConfirmButton, setShowConfirmButton] = useState(false);
 
+  // Save designer selection to sessionStorage when modal opens
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
       setIsLoading(true);
+      setShowConfirmButton(false);
+
+      // Store selected designer for thank you page
+      try {
+        sessionStorage.setItem(
+          "selectedDesigner",
+          JSON.stringify({
+            name: designer.name,
+            firstName: designer.firstName,
+            imageUrl: designer.imageUrl,
+            slug: designer.slug,
+          })
+        );
+      } catch {
+        // sessionStorage not available
+      }
+
+      // Fire Meta Pixel Schedule event
+      if (typeof window !== "undefined" && window.fbq) {
+        window.fbq("track", "Schedule", {
+          content_name: designer.firstName,
+        });
+      }
+
+      // Show the manual confirm button after 10 seconds
+      const timer = setTimeout(() => {
+        setShowConfirmButton(true);
+      }, 10000);
+
+      return () => clearTimeout(timer);
     } else {
       document.body.style.overflow = "";
     }
     return () => {
       document.body.style.overflow = "";
     };
-  }, [isOpen]);
+  }, [isOpen, designer]);
+
+  // Listen for postMessage from GHL iframe (booking confirmation)
+  const handleMessage = useCallback(
+    (event: MessageEvent) => {
+      // GHL iframes may send messages on booking completion
+      if (
+        event.data &&
+        typeof event.data === "string" &&
+        (event.data.includes("booking_confirmed") ||
+          event.data.includes("appointment_booked") ||
+          event.data.includes("calendly.event_scheduled"))
+      ) {
+        router.push("/thanks");
+      }
+      // Also handle object messages
+      if (event.data && typeof event.data === "object") {
+        const data = event.data as Record<string, unknown>;
+        if (
+          data.type === "booking_confirmed" ||
+          data.event === "appointment_booked" ||
+          data.status === "booked"
+        ) {
+          router.push("/thanks");
+        }
+      }
+    },
+    [router]
+  );
+
+  useEffect(() => {
+    if (isOpen) {
+      window.addEventListener("message", handleMessage);
+      return () => window.removeEventListener("message", handleMessage);
+    }
+  }, [isOpen, handleMessage]);
 
   useEffect(() => {
     function handleEscape(e: KeyboardEvent) {
@@ -39,23 +114,27 @@ export default function BookingModal({
     }
   }, [isOpen, onClose]);
 
+  function handleBookingConfirmed() {
+    router.push("/thanks");
+  }
+
   if (!isOpen) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center"
       onClick={onClose}
     >
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
-      {/* Modal */}
+      {/* Modal - Full viewport width */}
       <div
-        className="relative w-full max-w-3xl max-h-[90vh] bg-white rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+        className="relative w-full h-full sm:h-[95vh] sm:m-4 bg-white sm:rounded-2xl overflow-hidden shadow-2xl flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-zinc-100 flex-shrink-0">
           <div>
             <h3 className="text-lg font-semibold text-brand-text-primary">
               Book with {designer.firstName}
@@ -73,7 +152,7 @@ export default function BookingModal({
           </button>
         </div>
 
-        {/* Calendar iframe */}
+        {/* Calendar iframe - full width */}
         <div className="relative flex-1 overflow-auto">
           {isLoading && (
             <div className="absolute inset-0 flex items-center justify-center bg-white z-10">
@@ -92,11 +171,24 @@ export default function BookingModal({
             src={designer.calendarUrl}
             title={`Book consultation with ${designer.firstName}`}
             onLoad={() => setIsLoading(false)}
-            className="w-full border-none"
+            className="w-full h-full border-none"
             style={{ minHeight: "680px" }}
             allow="payment"
           />
         </div>
+
+        {/* Manual confirmation button - appears after 10s */}
+        {showConfirmButton && (
+          <div className="flex-shrink-0 border-t border-zinc-100 px-4 sm:px-6 py-3 bg-brand-cream">
+            <button
+              onClick={handleBookingConfirmed}
+              className="w-full sm:w-auto bg-brand-gold hover:bg-brand-gold-dark text-brand-charcoal font-semibold py-3 px-6 rounded-lg text-sm transition-all duration-200 flex items-center justify-center gap-2 active:scale-[0.98] mx-auto"
+            >
+              <CheckCircle size={18} weight="fill" />
+              I Have Booked My Consultation
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

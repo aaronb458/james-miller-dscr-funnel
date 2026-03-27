@@ -1,23 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, CircleNotch } from "@phosphor-icons/react";
 
 const WEBHOOK_URL =
   "https://services.leadconnectorhq.com/hooks/cObQXIqcbjUWRdqwM6aq/webhook-trigger/6a8a72a8-04be-42c8-a827-857eb88f44b5";
 
-const projectTypes = [
-  "Kitchen Remodel",
-  "Bathroom Remodel",
-  "Cabinet Refacing",
-  "New Construction",
+const homeownerProjectTypes = [
+  "Kitchen Cabinets",
+  "Bathroom Vanity",
+  "Laundry Room Cabinets",
+  "Full Home Cabinet Package",
+  "Other",
+];
+
+const contractorProjectTypes = [
+  "Single Family Home",
+  "Multi-Family",
+  "Commercial",
+  "Renovation",
   "Other",
 ];
 
 interface LeadFormProps {
   funnelSource?: string;
   funnelPage?: string;
+}
+
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void;
+  }
 }
 
 export default function LeadForm({
@@ -27,14 +41,32 @@ export default function LeadForm({
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [smsConsent, setSmsConsent] = useState(false);
+  const [utmData, setUtmData] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     phone: "",
     projectType: "",
+    cabinetCount: "",
+    projectTimeline: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const isContractor = funnelPage === "contractor_optin";
+  const projectTypes = isContractor ? contractorProjectTypes : homeownerProjectTypes;
+
+  // Load UTM data from sessionStorage on mount
+  useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem("utmData");
+      if (stored) {
+        setUtmData(JSON.parse(stored));
+      }
+    } catch {
+      // sessionStorage not available
+    }
+  }, []);
 
   function validate() {
     const newErrors: Record<string, string> = {};
@@ -66,20 +98,43 @@ export default function LeadForm({
       sessionStorage.setItem("leadData", JSON.stringify(formData));
     }
 
+    // Determine funnel_source: UTM overrides default
+    const resolvedSource = utmData.utm_source || funnelSource;
+
     // POST to GHL webhook
-    const payload = {
+    const payload: Record<string, unknown> = {
       firstName: formData.firstName,
       lastName: formData.lastName,
       name: `${formData.firstName} ${formData.lastName}`,
       email: formData.email,
       phone: formData.phone,
       projectType: formData.projectType,
-      funnel_source: funnelSource,
+      funnel_source: resolvedSource,
       funnel_page: funnelPage,
       sms_consent: smsConsent,
       submitted_at: new Date().toISOString(),
       page_url: typeof window !== "undefined" ? window.location.href : "",
+      // UTM parameters
+      utm_source: utmData.utm_source || "",
+      utm_medium: utmData.utm_medium || "",
+      utm_campaign: utmData.utm_campaign || "",
+      utm_content: utmData.utm_content || "",
+      utm_term: utmData.utm_term || "",
     };
+
+    // Add contractor-specific fields
+    if (isContractor) {
+      payload.estimated_cabinet_count = formData.cabinetCount;
+      payload.project_timeline = formData.projectTimeline;
+    }
+
+    // Fire Meta Pixel Lead event
+    if (typeof window !== "undefined" && window.fbq) {
+      window.fbq("track", "Lead", {
+        content_name: funnelPage,
+        content_category: isContractor ? "contractor" : "homeowner",
+      });
+    }
 
     try {
       await fetch(WEBHOOK_URL, {
@@ -92,7 +147,7 @@ export default function LeadForm({
       // Fire and forget - don't block navigation on webhook failure
     }
 
-    const basePath = funnelPage === "contractor_optin" ? "/contractors/choose-designer" : "/choose-designer";
+    const basePath = isContractor ? "/contractors/choose-designer" : "/choose-designer";
     router.push(basePath);
   }
 
@@ -210,7 +265,7 @@ export default function LeadForm({
           htmlFor="projectType"
           className="block text-sm font-medium text-white/90 mb-1.5"
         >
-          What are you looking for?
+          {isContractor ? "Project Type" : "What are you looking for?"}
         </label>
         <select
           id="projectType"
@@ -225,7 +280,7 @@ export default function LeadForm({
           }}
         >
           <option value="" className="bg-brand-charcoal">
-            Select your project type
+            {isContractor ? "Select project type" : "Select what you need"}
           </option>
           {projectTypes.map((type) => (
             <option key={type} value={type} className="bg-brand-charcoal">
@@ -237,6 +292,69 @@ export default function LeadForm({
           <p className="text-red-400 text-xs mt-1">{errors.projectType}</p>
         )}
       </div>
+
+      {/* Contractor-specific fields */}
+      {isContractor && (
+        <>
+          <div>
+            <label
+              htmlFor="cabinetCount"
+              className="block text-sm font-medium text-white/90 mb-1.5"
+            >
+              Estimated Number of Cabinets
+            </label>
+            <select
+              id="cabinetCount"
+              name="cabinetCount"
+              value={formData.cabinetCount}
+              onChange={handleChange}
+              className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white text-sm transition-all duration-200 appearance-none cursor-pointer"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='rgba(255,255,255,0.6)' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`,
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "right 16px center",
+              }}
+            >
+              <option value="" className="bg-brand-charcoal">
+                Select estimated count
+              </option>
+              <option value="1-10" className="bg-brand-charcoal">1 - 10 cabinets</option>
+              <option value="11-25" className="bg-brand-charcoal">11 - 25 cabinets</option>
+              <option value="26-50" className="bg-brand-charcoal">26 - 50 cabinets</option>
+              <option value="50+" className="bg-brand-charcoal">50+ cabinets</option>
+            </select>
+          </div>
+
+          <div>
+            <label
+              htmlFor="projectTimeline"
+              className="block text-sm font-medium text-white/90 mb-1.5"
+            >
+              Project Timeline
+            </label>
+            <select
+              id="projectTimeline"
+              name="projectTimeline"
+              value={formData.projectTimeline}
+              onChange={handleChange}
+              className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white text-sm transition-all duration-200 appearance-none cursor-pointer"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='rgba(255,255,255,0.6)' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`,
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "right 16px center",
+              }}
+            >
+              <option value="" className="bg-brand-charcoal">
+                When do you need them?
+              </option>
+              <option value="immediately" className="bg-brand-charcoal">Immediately</option>
+              <option value="1-2_months" className="bg-brand-charcoal">1 - 2 months</option>
+              <option value="3-6_months" className="bg-brand-charcoal">3 - 6 months</option>
+              <option value="6+_months" className="bg-brand-charcoal">6+ months</option>
+            </select>
+          </div>
+        </>
+      )}
 
       <div className="pt-1">
         <label className="flex items-start gap-3 cursor-pointer group">
@@ -281,7 +399,7 @@ export default function LeadForm({
           </>
         ) : (
           <>
-            Get Your Free Design Consultation
+            {isContractor ? "Get Volume Pricing" : "Get Your Free Design Consultation"}
             <ArrowRight size={20} weight="bold" />
           </>
         )}

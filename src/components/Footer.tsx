@@ -12,8 +12,8 @@ export default function Footer() {
           className="h-10 w-auto opacity-80"
         />
         <p className="text-zinc-400 text-sm text-center max-w-lg">
-          Premium kitchen and bath cabinetry. Serving homeowners who demand
-          quality craftsmanship and personalized design.
+          White shaker cabinets. Solid hardwood construction. Delivered to your
+          door. Showroom in Roswell, GA (by appointment).
         </p>
         <div className="text-zinc-500 text-xs">
           &copy; {new Date().getFullYear()} Jessen Cabinets. All rights

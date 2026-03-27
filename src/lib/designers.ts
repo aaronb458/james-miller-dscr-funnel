@@ -17,7 +17,7 @@ export const designers: Designer[] = [
     bio: "With a lifetime rooted in cabinetry and over 15 years of industry experience, Kaegan brings both knowledge and passion to every project. He loves working one-on-one with clients to understand their needs and bring their vision to life. From concept to completion, he focuses on delivering a seamless experience and a final product that truly stands out.",
     specialties: [
       "Custom Cabinetry",
-      "Full Kitchen Remodels",
+      "Kitchen Layout Design",
       "One-on-One Design",
     ],
     experience: "15+ years",

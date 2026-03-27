@@ -8,7 +8,7 @@ import {
   ShieldCheck,
   Star,
   Hammer,
-  Ruler,
+  Truck,
 } from "@phosphor-icons/react/dist/ssr";
 
 export default function OptInPage() {
@@ -16,20 +16,20 @@ export default function OptInPage() {
     <>
       <Header />
       <main>
-        {/* Hero Section - white overlay at 65% opacity */}
+        {/* Hero Section - white overlay at 87% opacity */}
         <section className="relative overflow-hidden">
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: `url('${heroImage}')` }}
           />
-          <div className="absolute inset-0 bg-white/[0.65]" />
+          <div className="absolute inset-0 bg-white/[0.87]" />
           <div className="relative max-w-6xl mx-auto px-4 py-16 md:py-24">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
               {/* Left Column - Copy */}
               <div className="pt-4">
                 <div className="inline-block bg-brand-gold/20 border border-brand-gold/40 rounded-full px-4 py-1.5 mb-6">
                   <span className="text-brand-charcoal text-sm font-medium">
-                    Limited Time: Free Design Consultation
+                    Free Design Consultation
                   </span>
                 </div>
 
@@ -38,9 +38,9 @@ export default function OptInPage() {
                 </h1>
 
                 <p className="text-brand-text-secondary text-lg leading-relaxed mb-8 max-w-lg">
-                  White shaker cabinets. Solid wood. Expert craftsmanship. A
-                  design team that listens. Get a personalized consultation and
-                  see exactly how your space can transform.
+                  White shaker cabinets. Solid hardwood construction. Dovetail
+                  drawers. A design team that listens. Get a personalized
+                  consultation and see exactly how your space can transform.
                 </p>
 
                 {/* Trust Signals */}
@@ -54,19 +54,7 @@ export default function OptInPage() {
                       />
                     </div>
                     <span className="text-brand-text-secondary text-sm">
-                      4.9 Google Rating
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-brand-gold/15 flex items-center justify-center flex-shrink-0">
-                      <ShieldCheck
-                        size={20}
-                        weight="fill"
-                        className="text-brand-gold-dark"
-                      />
-                    </div>
-                    <span className="text-brand-text-secondary text-sm">
-                      Lifetime Warranty
+                      5-Star Reviewed
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
@@ -78,19 +66,31 @@ export default function OptInPage() {
                       />
                     </div>
                     <span className="text-brand-text-secondary text-sm">
-                      Solid Wood Construction
+                      Solid Hardwood Construction
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg bg-brand-gold/15 flex items-center justify-center flex-shrink-0">
-                      <Ruler
+                      <ShieldCheck
                         size={20}
                         weight="fill"
                         className="text-brand-gold-dark"
                       />
                     </div>
                     <span className="text-brand-text-secondary text-sm">
-                      Free In-Home Measure
+                      Dovetail Drawers
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-brand-gold/15 flex items-center justify-center flex-shrink-0">
+                      <Truck
+                        size={20}
+                        weight="fill"
+                        className="text-brand-gold-dark"
+                      />
+                    </div>
+                    <span className="text-brand-text-secondary text-sm">
+                      Delivered to Your Door
                     </span>
                   </div>
                 </div>
@@ -103,7 +103,7 @@ export default function OptInPage() {
                     Claim Your Free Design Consultation
                   </h2>
                   <p className="text-white/60 text-sm">
-                    Normally $450. Yours free for a limited time.
+                    Work with a dedicated designer to plan your perfect kitchen.
                   </p>
                 </div>
                 <LeadForm />
@@ -120,9 +120,9 @@ export default function OptInPage() {
                 Why Homeowners Choose Jessen
               </h2>
               <p className="text-brand-text-secondary text-base max-w-2xl mx-auto">
-                From your first consultation to the final installation, we
-                handle every detail so you can enjoy the transformation without
-                the stress.
+                From your first consultation to the day your cabinets arrive, we
+                handle every detail so you can focus on enjoying the
+                transformation.
               </p>
             </div>
 
@@ -150,8 +150,8 @@ export default function OptInPage() {
                     </h3>
                     <p className="text-brand-text-secondary text-sm leading-relaxed">
                       Work directly with a dedicated designer who listens to
-                      your vision and guides you through materials, layouts, and
-                      finishes.
+                      your vision and guides you through layouts, materials, and
+                      finishes for your space.
                     </p>
                   </div>
                 </div>
@@ -162,12 +162,12 @@ export default function OptInPage() {
                   </div>
                   <div>
                     <h3 className="text-brand-text-primary font-semibold text-lg mb-1">
-                      Solid Wood, Built to Last
+                      Solid Hardwood, Built to Last
                     </h3>
                     <p className="text-brand-text-secondary text-sm leading-relaxed">
-                      No particle board. No shortcuts. Every cabinet is crafted
-                      from solid wood with dovetail joints and soft-close
-                      hardware.
+                      No particle board. No shortcuts. Every cabinet features
+                      solid hardwood construction, dovetail drawers, and
+                      high-quality hardware.
                     </p>
                   </div>
                 </div>
@@ -178,12 +178,12 @@ export default function OptInPage() {
                   </div>
                   <div>
                     <h3 className="text-brand-text-primary font-semibold text-lg mb-1">
-                      Professional Installation
+                      Ready to Assemble, Delivered to You
                     </h3>
                     <p className="text-brand-text-secondary text-sm leading-relaxed">
-                      Our certified install teams handle everything, leaving you
-                      with a kitchen that looks exactly like the design, down to
-                      every detail.
+                      Your cabinets ship directly to your door, ready to
+                      assemble. Work with your own installer or tackle it as a
+                      DIY project.
                     </p>
                   </div>
                 </div>
@@ -194,12 +194,12 @@ export default function OptInPage() {
                   </div>
                   <div>
                     <h3 className="text-brand-text-primary font-semibold text-lg mb-1">
-                      Backed by a Lifetime Warranty
+                      White Shaker Style, Always in Stock
                     </h3>
                     <p className="text-brand-text-secondary text-sm leading-relaxed">
-                      We stand behind our work. Your cabinets are protected with
-                      a comprehensive lifetime warranty on materials and
-                      craftsmanship.
+                      Our signature white shaker cabinets are always available.
+                      Base, wall, and tall cabinets in the sizes you need, ready
+                      when you are.
                     </p>
                   </div>
                 </div>
@@ -217,7 +217,7 @@ export default function OptInPage() {
               </h2>
               <p className="text-brand-text-secondary text-base max-w-xl mx-auto">
                 Every project features our signature white shaker cabinets,
-                crafted from solid wood and installed by our expert team.
+                crafted from solid hardwood with dovetail drawers.
               </p>
             </div>
 
@@ -246,12 +246,12 @@ export default function OptInPage() {
           </div>
         </section>
 
-        {/* Social Proof */}
+        {/* Social Proof - Real testimonials from jessencabinets.com */}
         <section className="py-16 bg-white">
           <div className="max-w-6xl mx-auto px-4">
             <div className="text-center mb-10">
               <h2 className="text-2xl md:text-3xl font-bold text-brand-text-primary mb-3">
-                Trusted by Hundreds of Homeowners
+                What Our Customers Say
               </h2>
             </div>
 
@@ -268,16 +268,12 @@ export default function OptInPage() {
                   ))}
                 </div>
                 <p className="text-brand-text-secondary text-sm leading-relaxed mb-4">
-                  &quot;From the first meeting to the final walkthrough,
-                  everything was handled with care. The cabinets are gorgeous and
-                  the soft-close drawers are a game changer. Our kitchen feels
-                  brand new.&quot;
+                  &quot;My experience with Jessen cabinets was wonderful. They
+                  were so helpful with assisting me in designing my kitchen and
+                  made the ordering process very smooth.&quot;
                 </p>
                 <div className="text-brand-text-primary text-sm font-medium">
-                  Jennifer R.
-                </div>
-                <div className="text-brand-text-muted text-xs">
-                  Kitchen Remodel, 2024
+                  B. Burdett
                 </div>
               </div>
 
@@ -293,15 +289,53 @@ export default function OptInPage() {
                   ))}
                 </div>
                 <p className="text-brand-text-secondary text-sm leading-relaxed mb-4">
-                  &quot;We compared five companies before choosing Jessen. The
-                  quality of their solid wood cabinets blew everything else out
-                  of the water. Worth every penny.&quot;
+                  &quot;Richard and Guido were at the door waiting to help me
+                  when I arrived. They took time to listen to my project needs
+                  and provided multiple solutions.&quot;
                 </p>
                 <div className="text-brand-text-primary text-sm font-medium">
-                  Mark & Lisa T.
+                  J. Davis
                 </div>
-                <div className="text-brand-text-muted text-xs">
-                  Full Kitchen Renovation, 2024
+              </div>
+
+              <div className="bg-brand-cream rounded-xl p-6 shadow-sm">
+                <div className="flex gap-1 mb-3">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      size={16}
+                      weight="fill"
+                      className="text-brand-gold"
+                    />
+                  ))}
+                </div>
+                <p className="text-brand-text-secondary text-sm leading-relaxed mb-4">
+                  &quot;High quality cabinets in stock with reasonable pricing.
+                  They did a great job on the cabinets I purchased for
+                  installation.&quot;
+                </p>
+                <div className="text-brand-text-primary text-sm font-medium">
+                  C. Touton
+                </div>
+              </div>
+
+              <div className="bg-brand-cream rounded-xl p-6 shadow-sm">
+                <div className="flex gap-1 mb-3">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      size={16}
+                      weight="fill"
+                      className="text-brand-gold"
+                    />
+                  ))}
+                </div>
+                <p className="text-brand-text-secondary text-sm leading-relaxed mb-4">
+                  &quot;I highly recommend Jessen Cabinets! A terrific product
+                  at a great price with fantastic customer service.&quot;
+                </p>
+                <div className="text-brand-text-primary text-sm font-medium">
+                  B. Carrington
                 </div>
               </div>
             </div>

@@ -28,7 +28,7 @@ export default function ContractorOptInPage() {
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: `url('${heroImage}')` }}
           />
-          <div className="absolute inset-0 bg-white/[0.65]" />
+          <div className="absolute inset-0 bg-white/[0.87]" />
           <div className="relative max-w-6xl mx-auto px-4 py-16 md:py-24">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
               {/* Left Column - Copy */}
@@ -44,7 +44,7 @@ export default function ContractorOptInPage() {
                 </h1>
 
                 <p className="text-brand-text-secondary text-lg leading-relaxed mb-8 max-w-lg">
-                  Solid wood construction. Consistent quality across every
+                  Solid hardwood construction. Consistent quality across every
                   order. A design team that coordinates directly with your crew
                   so your projects stay on schedule.
                 </p>
@@ -65,18 +65,6 @@ export default function ContractorOptInPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg bg-brand-gold/15 flex items-center justify-center flex-shrink-0">
-                      <ShieldCheck
-                        size={20}
-                        weight="fill"
-                        className="text-brand-gold-dark"
-                      />
-                    </div>
-                    <span className="text-brand-text-secondary text-sm">
-                      Lifetime Warranty
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-brand-gold/15 flex items-center justify-center flex-shrink-0">
                       <Handshake
                         size={20}
                         weight="fill"
@@ -89,6 +77,18 @@ export default function ContractorOptInPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg bg-brand-gold/15 flex items-center justify-center flex-shrink-0">
+                      <ShieldCheck
+                        size={20}
+                        weight="fill"
+                        className="text-brand-gold-dark"
+                      />
+                    </div>
+                    <span className="text-brand-text-secondary text-sm">
+                      Solid Hardwood Construction
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-brand-gold/15 flex items-center justify-center flex-shrink-0">
                       <Star
                         size={20}
                         weight="fill"
@@ -96,7 +96,7 @@ export default function ContractorOptInPage() {
                       />
                     </div>
                     <span className="text-brand-text-secondary text-sm">
-                      4.9 Google Rating
+                      25+ Kitchen Custom Orders
                     </span>
                   </div>
                 </div>
@@ -160,8 +160,8 @@ export default function ContractorOptInPage() {
                     </h3>
                     <p className="text-brand-text-secondary text-sm leading-relaxed">
                       Competitive pricing on bulk orders means better margins
-                      for your projects. The more kitchens you build, the more
-                      you save.
+                      for your projects. Orders of 25+ kitchens unlock custom
+                      colors and frame options.
                     </p>
                   </div>
                 </div>
@@ -176,7 +176,8 @@ export default function ContractorOptInPage() {
                     </h3>
                     <p className="text-brand-text-secondary text-sm leading-relaxed">
                       Predictable lead times and dependable inventory so your
-                      job sites never stall waiting on cabinets.
+                      job sites never stall waiting on cabinets. RTA format
+                      means easy transport and storage.
                     </p>
                   </div>
                 </div>
@@ -187,12 +188,12 @@ export default function ContractorOptInPage() {
                   </div>
                   <div>
                     <h3 className="text-brand-text-primary font-semibold text-lg mb-1">
-                      Project Coordination Built In
+                      Design Coordination Built In
                     </h3>
                     <p className="text-brand-text-secondary text-sm leading-relaxed">
                       Our designers work directly with your team on layouts,
                       measurements, and specifications. Less back and forth,
-                      fewer mistakes.
+                      fewer mistakes on the job site.
                     </p>
                   </div>
                 </div>
@@ -203,12 +204,12 @@ export default function ContractorOptInPage() {
                   </div>
                   <div>
                     <h3 className="text-brand-text-primary font-semibold text-lg mb-1">
-                      Solid Wood, Every Time
+                      Solid Hardwood, Every Time
                     </h3>
                     <p className="text-brand-text-secondary text-sm leading-relaxed">
-                      White shaker cabinets built from solid wood with dovetail
-                      joints and soft-close hardware. No particle board. No
-                      shortcuts.
+                      White shaker cabinets built from solid hardwood with
+                      dovetail drawers and high-quality hardware. No particle
+                      board. No shortcuts.
                     </p>
                   </div>
                 </div>

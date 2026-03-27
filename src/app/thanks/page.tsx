@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Image from "next/image";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import {
@@ -5,40 +9,94 @@ import {
   Phone,
   Envelope,
   CalendarCheck,
-} from "@phosphor-icons/react/dist/ssr";
+} from "@phosphor-icons/react";
 
-export const metadata = {
-  title: "You are All Set | Jessen Cabinets",
-  description: "Your design consultation has been booked. Here is what happens next.",
-};
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void;
+  }
+}
+
+interface SelectedDesigner {
+  name: string;
+  firstName: string;
+  imageUrl: string;
+  slug: string;
+}
 
 export default function ThanksPage() {
+  const [designer, setDesigner] = useState<SelectedDesigner | null>(null);
+
+  useEffect(() => {
+    // Load selected designer from sessionStorage
+    try {
+      const stored = sessionStorage.getItem("selectedDesigner");
+      if (stored) {
+        setDesigner(JSON.parse(stored));
+      }
+    } catch {
+      // sessionStorage not available
+    }
+
+    // Fire Meta Pixel CompleteRegistration event
+    if (typeof window !== "undefined" && window.fbq) {
+      window.fbq("track", "CompleteRegistration");
+    }
+  }, []);
+
   return (
     <>
       <Header />
       <main className="min-h-[100dvh]">
-        {/* Hero */}
-        <section className="bg-brand-brown py-16 md:py-24">
+        {/* Hero - Light background */}
+        <section className="bg-brand-cream py-12 md:py-16">
           <div className="max-w-2xl mx-auto px-4 text-center">
-            <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6">
+            <div className="w-16 h-16 rounded-full bg-green-500/15 flex items-center justify-center mx-auto mb-5">
               <CheckCircle
                 size={40}
                 weight="fill"
-                className="text-green-400"
+                className="text-green-500"
               />
             </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight mb-4">
-              Your Consultation Is Booked
-            </h1>
-            <p className="text-white/70 text-base max-w-lg mx-auto">
-              Thank you for choosing Jessen Cabinets. Your designer is looking
-              forward to helping you bring your vision to life.
+
+            {/* Personalized heading with designer info */}
+            {designer ? (
+              <>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-text-primary tracking-tight mb-3">
+                  Your Consultation with {designer.firstName} Is Confirmed!
+                </h1>
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <div className="relative w-12 h-12 rounded-full overflow-hidden ring-2 ring-brand-gold ring-offset-2">
+                    <Image
+                      src={designer.imageUrl}
+                      alt={designer.name}
+                      fill
+                      className="object-cover object-top"
+                      sizes="48px"
+                    />
+                  </div>
+                  <span className="text-brand-text-secondary text-base">
+                    {designer.name}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-text-primary tracking-tight mb-3">
+                Your Consultation Is Booked!
+              </h1>
+            )}
+
+            <p className="text-brand-text-secondary text-base max-w-lg mx-auto">
+              Thank you for choosing Jessen Cabinets.{" "}
+              {designer
+                ? `${designer.firstName} is looking forward to helping you bring your vision to life.`
+                : "Your designer is looking forward to helping you bring your vision to life."}
             </p>
           </div>
         </section>
 
         {/* What Happens Next */}
-        <section className="py-14 md:py-20 bg-white">
+        <section className="py-10 md:py-14 bg-white">
           <div className="max-w-2xl mx-auto px-4">
             <h2 className="text-xl md:text-2xl font-bold text-brand-text-primary mb-8 text-center">
               What Happens Next
@@ -78,9 +136,9 @@ export default function ThanksPage() {
                     Quick Introduction Call
                   </h3>
                   <p className="text-brand-text-secondary text-sm leading-relaxed">
-                    Your designer may reach out within 24-48 hours to introduce
-                    themselves and gather a few details about your project before
-                    the consultation.
+                    {designer
+                      ? `${designer.firstName} may reach out within 24-48 hours to introduce themselves and gather a few details about your project before the consultation.`
+                      : "Your designer may reach out within 24-48 hours to introduce themselves and gather a few details about your project before the consultation."}
                   </p>
                 </div>
               </div>
@@ -109,12 +167,12 @@ export default function ThanksPage() {
         </section>
 
         {/* Contact Info */}
-        <section className="py-12 bg-brand-cream">
+        <section className="py-10 bg-brand-cream">
           <div className="max-w-2xl mx-auto px-4 text-center">
             <h3 className="text-lg font-semibold text-brand-text-primary mb-3">
               Questions Before Your Appointment?
             </h3>
-            <p className="text-brand-text-secondary text-sm mb-6">
+            <p className="text-brand-text-secondary text-sm mb-5">
               Our team is here to help. Give us a call and we will get you
               sorted.
             </p>
