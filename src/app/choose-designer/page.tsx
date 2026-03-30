@@ -16,7 +16,7 @@ export default function ChooseDesignerPage() {
       <Header />
       <main className="min-h-[100dvh]">
         {/* Confirmation Banner */}
-        <section className="bg-brand-brown py-6">
+        <section className="bg-brand-charcoal py-6">
           <div className="max-w-7xl mx-auto px-4 text-center">
             <div className="inline-flex items-center gap-2 bg-green-500/20 border border-green-500/30 rounded-full px-4 py-1.5 mb-3">
               <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />

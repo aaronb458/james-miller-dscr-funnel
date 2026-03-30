@@ -68,7 +68,7 @@ export default function DesignerCard({ designer, index }: DesignerCardProps) {
 
           <button
             onClick={() => setIsModalOpen(true)}
-            className="w-full bg-brand-charcoal hover:bg-brand-brown text-white font-medium py-3 px-6 rounded-lg text-sm transition-all duration-200 flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer"
+            className="w-full bg-brand-charcoal hover:bg-zinc-700 text-white font-medium py-3 px-6 rounded-lg text-sm transition-all duration-200 flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer"
           >
             Book with {designer.firstName}
             <ArrowRight size={16} weight="bold" />

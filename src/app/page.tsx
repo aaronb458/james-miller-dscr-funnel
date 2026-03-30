@@ -9,6 +9,9 @@ import {
   Star,
   Hammer,
   Truck,
+  Package,
+  CurrencyDollar,
+  Wrench,
 } from "@phosphor-icons/react/dist/ssr";
 
 export default function OptInPage() {
@@ -39,7 +42,8 @@ export default function OptInPage() {
 
                 <p className="text-brand-text-secondary text-lg leading-relaxed mb-8 max-w-lg">
                   White shaker cabinets. Solid hardwood construction. Dovetail
-                  drawers. A design team that listens. Get a personalized
+                  drawers. Ready to assemble, shipped flat-packed to your door.
+                  Free shipping on orders over $4,000. Get a personalized
                   consultation and see exactly how your space can transform.
                 </p>
 
@@ -83,14 +87,14 @@ export default function OptInPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg bg-brand-gold/15 flex items-center justify-center flex-shrink-0">
-                      <Truck
+                      <Package
                         size={20}
                         weight="fill"
                         className="text-brand-gold-dark"
                       />
                     </div>
                     <span className="text-brand-text-secondary text-sm">
-                      Delivered to Your Door
+                      Ready to Assemble
                     </span>
                   </div>
                 </div>
@@ -242,6 +246,78 @@ export default function OptInPage() {
                   />
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Shipping, Assembly & Financing */}
+        <section className="py-16 md:py-20 bg-white">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="text-center mb-14">
+              <h2 className="text-2xl md:text-3xl font-bold text-brand-text-primary mb-4">
+                How It Works: Order to Install
+              </h2>
+              <p className="text-brand-text-secondary text-base max-w-2xl mx-auto">
+                Our cabinets ship flat-packed and ready to assemble. No
+                warehouse middleman, no inflated markup. Just quality cabinets
+                delivered to your door.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="text-center p-6">
+                <div className="w-14 h-14 rounded-2xl bg-brand-gold/10 flex items-center justify-center mx-auto mb-4">
+                  <Truck
+                    size={28}
+                    weight="fill"
+                    className="text-brand-gold-dark"
+                  />
+                </div>
+                <h3 className="text-brand-text-primary font-semibold text-lg mb-2">
+                  Free Shipping Over $4,000
+                </h3>
+                <p className="text-brand-text-secondary text-sm leading-relaxed">
+                  Orders over $4,000 paid in full ship free. Otherwise shipping
+                  runs $499 - $699 depending on order size. Delivered direct to
+                  your door.
+                </p>
+              </div>
+
+              <div className="text-center p-6">
+                <div className="w-14 h-14 rounded-2xl bg-brand-gold/10 flex items-center justify-center mx-auto mb-4">
+                  <Wrench
+                    size={28}
+                    weight="fill"
+                    className="text-brand-gold-dark"
+                  />
+                </div>
+                <h3 className="text-brand-text-primary font-semibold text-lg mb-2">
+                  Ready to Assemble
+                </h3>
+                <p className="text-brand-text-secondary text-sm leading-relaxed">
+                  Shipped flat-packed for safe delivery. Average cabinet takes
+                  about 30 minutes to assemble. DIY-friendly or hand it to your
+                  contractor.
+                </p>
+              </div>
+
+              <div className="text-center p-6">
+                <div className="w-14 h-14 rounded-2xl bg-brand-gold/10 flex items-center justify-center mx-auto mb-4">
+                  <CurrencyDollar
+                    size={28}
+                    weight="fill"
+                    className="text-brand-gold-dark"
+                  />
+                </div>
+                <h3 className="text-brand-text-primary font-semibold text-lg mb-2">
+                  Financing Available
+                </h3>
+                <p className="text-brand-text-secondary text-sm leading-relaxed">
+                  0% interest if paid in full within 12 months. Flexible monthly
+                  payments to fit any budget. Get the kitchen you want now,
+                  pay over time.
+                </p>
+              </div>
             </div>
           </div>
         </section>

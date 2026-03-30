@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import confetti from "canvas-confetti";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -11,8 +12,11 @@ interface SurveyData {
   projectSpace: string;
   style: string;
   scope: string;
+  cabinetCount: string;
+  hasInstaller: string;
   timeline: string;
   budget: string;
+  financing: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -60,6 +64,32 @@ const scopeOptions = [
   { value: "adding", label: "Adding cabinets to existing space", sub: "Island, pantry wall, extra storage" },
 ];
 
+const cabinetCountOptions = [
+  { value: "1-10", label: "1 to 10 cabinets", sub: "Small project or single area" },
+  { value: "11-20", label: "11 to 20 cabinets", sub: "Average kitchen" },
+  { value: "21-35", label: "21 to 35 cabinets", sub: "Large kitchen or multiple areas" },
+  { value: "35+", label: "35+ cabinets", sub: "Full home or major remodel" },
+  { value: "not-sure", label: "Not sure yet", sub: "We'll help you figure it out" },
+];
+
+const installerOptions = [
+  {
+    value: "yes-contractor",
+    label: "Yes, I have a contractor",
+    sub: "They'll handle assembly and installation",
+  },
+  {
+    value: "yes-diy",
+    label: "I'll do it myself",
+    sub: "Average cabinet takes about 30 minutes to assemble",
+  },
+  {
+    value: "need-help",
+    label: "I need help finding someone",
+    sub: "We can connect you with local installers",
+  },
+];
+
 const timelineOptions = [
   { value: "now", label: "Ready to order", sub: "Let's go" },
   { value: "1-month", label: "Within a month", sub: "Finalizing details" },
@@ -75,7 +105,27 @@ const budgetOptions = [
   { value: "not-sure", label: "Not sure yet" },
 ];
 
-const TOTAL_STEPS = 8;
+const financingOptions = [
+  {
+    value: "pay-full",
+    label: "Paying in full",
+    sub: "Free shipping on orders over $4,000",
+  },
+  {
+    value: "financing",
+    label: "I'd like financing options",
+    sub: "0% interest if paid within 12 months",
+  },
+  {
+    value: "undecided",
+    label: "Not sure yet",
+    sub: "We'll walk you through options on your consult",
+  },
+];
+
+const TOTAL_STEPS = 11;
+const WEBHOOK_URL =
+  "https://services.leadconnectorhq.com/hooks/cObQXIqcbjUWRdqwM6aq/webhook-trigger/6a8a72a8-04be-42c8-a827-857eb88f44b5";
 
 // ─── Animation Variants ─────────────────────────────────────────────────────
 
@@ -124,6 +174,76 @@ function OptionCard({
   );
 }
 
+function BackButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="mt-4 text-sm text-brand-text-muted hover:text-brand-text-secondary transition-colors cursor-pointer"
+    >
+      &larr; Back
+    </button>
+  );
+}
+
+function SummaryRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between items-center px-4 py-3">
+      <span className="text-xs text-brand-text-muted uppercase tracking-wide">
+        {label}
+      </span>
+      <span className="text-sm text-brand-text-primary font-medium text-right max-w-[60%]">
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function StepHeading({
+  title,
+  subtitle,
+}: {
+  title: string;
+  subtitle: string;
+}) {
+  return (
+    <>
+      <h1 className="text-2xl md:text-3xl font-bold text-brand-text-primary tracking-tight">
+        {title}
+      </h1>
+      <p className="text-brand-text-secondary mt-2 text-sm">{subtitle}</p>
+    </>
+  );
+}
+
+// ─── Confetti helpers ────────────────────────────────────────────────────────
+
+function fireConfetti() {
+  const duration = 2000;
+  const end = Date.now() + duration;
+
+  const frame = () => {
+    confetti({
+      particleCount: 3,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0, y: 0.7 },
+      colors: ["#F7CE1F", "#D4AD00", "#ffffff", "#38bdf8"],
+    });
+    confetti({
+      particleCount: 3,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1, y: 0.7 },
+      colors: ["#F7CE1F", "#D4AD00", "#ffffff", "#38bdf8"],
+    });
+
+    if (Date.now() < end) {
+      requestAnimationFrame(frame);
+    }
+  };
+  frame();
+}
+
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export default function SurveyPage() {
@@ -135,8 +255,11 @@ export default function SurveyPage() {
     projectSpace: "",
     style: "",
     scope: "",
+    cabinetCount: "",
+    hasInstaller: "",
     timeline: "",
     budget: "",
+    financing: "",
     firstName: "",
     lastName: "",
     email: "",
@@ -161,26 +284,36 @@ export default function SurveyPage() {
     [update]
   );
 
+  const qualifiesForFreeShipping =
+    ["10k-20k", "20k-plus"].includes(data.budget) &&
+    data.financing !== "financing";
+
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
       setSubmitting(true);
 
-      // Submit to GHL or webhook
       try {
-        const utmRaw = sessionStorage.getItem("utmData");
+        const utmRaw =
+          typeof window !== "undefined"
+            ? sessionStorage.getItem("utmData")
+            : null;
         const utmData = utmRaw ? JSON.parse(utmRaw) : {};
 
-        await fetch(
-          "https://services.leadconnectorhq.com/hooks/cObQXIqcbjUWRdqwM6aq/webhook/survey",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ...data, ...utmData }),
-          }
-        ).catch(() => {
-          // Silent fail - we'll still show the offer
-        });
+        await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...data,
+            funnel_source: utmData.utm_source || "jessen_survey",
+            funnel_page: "survey",
+            submitted_at: new Date().toISOString(),
+            page_url:
+              typeof window !== "undefined" ? window.location.href : "",
+            ...utmData,
+          }),
+          mode: "no-cors",
+        }).catch(() => {});
       } catch {
         // Silent fail
       }
@@ -190,6 +323,13 @@ export default function SurveyPage() {
     },
     [data]
   );
+
+  // Fire confetti on reveal
+  useEffect(() => {
+    if (submitted) {
+      fireConfetti();
+    }
+  }, [submitted]);
 
   // ─── Reveal Page ─────────────────────────────────────────────────────────
 
@@ -227,12 +367,41 @@ export default function SurveyPage() {
               </div>
 
               <div className="px-6 py-8 space-y-6">
-                <div>
-                  <p className="text-brand-text-secondary text-sm leading-relaxed">
-                    Based on your answers, we ship to your area and your project
-                    is a perfect fit for our premium white shaker line.
-                  </p>
-                </div>
+                <p className="text-brand-text-secondary text-sm leading-relaxed">
+                  Based on your answers, we ship to your area and your project
+                  is a perfect fit for our premium white shaker line.
+                </p>
+
+                {/* Free Shipping callout */}
+                {qualifiesForFreeShipping && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="bg-green-50 border border-green-200 rounded-xl p-4 text-center"
+                  >
+                    <p className="text-green-700 font-bold text-lg">
+                      &#127881; FREE Shipping Included! &#127881;
+                    </p>
+                    <p className="text-green-600 text-xs mt-1">
+                      Orders over $4,000 paid in full ship free. You just saved
+                      $499 - $699.
+                    </p>
+                  </motion.div>
+                )}
+
+                {!qualifiesForFreeShipping && (
+                  <div className="bg-brand-warm-gray rounded-xl p-4 text-center">
+                    <p className="text-brand-text-secondary text-sm">
+                      Shipping runs $499 - $699 depending on order size.
+                      {data.financing !== "financing" && (
+                        <span className="font-medium">
+                          {" "}Orders over $4,000 paid in full ship free!
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                )}
 
                 {/* Bonus */}
                 <div className="bg-brand-warm-gray rounded-xl p-5 border border-zinc-100">
@@ -255,7 +424,8 @@ export default function SurveyPage() {
                     "Free 3D design rendering of your space",
                     "One-on-one consultation with a designer",
                     "Solid hardwood, dovetail drawers, soft-close",
-                    "Delivered direct to your door",
+                    "Ready to assemble, shipped flat-packed to your door",
+                    "Average cabinet assembles in about 30 minutes",
                   ].map((item) => (
                     <li
                       key={item}
@@ -335,12 +505,10 @@ export default function SurveyPage() {
                 exit="exit"
                 transition={{ duration: 0.25 }}
               >
-                <h1 className="text-2xl md:text-3xl font-bold text-brand-text-primary tracking-tight">
-                  First, let&apos;s check if we deliver to your area.
-                </h1>
-                <p className="text-brand-text-secondary mt-2 text-sm">
-                  We ship direct to your door across the U.S.
-                </p>
+                <StepHeading
+                  title="First, let's check if we deliver to your area."
+                  subtitle="We ship flat-packed cabinets direct to your door across the U.S."
+                />
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
@@ -393,12 +561,10 @@ export default function SurveyPage() {
                 exit="exit"
                 transition={{ duration: 0.25 }}
               >
-                <h1 className="text-2xl md:text-3xl font-bold text-brand-text-primary tracking-tight">
-                  What room are you working on?
-                </h1>
-                <p className="text-brand-text-secondary mt-2 text-sm">
-                  Pick the space that needs new cabinets.
-                </p>
+                <StepHeading
+                  title="What room are you working on?"
+                  subtitle="Pick the space that needs new cabinets."
+                />
                 <div className="mt-8 grid grid-cols-2 gap-3">
                   {projectSpaces.map((space) => (
                     <OptionCard
@@ -429,13 +595,10 @@ export default function SurveyPage() {
                 exit="exit"
                 transition={{ duration: 0.25 }}
               >
-                <h1 className="text-2xl md:text-3xl font-bold text-brand-text-primary tracking-tight">
-                  What matters most to you in a cabinet?
-                </h1>
-                <p className="text-brand-text-secondary mt-2 text-sm">
-                  There&apos;s no wrong answer. This helps us tailor your
-                  consultation.
-                </p>
+                <StepHeading
+                  title="What matters most to you in a cabinet?"
+                  subtitle="There's no wrong answer. This helps us tailor your consultation."
+                />
                 <div className="mt-8 space-y-3">
                   {styleOptions.map((opt) => (
                     <OptionCard
@@ -466,12 +629,10 @@ export default function SurveyPage() {
                 exit="exit"
                 transition={{ duration: 0.25 }}
               >
-                <h1 className="text-2xl md:text-3xl font-bold text-brand-text-primary tracking-tight">
-                  What does your project look like?
-                </h1>
-                <p className="text-brand-text-secondary mt-2 text-sm">
-                  This helps us understand the size of the job.
-                </p>
+                <StepHeading
+                  title="What does your project look like?"
+                  subtitle="This helps us understand the size of the job."
+                />
                 <div className="mt-8 space-y-3">
                   {scopeOptions.map((opt) => (
                     <OptionCard
@@ -492,8 +653,80 @@ export default function SurveyPage() {
               </motion.div>
             )}
 
-            {/* ── Step 4: Timeline ── */}
+            {/* ── Step 4: Cabinet Count ── */}
             {step === 4 && (
+              <motion.div
+                key="count"
+                variants={pageVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.25 }}
+              >
+                <StepHeading
+                  title="How many cabinets do you think you'll need?"
+                  subtitle="Just a rough estimate. Your designer will help finalize the count."
+                />
+                <div className="mt-8 space-y-3">
+                  {cabinetCountOptions.map((opt) => (
+                    <OptionCard
+                      key={opt.value}
+                      selected={data.cabinetCount === opt.value}
+                      onClick={() =>
+                        selectAndAdvance("cabinetCount", opt.value)
+                      }
+                    >
+                      <span className="text-sm font-medium text-brand-text-primary block">
+                        {opt.label}
+                      </span>
+                      <span className="text-xs text-brand-text-muted block mt-0.5">
+                        {opt.sub}
+                      </span>
+                    </OptionCard>
+                  ))}
+                </div>
+                <BackButton onClick={back} />
+              </motion.div>
+            )}
+
+            {/* ── Step 5: Assembly / Installer ── */}
+            {step === 5 && (
+              <motion.div
+                key="installer"
+                variants={pageVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.25 }}
+              >
+                <StepHeading
+                  title="Do you have someone to assemble and install?"
+                  subtitle="Our cabinets ship flat-packed and ready to assemble. Average cabinet takes about 30 minutes."
+                />
+                <div className="mt-8 space-y-3">
+                  {installerOptions.map((opt) => (
+                    <OptionCard
+                      key={opt.value}
+                      selected={data.hasInstaller === opt.value}
+                      onClick={() =>
+                        selectAndAdvance("hasInstaller", opt.value)
+                      }
+                    >
+                      <span className="text-sm font-medium text-brand-text-primary block">
+                        {opt.label}
+                      </span>
+                      <span className="text-xs text-brand-text-muted block mt-0.5">
+                        {opt.sub}
+                      </span>
+                    </OptionCard>
+                  ))}
+                </div>
+                <BackButton onClick={back} />
+              </motion.div>
+            )}
+
+            {/* ── Step 6: Timeline ── */}
+            {step === 6 && (
               <motion.div
                 key="timeline"
                 variants={pageVariants}
@@ -502,12 +735,10 @@ export default function SurveyPage() {
                 exit="exit"
                 transition={{ duration: 0.25 }}
               >
-                <h1 className="text-2xl md:text-3xl font-bold text-brand-text-primary tracking-tight">
-                  When are you looking to get started?
-                </h1>
-                <p className="text-brand-text-secondary mt-2 text-sm">
-                  No pressure. We work on your timeline.
-                </p>
+                <StepHeading
+                  title="When are you looking to get started?"
+                  subtitle="No pressure. We work on your timeline."
+                />
                 <div className="mt-8 space-y-3">
                   {timelineOptions.map((opt) => (
                     <OptionCard
@@ -528,8 +759,8 @@ export default function SurveyPage() {
               </motion.div>
             )}
 
-            {/* ── Step 5: Budget ── */}
-            {step === 5 && (
+            {/* ── Step 7: Budget ── */}
+            {step === 7 && (
               <motion.div
                 key="budget"
                 variants={pageVariants}
@@ -538,12 +769,10 @@ export default function SurveyPage() {
                 exit="exit"
                 transition={{ duration: 0.25 }}
               >
-                <h1 className="text-2xl md:text-3xl font-bold text-brand-text-primary tracking-tight">
-                  Do you have a budget in mind?
-                </h1>
-                <p className="text-brand-text-secondary mt-2 text-sm">
-                  Just a ballpark. Helps us recommend the right package.
-                </p>
+                <StepHeading
+                  title="Do you have a budget in mind?"
+                  subtitle="Just a ballpark. Helps us recommend the right package."
+                />
                 <div className="mt-8 space-y-3">
                   {budgetOptions.map((opt) => (
                     <OptionCard
@@ -561,8 +790,42 @@ export default function SurveyPage() {
               </motion.div>
             )}
 
-            {/* ── Step 6: Contact Info ── */}
-            {step === 6 && (
+            {/* ── Step 8: Financing ── */}
+            {step === 8 && (
+              <motion.div
+                key="financing"
+                variants={pageVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.25 }}
+              >
+                <StepHeading
+                  title="How are you planning to pay?"
+                  subtitle="We offer flexible financing with 0% interest if paid within 12 months."
+                />
+                <div className="mt-8 space-y-3">
+                  {financingOptions.map((opt) => (
+                    <OptionCard
+                      key={opt.value}
+                      selected={data.financing === opt.value}
+                      onClick={() => selectAndAdvance("financing", opt.value)}
+                    >
+                      <span className="text-sm font-medium text-brand-text-primary block">
+                        {opt.label}
+                      </span>
+                      <span className="text-xs text-brand-text-muted block mt-0.5">
+                        {opt.sub}
+                      </span>
+                    </OptionCard>
+                  ))}
+                </div>
+                <BackButton onClick={back} />
+              </motion.div>
+            )}
+
+            {/* ── Step 9: Contact Info ── */}
+            {step === 9 && (
               <motion.div
                 key="contact"
                 variants={pageVariants}
@@ -571,12 +834,10 @@ export default function SurveyPage() {
                 exit="exit"
                 transition={{ duration: 0.25 }}
               >
-                <h1 className="text-2xl md:text-3xl font-bold text-brand-text-primary tracking-tight">
-                  Almost done. Where should we send your results?
-                </h1>
-                <p className="text-brand-text-secondary mt-2 text-sm">
-                  We&apos;ll also use this to set up your free consultation.
-                </p>
+                <StepHeading
+                  title="Almost done. Where should we send your results?"
+                  subtitle="We'll also use this to set up your free consultation."
+                />
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
@@ -664,8 +925,8 @@ export default function SurveyPage() {
               </motion.div>
             )}
 
-            {/* ── Step 7: Confirmation / Submit ── */}
-            {step === 7 && (
+            {/* ── Step 10: Confirmation / Submit ── */}
+            {step === 10 && (
               <motion.div
                 key="confirm"
                 variants={pageVariants}
@@ -674,13 +935,10 @@ export default function SurveyPage() {
                 exit="exit"
                 transition={{ duration: 0.25 }}
               >
-                <h1 className="text-2xl md:text-3xl font-bold text-brand-text-primary tracking-tight">
-                  Here&apos;s what you told us, {data.firstName}.
-                </h1>
-                <p className="text-brand-text-secondary mt-2 text-sm">
-                  Look good? Hit the button and we&apos;ll check your
-                  eligibility.
-                </p>
+                <StepHeading
+                  title={`Here's what you told us, ${data.firstName}.`}
+                  subtitle="Look good? Hit the button and we'll check your eligibility."
+                />
 
                 <div className="mt-8 bg-white rounded-xl border border-zinc-200 divide-y divide-zinc-100">
                   <SummaryRow label="Zip code" value={data.zipCode} />
@@ -706,6 +964,22 @@ export default function SurveyPage() {
                     }
                   />
                   <SummaryRow
+                    label="Cabinets"
+                    value={
+                      cabinetCountOptions.find(
+                        (s) => s.value === data.cabinetCount
+                      )?.label || data.cabinetCount
+                    }
+                  />
+                  <SummaryRow
+                    label="Assembly"
+                    value={
+                      installerOptions.find(
+                        (s) => s.value === data.hasInstaller
+                      )?.label || data.hasInstaller
+                    }
+                  />
+                  <SummaryRow
                     label="Timeline"
                     value={
                       timelineOptions.find((s) => s.value === data.timeline)
@@ -717,6 +991,13 @@ export default function SurveyPage() {
                     value={
                       budgetOptions.find((s) => s.value === data.budget)
                         ?.label || data.budget
+                    }
+                  />
+                  <SummaryRow
+                    label="Payment"
+                    value={
+                      financingOptions.find((s) => s.value === data.financing)
+                        ?.label || data.financing
                     }
                   />
                   <SummaryRow label="Email" value={data.email} />
@@ -735,32 +1016,6 @@ export default function SurveyPage() {
           </AnimatePresence>
         </div>
       </main>
-    </div>
-  );
-}
-
-// ─── Small Components ────────────────────────────────────────────────────────
-
-function BackButton({ onClick }: { onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      className="mt-4 text-sm text-brand-text-muted hover:text-brand-text-secondary transition-colors cursor-pointer"
-    >
-      &larr; Back
-    </button>
-  );
-}
-
-function SummaryRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex justify-between items-center px-4 py-3">
-      <span className="text-xs text-brand-text-muted uppercase tracking-wide">
-        {label}
-      </span>
-      <span className="text-sm text-brand-text-primary font-medium text-right max-w-[60%]">
-        {value}
-      </span>
     </div>
   );
 }
