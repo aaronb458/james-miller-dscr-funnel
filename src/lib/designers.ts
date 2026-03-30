@@ -21,8 +21,7 @@ export const designers: Designer[] = [
       "One-on-One Design",
     ],
     experience: "15+ years",
-    imageUrl:
-      "https://assets.cdn.filesafe.space/cObQXIqcbjUWRdqwM6aq/media/69c6cf20cd897ad64ef750d8.jpg",
+    imageUrl: "/images/designers/kaegan.jpg",
     calendarUrl:
       "https://api.leadconnectorhq.com/widget/booking/zJhQa1OgSFxbW2ulmclx",
   },
@@ -30,15 +29,14 @@ export const designers: Designer[] = [
     slug: "madison-batchelder",
     name: "Madison Batchelder",
     firstName: "Madison",
-    bio: "Madison brings fresh energy and a keen eye for detail to the Jessen Cabinets design team. She works closely with clients to create spaces that balance style and function, making every project feel personal and polished.",
+    bio: "My career in design began with an apprenticeship at a small family-owned custom shop - it reminded me of playing Tetris! I love taking the time to learn how the space serves your family, and working together to best optimize it for years to come. Over the last 6 years I have also spent time focusing on appliances and other materials such as flooring and countertops, and can't wait to share my overall expertise with you!",
     specialties: [
-      "Modern Design",
-      "Detail-Oriented Planning",
-      "Client Collaboration",
+      "Custom Cabinetry",
+      "Appliances & Materials",
+      "Space Optimization",
     ],
-    experience: "Design Specialist",
-    imageUrl:
-      "https://assets.cdn.filesafe.space/cObQXIqcbjUWRdqwM6aq/media/69c6cf200c63d5611d3cc770.jpg",
+    experience: "6+ years",
+    imageUrl: "/images/designers/madison.jpg",
     calendarUrl:
       "https://api.leadconnectorhq.com/widget/booking/MhIGLo3CVdCbhvmatleo",
   },
@@ -53,8 +51,7 @@ export const designers: Designer[] = [
       "Kitchen & Bath Design",
     ],
     experience: "19+ years",
-    imageUrl:
-      "https://assets.cdn.filesafe.space/cObQXIqcbjUWRdqwM6aq/media/69c6cf2031ffeb2000e723f5.jpg",
+    imageUrl: "/images/designers/carmie.jpg",
     calendarUrl:
       "https://api.leadconnectorhq.com/widget/booking/BDsC6vt2PO9F7xbn3iUF",
   },
@@ -69,8 +66,7 @@ export const designers: Designer[] = [
       "Lifestyle-Driven Design",
     ],
     experience: "25+ years",
-    imageUrl:
-      "https://assets.cdn.filesafe.space/cObQXIqcbjUWRdqwM6aq/media/69c6cf201d9054af3e63a43d.jpg",
+    imageUrl: "/images/designers/heather.jpg",
     calendarUrl:
       "https://api.leadconnectorhq.com/widget/booking/P2SXa7K4zduXq9jmgfMo",
   },

@@ -5,7 +5,7 @@ export default function Footer() {
     <footer className="bg-brand-charcoal py-8">
       <div className="max-w-6xl mx-auto px-4 flex flex-col items-center gap-4">
         <Image
-          src="https://assets.cdn.filesafe.space/cObQXIqcbjUWRdqwM6aq/media/65924660888153049a4cd890.png"
+          src="/images/logo.png"
           alt="Jessen Cabinets"
           width={160}
           height={53}

@@ -7,7 +7,7 @@ export default function Header() {
       <div className="max-w-6xl mx-auto px-4 flex items-center justify-center">
         <Link href="/">
           <Image
-            src="https://assets.cdn.filesafe.space/cObQXIqcbjUWRdqwM6aq/media/65924660888153049a4cd890.png"
+            src="/images/logo.png"
             alt="Jessen Cabinets"
             width={180}
             height={60}
