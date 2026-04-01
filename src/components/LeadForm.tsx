@@ -377,7 +377,9 @@ export default function LeadForm({
             By checking this box, you agree to receive text messages from Jessen
             Cabinets at the phone number provided. Message and data rates may
             apply. Message frequency varies. Reply STOP to opt out. Reply HELP
-            for help. View our Privacy Policy and Terms of Service.
+            for help. View our{" "}
+            <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" className="underline hover:text-white/80">Privacy Policy</a>{" "}and{" "}
+            <a href="/terms-of-service" target="_blank" rel="noopener noreferrer" className="underline hover:text-white/80">Terms of Service</a>.
           </span>
         </label>
         {errors.smsConsent && (

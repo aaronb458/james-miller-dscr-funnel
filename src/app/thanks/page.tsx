@@ -26,6 +26,7 @@ interface SelectedDesigner {
 
 export default function ThanksPage() {
   const [designer, setDesigner] = useState<SelectedDesigner | null>(null);
+  const [leadName, setLeadName] = useState("");
 
   useEffect(() => {
     // Load selected designer from sessionStorage
@@ -33,6 +34,17 @@ export default function ThanksPage() {
       const stored = sessionStorage.getItem("selectedDesigner");
       if (stored) {
         setDesigner(JSON.parse(stored));
+      }
+    } catch {
+      // sessionStorage not available
+    }
+
+    // Load lead name from sessionStorage
+    try {
+      const leadStored = sessionStorage.getItem("leadData");
+      if (leadStored) {
+        const data = JSON.parse(leadStored);
+        if (data.firstName) setLeadName(data.firstName);
       }
     } catch {
       // sessionStorage not available
@@ -63,7 +75,9 @@ export default function ThanksPage() {
             {designer ? (
               <>
                 <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-text-primary tracking-tight mb-3">
-                  Your Consultation with {designer.firstName} Is Confirmed!
+                  {leadName
+                    ? `${leadName}, Your Consultation with ${designer.firstName} Is Confirmed!`
+                    : `Your Consultation with ${designer.firstName} Is Confirmed!`}
                 </h1>
                 <div className="flex items-center justify-center gap-3 mb-4">
                   <div className="relative w-12 h-12 rounded-full overflow-hidden ring-2 ring-brand-gold ring-offset-2">
@@ -82,7 +96,9 @@ export default function ThanksPage() {
               </>
             ) : (
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-text-primary tracking-tight mb-3">
-                Your Consultation Is Booked!
+                {leadName
+                  ? `${leadName}, Your Consultation Is Booked!`
+                  : "Your Consultation Is Booked!"}
               </h1>
             )}
 

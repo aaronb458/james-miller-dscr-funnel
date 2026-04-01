@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -15,6 +16,21 @@ export default function Footer() {
           White shaker cabinets. Solid hardwood construction. Delivered to your
           door. Showroom in Roswell, GA (by appointment).
         </p>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/privacy-policy"
+            className="text-zinc-500 text-xs underline hover:text-zinc-300 transition-colors"
+          >
+            Privacy Policy
+          </Link>
+          <span className="text-zinc-600">|</span>
+          <Link
+            href="/terms-of-service"
+            className="text-zinc-500 text-xs underline hover:text-zinc-300 transition-colors"
+          >
+            Terms of Service
+          </Link>
+        </div>
         <div className="text-zinc-500 text-xs">
           &copy; {new Date().getFullYear()} Jessen Cabinets. All rights
           reserved.
