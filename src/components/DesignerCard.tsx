@@ -28,7 +28,10 @@ export default function DesignerCard({ designer, index }: DesignerCardProps) {
         }}
         className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_24px_-4px_rgba(0,0,0,0.08)] hover:shadow-[0_12px_40px_-8px_rgba(0,0,0,0.12)] transition-shadow duration-300 group"
       >
-        <div className="relative h-72 sm:h-80 overflow-hidden">
+        <div
+          className="relative h-72 sm:h-80 overflow-hidden cursor-pointer"
+          onClick={() => setIsModalOpen(true)}
+        >
           <Image
             src={designer.imageUrl}
             alt={designer.name}

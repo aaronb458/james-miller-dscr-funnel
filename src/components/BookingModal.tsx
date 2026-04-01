@@ -55,10 +55,10 @@ export default function BookingModal({
         });
       }
 
-      // Show the manual confirm button after 10 seconds
+      // Show the manual confirm button after 5 seconds as fallback
       const timer = setTimeout(() => {
         setShowConfirmButton(true);
-      }, 10000);
+      }, 5000);
 
       return () => clearTimeout(timer);
     } else {
@@ -72,23 +72,34 @@ export default function BookingModal({
   // Listen for postMessage from GHL iframe (booking confirmation)
   const handleMessage = useCallback(
     (event: MessageEvent) => {
-      // GHL iframes may send messages on booking completion
-      if (
-        event.data &&
-        typeof event.data === "string" &&
-        (event.data.includes("booking_confirmed") ||
-          event.data.includes("appointment_booked") ||
-          event.data.includes("calendly.event_scheduled"))
-      ) {
-        router.push("/thanks");
+      // GHL iframes send various message types -- cast a wide net
+      if (event.data && typeof event.data === "string") {
+        const lower = event.data.toLowerCase();
+        if (
+          lower.includes("booking") ||
+          lower.includes("appointment") ||
+          lower.includes("confirmed") ||
+          lower.includes("scheduled") ||
+          lower.includes("booked")
+        ) {
+          router.push("/thanks");
+        }
       }
-      // Also handle object messages
+      // Handle object messages
       if (event.data && typeof event.data === "object") {
         const data = event.data as Record<string, unknown>;
+        const dataStr = JSON.stringify(data).toLowerCase();
         if (
           data.type === "booking_confirmed" ||
+          data.type === "booking-confirmed" ||
+          data.type === "appointment-booked" ||
           data.event === "appointment_booked" ||
-          data.status === "booked"
+          data.event === "booking_confirmed" ||
+          data.status === "booked" ||
+          data.bookingConfirmed === true ||
+          dataStr.includes("scheduled") ||
+          dataStr.includes("booking") ||
+          dataStr.includes("confirmed")
         ) {
           router.push("/thanks");
         }

@@ -62,7 +62,10 @@ export default function DesignerTabs() {
           transition={{ duration: 0.2 }}
           className="bg-white rounded-2xl overflow-hidden shadow-[0_4px_24px_-4px_rgba(0,0,0,0.08)]"
         >
-          <div className="relative h-64 overflow-hidden">
+          <div
+            className="relative h-64 overflow-hidden cursor-pointer"
+            onClick={() => setIsModalOpen(true)}
+          >
             <Image
               src={activeDesigner.imageUrl}
               alt={activeDesigner.name}
