@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { X, CircleNotch, CheckCircle } from "@phosphor-icons/react";
+import { X, CircleNotch } from "@phosphor-icons/react";
 import type { Designer } from "@/lib/designers";
 
 declare global {
@@ -24,7 +24,6 @@ export default function BookingModal({
 }: BookingModalProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
-  const [showConfirmButton, setShowConfirmButton] = useState(false);
   const [calendarUrlWithParams, setCalendarUrlWithParams] = useState(designer.calendarUrl);
 
   // Save designer selection to sessionStorage when modal opens
@@ -32,7 +31,6 @@ export default function BookingModal({
     if (isOpen) {
       document.body.style.overflow = "hidden";
       setIsLoading(true);
-      setShowConfirmButton(false);
 
       // Store selected designer for thank you page
       try {
@@ -73,12 +71,6 @@ export default function BookingModal({
         });
       }
 
-      // Show the manual confirm button after 5 seconds as fallback
-      const timer = setTimeout(() => {
-        setShowConfirmButton(true);
-      }, 5000);
-
-      return () => clearTimeout(timer);
     } else {
       document.body.style.overflow = "";
     }
@@ -143,10 +135,6 @@ export default function BookingModal({
     }
   }, [isOpen, onClose]);
 
-  function handleBookingConfirmed() {
-    router.push("/thanks");
-  }
-
   if (!isOpen) return null;
 
   return (
@@ -206,18 +194,6 @@ export default function BookingModal({
           />
         </div>
 
-        {/* Manual confirmation button - appears after 10s */}
-        {showConfirmButton && (
-          <div className="flex-shrink-0 border-t border-zinc-100 px-4 sm:px-6 py-3 bg-brand-cream">
-            <button
-              onClick={handleBookingConfirmed}
-              className="w-full sm:w-auto bg-brand-gold hover:bg-brand-gold-dark text-brand-charcoal font-semibold py-3 px-6 rounded-lg text-sm transition-all duration-200 flex items-center justify-center gap-2 active:scale-[0.98] mx-auto"
-            >
-              <CheckCircle size={18} weight="fill" />
-              I Have Booked My Consultation
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );
