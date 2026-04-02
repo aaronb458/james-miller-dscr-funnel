@@ -25,6 +25,7 @@ export default function BookingModal({
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [showConfirmButton, setShowConfirmButton] = useState(false);
+  const [calendarUrlWithParams, setCalendarUrlWithParams] = useState(designer.calendarUrl);
 
   // Save designer selection to sessionStorage when modal opens
   useEffect(() => {
@@ -46,6 +47,23 @@ export default function BookingModal({
         );
       } catch {
         // sessionStorage not available
+      }
+
+      // Build calendar URL with lead contact info for auto-fill
+      try {
+        const leadStr = sessionStorage.getItem("leadData");
+        if (leadStr) {
+          const lead = JSON.parse(leadStr);
+          const params = new URLSearchParams();
+          if (lead.firstName) params.set("first_name", lead.firstName);
+          if (lead.lastName) params.set("last_name", lead.lastName);
+          if (lead.email) params.set("email", lead.email);
+          if (lead.phone) params.set("phone", lead.phone);
+          const qs = params.toString();
+          if (qs) setCalendarUrlWithParams(`${designer.calendarUrl}?${qs}`);
+        }
+      } catch {
+        // sessionStorage not available or parse error
       }
 
       // Fire Meta Pixel Schedule event
@@ -179,7 +197,7 @@ export default function BookingModal({
             </div>
           )}
           <iframe
-            src={designer.calendarUrl}
+            src={calendarUrlWithParams}
             title={`Book consultation with ${designer.firstName}`}
             onLoad={() => setIsLoading(false)}
             className="w-full h-full border-none"
