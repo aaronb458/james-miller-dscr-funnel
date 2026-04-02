@@ -56,7 +56,14 @@ export default function BookingModal({
           if (lead.firstName) params.set("first_name", lead.firstName);
           if (lead.lastName) params.set("last_name", lead.lastName);
           if (lead.email) params.set("email", lead.email);
-          if (lead.phone) params.set("phone", lead.phone);
+          if (lead.phone) {
+            // Strip all non-digit characters -- GHL calendar needs digits only
+            let digits = lead.phone.replace(/\D/g, "");
+            // Prepend country code for 10-digit US numbers
+            if (digits.length === 10) digits = "+1" + digits;
+            else if (digits.length === 11 && digits.startsWith("1")) digits = "+" + digits;
+            params.set("phone", digits);
+          }
           const qs = params.toString();
           if (qs) setCalendarUrlWithParams(`${designer.calendarUrl}?${qs}`);
         }
