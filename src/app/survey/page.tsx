@@ -318,6 +318,21 @@ export default function SurveyPage() {
         // Silent fail
       }
 
+      // Save contact data for calendar prefill via BookingModal
+      try {
+        sessionStorage.setItem(
+          "leadData",
+          JSON.stringify({
+            firstName: data.firstName,
+            lastName: data.lastName,
+            email: data.email,
+            phone: data.phone,
+          })
+        );
+      } catch {
+        // sessionStorage not available
+      }
+
       setSubmitting(false);
       setSubmitted(true);
     },
@@ -362,8 +377,11 @@ export default function SurveyPage() {
                   Great news, {data.firstName}!
                 </p>
                 <h1 className="text-brand-charcoal text-2xl md:text-3xl font-bold mt-1">
-                  You qualify for 20% off
+                  You Qualify for Our Premium White Shaker Cabinets!
                 </h1>
+                <p className="text-brand-charcoal text-base font-semibold mt-2">
+                  Plus a FREE $500 3D Design Consultation
+                </p>
               </div>
 
               <div className="px-6 py-8 space-y-6">
@@ -449,7 +467,7 @@ export default function SurveyPage() {
 
                 {/* CTA */}
                 <a
-                  href="https://api.leadconnectorhq.com/widget/booking/zJhQa1OgSFxbW2ulmclx"
+                  href="/choose-designer"
                   className="block w-full bg-brand-gold hover:bg-brand-gold-dark text-brand-charcoal font-semibold text-center py-4 rounded-xl transition-colors text-base"
                 >
                   Book Your Free 3D Design Consult

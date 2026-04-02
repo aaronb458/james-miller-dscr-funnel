@@ -24,9 +24,9 @@ export default function BookingModal({
 }: BookingModalProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
-  const [calendarUrlWithParams, setCalendarUrlWithParams] = useState(designer.calendarUrl);
 
   // Save designer selection to sessionStorage when modal opens
+  // Push lead contact data to parent URL for GHL form_embed.js prefill
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -47,25 +47,22 @@ export default function BookingModal({
         // sessionStorage not available
       }
 
-      // Build calendar URL with lead contact info for auto-fill
+      // Push lead contact data to parent URL so form_embed.js can relay via postMessage
       try {
         const leadStr = sessionStorage.getItem("leadData");
         if (leadStr) {
           const lead = JSON.parse(leadStr);
-          const params = new URLSearchParams();
-          if (lead.firstName) params.set("first_name", lead.firstName);
-          if (lead.lastName) params.set("last_name", lead.lastName);
-          if (lead.email) params.set("email", lead.email);
+          const url = new URL(window.location.href);
+          if (lead.firstName) url.searchParams.set("first_name", lead.firstName);
+          if (lead.lastName) url.searchParams.set("last_name", lead.lastName);
+          if (lead.email) url.searchParams.set("email", lead.email);
           if (lead.phone) {
-            // Strip all non-digit characters -- GHL calendar needs digits only
             let digits = lead.phone.replace(/\D/g, "");
-            // Prepend country code for 10-digit US numbers
             if (digits.length === 10) digits = "+1" + digits;
             else if (digits.length === 11 && digits.startsWith("1")) digits = "+" + digits;
-            params.set("phone", digits);
+            url.searchParams.set("phone", digits);
           }
-          const qs = params.toString();
-          if (qs) setCalendarUrlWithParams(`${designer.calendarUrl}?${qs}`);
+          window.history.replaceState({}, "", url.toString());
         }
       } catch {
         // sessionStorage not available or parse error
@@ -80,6 +77,17 @@ export default function BookingModal({
 
     } else {
       document.body.style.overflow = "";
+
+      // On close, remove prefill params from URL
+      try {
+        const cleanUrl = new URL(window.location.href);
+        ["first_name", "last_name", "email", "phone"].forEach((k) =>
+          cleanUrl.searchParams.delete(k)
+        );
+        window.history.replaceState({}, "", cleanUrl.toString());
+      } catch {
+        // ignore
+      }
     }
     return () => {
       document.body.style.overflow = "";
@@ -192,7 +200,7 @@ export default function BookingModal({
             </div>
           )}
           <iframe
-            src={calendarUrlWithParams}
+            src={designer.calendarUrl}
             title={`Book consultation with ${designer.firstName}`}
             onLoad={() => setIsLoading(false)}
             className="w-full h-full border-none"

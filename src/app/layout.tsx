@@ -67,6 +67,11 @@ export default function RootLayout({
             });
           `}
         </Script>
+        {/* GHL Form Embed (reads parent URL params for calendar prefill) */}
+        <Script
+          src="https://link.msgsndr.com/js/form_embed.js"
+          strategy="afterInteractive"
+        />
         {/* UTM Capture */}
         <Script id="utm-capture" strategy="afterInteractive">
           {`
