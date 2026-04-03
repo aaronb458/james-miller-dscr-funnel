@@ -307,6 +307,7 @@ export default function SurveyPage() {
             ...data,
             funnel_source: utmData.utm_source || "jessen_survey",
             funnel_page: "survey",
+            ab_variant: "full-survey",
             submitted_at: new Date().toISOString(),
             page_url:
               typeof window !== "undefined" ? window.location.href : "",
@@ -314,6 +315,16 @@ export default function SurveyPage() {
           }),
           mode: "no-cors",
         }).catch(() => {});
+
+        if (typeof window !== "undefined" && (window as Window & { posthog?: { capture: (e: string, p?: Record<string, unknown>) => void } }).posthog) {
+          (window as Window & { posthog?: { capture: (e: string, p?: Record<string, unknown>) => void } }).posthog!.capture('survey_submit', {
+            ab_variant: 'full-survey',
+            project_space: data.projectSpace,
+            budget: data.budget,
+            timeline: data.timeline,
+            ...utmData,
+          });
+        }
       } catch {
         // Silent fail
       }

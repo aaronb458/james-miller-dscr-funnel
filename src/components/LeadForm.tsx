@@ -31,6 +31,7 @@ interface LeadFormProps {
 declare global {
   interface Window {
     fbq?: (...args: unknown[]) => void;
+    posthog?: { capture: (event: string, props?: Record<string, unknown>) => void };
   }
 }
 
@@ -111,6 +112,7 @@ export default function LeadForm({
       projectType: formData.projectType,
       funnel_source: resolvedSource,
       funnel_page: funnelPage,
+      ab_variant: 'quick-form',
       sms_consent: smsConsent,
       submitted_at: new Date().toISOString(),
       page_url: typeof window !== "undefined" ? window.location.href : "",
@@ -121,6 +123,15 @@ export default function LeadForm({
       utm_content: utmData.utm_content || "",
       utm_term: utmData.utm_term || "",
     };
+
+    if (typeof window !== "undefined" && window.posthog) {
+      window.posthog.capture('form_submit', {
+        ab_variant: 'quick-form',
+        funnel_page: funnelPage,
+        project_type: formData.projectType,
+        ...utmData,
+      });
+    }
 
     // Add contractor-specific fields
     if (isContractor) {
