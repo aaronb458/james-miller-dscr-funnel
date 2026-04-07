@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
@@ -10,12 +10,9 @@ import confetti from "canvas-confetti";
 interface SurveyData {
   zipCode: string;
   projectSpace: string;
+  whiteShaker: string;
   style: string;
-  scope: string;
-  cabinetCount: string;
-  hasInstaller: string;
   timeline: string;
-  budget: string;
   financing: string;
   firstName: string;
   lastName: string;
@@ -27,11 +24,29 @@ interface SurveyData {
 
 const projectSpaces = [
   { value: "kitchen", label: "Kitchen", icon: "🍳" },
-  { value: "bathroom", label: "Bathroom", icon: "🚿" },
+  { value: "bathroom", label: "Bathroom or Vanity", icon: "🚿" },
   { value: "laundry", label: "Laundry Room", icon: "👕" },
-  { value: "pantry", label: "Pantry / Butler's Pantry", icon: "🏺" },
-  { value: "mudroom", label: "Mudroom / Entryway", icon: "🚪" },
-  { value: "other", label: "Other / Multiple Rooms", icon: "🏠" },
+  { value: "pantry", label: "Pantry or Storage Room", icon: "🏺" },
+  { value: "mudroom", label: "Mudroom", icon: "🚪" },
+  { value: "other", label: "Multiple Rooms", icon: "🏠" },
+];
+
+const whiteShakerOptions = [
+  {
+    value: "yes",
+    label: "Yes, that is exactly what I want",
+    sub: "Let's keep going",
+  },
+  {
+    value: "not-sure",
+    label: "I am still figuring out my style",
+    sub: "We can help you decide. White shaker works with almost everything.",
+  },
+  {
+    value: "no",
+    label: "I need a different style or color",
+    sub: "Custom colors, frameless, or specialty styles",
+  },
 ];
 
 const styleOptions = [
@@ -41,9 +56,9 @@ const styleOptions = [
     sub: "Clean lines, no trends to age out of",
   },
   {
-    value: "versatile",
-    label: "Something that pairs with any countertop or backsplash",
-    sub: "Flexibility to change your mind on finishes",
+    value: "luxury",
+    label: "Luxury look at an affordable price",
+    sub: "High-end appearance without the custom price tag",
   },
   {
     value: "quality",
@@ -57,52 +72,11 @@ const styleOptions = [
   },
 ];
 
-const scopeOptions = [
-  { value: "full-remodel", label: "Full remodel", sub: "Gutting it and starting fresh" },
-  { value: "cabinet-replacement", label: "Replacing existing cabinets", sub: "Keeping the layout, upgrading the cabinets" },
-  { value: "new-construction", label: "New construction", sub: "Building from the ground up" },
-  { value: "adding", label: "Adding cabinets to existing space", sub: "Island, pantry wall, extra storage" },
-];
-
-const cabinetCountOptions = [
-  { value: "1-10", label: "1 to 10 cabinets", sub: "Small project or single area" },
-  { value: "11-20", label: "11 to 20 cabinets", sub: "Average kitchen" },
-  { value: "21-35", label: "21 to 35 cabinets", sub: "Large kitchen or multiple areas" },
-  { value: "35+", label: "35+ cabinets", sub: "Full home or major remodel" },
-  { value: "not-sure", label: "Not sure yet", sub: "We'll help you figure it out" },
-];
-
-const installerOptions = [
-  {
-    value: "yes-contractor",
-    label: "Yes, I have a contractor",
-    sub: "They'll handle assembly and installation",
-  },
-  {
-    value: "yes-diy",
-    label: "I'll do it myself",
-    sub: "Average cabinet takes about 30 minutes to assemble",
-  },
-  {
-    value: "need-help",
-    label: "I need help finding someone",
-    sub: "We can connect you with local installers",
-  },
-];
-
 const timelineOptions = [
   { value: "now", label: "Ready to order", sub: "Let's go" },
   { value: "1-month", label: "Within a month", sub: "Finalizing details" },
   { value: "3-6-months", label: "3 to 6 months out", sub: "Planning ahead" },
   { value: "exploring", label: "Just exploring options", sub: "No rush, doing research" },
-];
-
-const budgetOptions = [
-  { value: "under-5k", label: "Under $5,000" },
-  { value: "5k-10k", label: "$5,000 - $10,000" },
-  { value: "10k-20k", label: "$10,000 - $20,000" },
-  { value: "20k-plus", label: "$20,000+" },
-  { value: "not-sure", label: "Not sure yet" },
 ];
 
 const financingOptions = [
@@ -123,7 +97,8 @@ const financingOptions = [
   },
 ];
 
-const TOTAL_STEPS = 11;
+// Steps: 0=zip, 1=congrats, 2=projectSpace, 3=whiteShaker, 4=style, 5=timeline, 6=financing, 7=contact
+const TOTAL_STEPS = 8;
 const WEBHOOK_URL =
   "https://services.leadconnectorhq.com/hooks/cObQXIqcbjUWRdqwM6aq/webhook-trigger/6a8a72a8-04be-42c8-a827-857eb88f44b5";
 
@@ -185,19 +160,6 @@ function BackButton({ onClick }: { onClick: () => void }) {
   );
 }
 
-function SummaryRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex justify-between items-center px-4 py-3">
-      <span className="text-xs text-brand-text-muted uppercase tracking-wide">
-        {label}
-      </span>
-      <span className="text-sm text-brand-text-primary font-medium text-right max-w-[60%]">
-        {value}
-      </span>
-    </div>
-  );
-}
-
 function StepHeading({
   title,
   subtitle,
@@ -244,27 +206,104 @@ function fireConfetti() {
   frame();
 }
 
+// ─── Exit Intent Popup ───────────────────────────────────────────────────────
+
+function ExitIntentPopup({
+  onClose,
+  onContinue,
+}: {
+  onClose: () => void;
+  onContinue: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Overlay */}
+      <div
+        className="absolute inset-0 bg-black/60"
+        onClick={onClose}
+      />
+      {/* Modal */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.92 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.92 }}
+        transition={{ duration: 0.2 }}
+        className="relative bg-white rounded-2xl shadow-2xl max-w-sm w-full p-8 text-center z-10"
+      >
+        <h2 className="text-2xl font-bold text-brand-text-primary mb-3">
+          Don&apos;t Miss Out!
+        </h2>
+        <p className="text-brand-text-secondary text-sm leading-relaxed mb-6">
+          Your free $500 3D design consult and 20% discount are still waiting for you.
+        </p>
+        <button
+          onClick={onContinue}
+          className="w-full bg-brand-gold hover:bg-brand-gold-dark text-brand-charcoal font-semibold py-3.5 rounded-xl transition-colors cursor-pointer mb-3"
+        >
+          Continue My Application
+        </button>
+        <button
+          onClick={onClose}
+          className="text-sm text-brand-text-muted hover:text-brand-text-secondary transition-colors cursor-pointer"
+        >
+          No thanks
+        </button>
+      </motion.div>
+    </div>
+  );
+}
+
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export default function SurveyPage() {
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [disqualified, setDisqualified] = useState(false);
+  const [showExitPopup, setShowExitPopup] = useState(false);
+  const [countdown, setCountdown] = useState(1200); // 20:00 in seconds
+
+  // Refs for exit/submit tracking
+  const submittedRef = useRef(false);
+  const exitFiredRef = useRef(false);
+
+  // When leadData exists in sessionStorage (came from /start), skip contact steps
+  const [skipContact, setSkipContact] = useState(false);
   const [data, setData] = useState<SurveyData>({
     zipCode: "",
     projectSpace: "",
+    whiteShaker: "",
     style: "",
-    scope: "",
-    cabinetCount: "",
-    hasInstaller: "",
     timeline: "",
-    budget: "",
     financing: "",
     firstName: "",
     lastName: "",
     email: "",
     phone: "",
   });
+
+  // Check sessionStorage on mount for pre-existing leadData from /start
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const stored = sessionStorage.getItem("leadData");
+      if (stored) {
+        const lead = JSON.parse(stored);
+        if (lead.firstName && lead.email) {
+          setData((prev) => ({
+            ...prev,
+            firstName: lead.firstName,
+            lastName: lead.lastName || "",
+            email: lead.email,
+            phone: lead.phone || "",
+          }));
+          setSkipContact(true);
+        }
+      }
+    } catch {
+      // sessionStorage not available
+    }
+  }, []);
 
   const update = useCallback(
     (field: keyof SurveyData, value: string) => {
@@ -284,15 +323,16 @@ export default function SurveyPage() {
     [update]
   );
 
-  const qualifiesForFreeShipping =
-    ["10k-20k", "20k-plus"].includes(data.budget) &&
-    data.financing !== "financing";
+  // ─── Webhook helper ───────────────────────────────────────────────────────
 
-  const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
-      setSubmitting(true);
-
+  const fireWebhook = useCallback(
+    async (
+      stepName: string,
+      currentData: SurveyData,
+      isBooked: boolean = false,
+      isQualified: boolean = true,
+      surveyPartial: boolean = true
+    ) => {
       try {
         const utmRaw =
           typeof window !== "undefined"
@@ -304,23 +344,113 @@ export default function SurveyPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            ...data,
+            firstName: currentData.firstName,
+            lastName: currentData.lastName,
+            name: `${currentData.firstName} ${currentData.lastName}`.trim(),
+            email: currentData.email,
+            phone: currentData.phone,
+            projectType: "",
+            sms_consent: true,
+            ab_variant: "full-survey",
             funnel_source: utmData.utm_source || "jessen_survey",
             funnel_page: "survey",
-            ab_variant: "full-survey",
             submitted_at: new Date().toISOString(),
-            page_url:
-              typeof window !== "undefined" ? window.location.href : "",
-            ...utmData,
+            page_url: typeof window !== "undefined" ? window.location.href : "",
+            utm_source: utmData.utm_source || "",
+            utm_medium: utmData.utm_medium || "",
+            utm_campaign: utmData.utm_campaign || "",
+            utm_content: utmData.utm_content || "",
+            utm_term: utmData.utm_term || "",
+            survey_zip_code: currentData.zipCode,
+            survey_project_space: currentData.projectSpace,
+            survey_style: currentData.style,
+            survey_timeline: currentData.timeline,
+            survey_financing: currentData.financing,
+            survey_white_shaker_confirmed: currentData.whiteShaker || "",
+            step_completed: stepName,
+            is_booked: isBooked,
+            is_qualified: isQualified,
+            survey_partial: surveyPartial,
           }),
           mode: "no-cors",
         }).catch(() => {});
+      } catch {
+        // Silent fail — never block UX
+      }
+    },
+    []
+  );
 
-        if (typeof window !== "undefined" && (window as Window & { posthog?: { capture: (e: string, p?: Record<string, unknown>) => void } }).posthog) {
-          (window as Window & { posthog?: { capture: (e: string, p?: Record<string, unknown>) => void } }).posthog!.capture('survey_submit', {
-            ab_variant: 'full-survey',
+  // White shaker selection — "no" disqualifies, others advance
+  const selectWhiteShaker = useCallback(
+    (value: string) => {
+      update("whiteShaker", value);
+      if (value === "no") {
+        setDisqualified(true);
+        // Fire DQ webhook with whatever data we have
+        setData((prev) => {
+          const updated = { ...prev, whiteShaker: value };
+          fireWebhook("disqualified", updated, false, false, true);
+          return updated;
+        });
+      } else {
+        setTimeout(() => setStep((s) => s + 1), 300);
+      }
+    },
+    [update, fireWebhook]
+  );
+
+  // Zip DQ check
+  const handleZipSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      if (data.zipCode.length !== 5) return;
+
+      const zip = data.zipCode;
+      const prefix = parseInt(zip.substring(0, 3));
+      const isHawaii = zip.startsWith("967") || zip.startsWith("968");
+      const isAlabama = prefix >= 350 && prefix <= 369;
+
+      if (isHawaii || isAlabama) {
+        // Fire zip DQ webhook then disqualify
+        fireWebhook("zip_dq", data, false, false, true);
+        setDisqualified(true);
+      } else {
+        next(); // advance to congrats slide (step 1)
+      }
+    },
+    [data, next, fireWebhook]
+  );
+
+  const qualifiesForFreeShipping = data.financing !== "financing";
+
+  // Task 1: Normalized payload on submit
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setSubmitting(true);
+      submittedRef.current = true;
+
+      try {
+        await fireWebhook("submit", data, false, true, false);
+
+        if (
+          typeof window !== "undefined" &&
+          (
+            window as Window & {
+              posthog?: { capture: (e: string, p?: Record<string, unknown>) => void };
+            }
+          ).posthog
+        ) {
+          const utmRaw = sessionStorage.getItem("utmData");
+          const utmData = utmRaw ? JSON.parse(utmRaw) : {};
+          (
+            window as Window & {
+              posthog?: { capture: (e: string, p?: Record<string, unknown>) => void };
+            }
+          ).posthog!.capture("survey_submit", {
+            ab_variant: "full-survey",
             project_space: data.projectSpace,
-            budget: data.budget,
             timeline: data.timeline,
             ...utmData,
           });
@@ -347,8 +477,54 @@ export default function SurveyPage() {
       setSubmitting(false);
       setSubmitted(true);
     },
-    [data]
+    [data, fireWebhook]
   );
+
+  // Auto-advance from step 7 when skipContact is true
+  useEffect(() => {
+    if (step === 7 && skipContact) {
+      // Fire webhook immediately since we already have contact info
+      fireWebhook("contact", data, false, true, true);
+      const t = setTimeout(() => {
+        // Submit directly
+        submittedRef.current = true;
+        fireWebhook("submit", data, false, true, false).then(() => {
+          try {
+            sessionStorage.setItem(
+              "leadData",
+              JSON.stringify({
+                firstName: data.firstName,
+                lastName: data.lastName,
+                email: data.email,
+                phone: data.phone,
+              })
+            );
+          } catch {
+            // ignore
+          }
+          setSubmitted(true);
+        });
+      }, 400);
+      return () => clearTimeout(t);
+    }
+  }, [step, skipContact, data, fireWebhook]);
+
+  // Fire milestone webhooks for skipContact users when style/timeline complete
+  // These fire via selectAndAdvance — we watch step changes
+  const prevStepRef = useRef(step);
+  useEffect(() => {
+    if (!skipContact) return;
+    const prev = prevStepRef.current;
+    prevStepRef.current = step;
+
+    // style is step 4, timeline is step 5
+    if (prev === 4 && step === 5) {
+      fireWebhook("style", data, false, true, true);
+    }
+    if (prev === 5 && step === 6) {
+      fireWebhook("timeline", data, false, true, true);
+    }
+  }, [step, skipContact, data, fireWebhook]);
 
   // Fire confetti on reveal
   useEffect(() => {
@@ -357,9 +533,154 @@ export default function SurveyPage() {
     }
   }, [submitted]);
 
+  // Countdown timer — starts when submitted
+  useEffect(() => {
+    if (!submitted) return;
+    setCountdown(1200);
+    const interval = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [submitted]);
+
+  // Exit intent — desktop mouseleave
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleMouseLeave = (e: MouseEvent) => {
+      if (submittedRef.current) return;
+      if (exitFiredRef.current) return;
+      if (step === 0) return;
+      // Check sessionStorage flag
+      try {
+        if (sessionStorage.getItem("exitPopupShown")) return;
+      } catch { /* ignore */ }
+      // Mouse moving upward and near top
+      if (e.clientY < window.innerHeight * 0.05) {
+        exitFiredRef.current = true;
+        try { sessionStorage.setItem("exitPopupShown", "1"); } catch { /* ignore */ }
+        setShowExitPopup(true);
+      }
+    };
+
+    document.addEventListener("mouseleave", handleMouseLeave);
+    return () => document.removeEventListener("mouseleave", handleMouseLeave);
+  }, [step]);
+
+  // Exit intent + exit webhook — visibilitychange / pagehide
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleVisibility = () => {
+      if (!document.hidden) return;
+
+      // Exit intent popup (mobile)
+      if (!submittedRef.current && !exitFiredRef.current && step > 0) {
+        try {
+          if (!sessionStorage.getItem("exitPopupShown")) {
+            exitFiredRef.current = true;
+            sessionStorage.setItem("exitPopupShown", "1");
+            setShowExitPopup(true);
+          }
+        } catch { /* ignore */ }
+      }
+
+      // Exit webhook — only if we have contact info
+      setData((current) => {
+        const hasContact = current.email || current.phone;
+        let hasSessionContact = false;
+        try {
+          const stored = sessionStorage.getItem("leadData");
+          if (stored) {
+            const lead = JSON.parse(stored);
+            hasSessionContact = !!(lead.email || lead.phone);
+          }
+        } catch { /* ignore */ }
+
+        if ((hasContact || hasSessionContact) && !submittedRef.current) {
+          fireWebhook(`exit_step_${step}`, current, false, true, true);
+        }
+        return current;
+      });
+    };
+
+    const handlePageHide = () => {
+      setData((current) => {
+        const hasContact = current.email || current.phone;
+        if (hasContact && !submittedRef.current) {
+          fireWebhook(`exit_step_${step}`, current, false, true, true);
+        }
+        return current;
+      });
+    };
+
+    document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("pagehide", handlePageHide);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("pagehide", handlePageHide);
+    };
+  }, [step, fireWebhook]);
+
+  // ─── Disqualification Screen ─────────────────────────────────────────────
+
+  if (disqualified) {
+    return (
+      <div className="min-h-screen bg-brand-charcoal flex flex-col">
+        <header className="py-4 border-b border-white/10">
+          <div className="max-w-2xl mx-auto px-4 flex justify-center">
+            <Image
+              src="/images/logo.png"
+              alt="Jessen Cabinets"
+              width={160}
+              height={53}
+              className="h-10 w-auto"
+            />
+          </div>
+        </header>
+
+        <main className="flex-1 flex items-center justify-center px-4 py-12">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, type: "spring", stiffness: 80 }}
+            className="max-w-lg w-full text-center"
+          >
+            <div className="bg-white/5 border border-white/10 rounded-2xl px-6 py-10 space-y-4">
+              <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
+                We may not be the right fit
+              </h1>
+              <p className="text-white/70 text-sm leading-relaxed">
+                We carry one style and one color. It&apos;s timeless, never goes out of style, and has worked in hundreds of kitchens — but if you&apos;re looking for something different, a custom cabinet shop might be a better match.
+              </p>
+              <div className="pt-2">
+                <a
+                  href="/choose-designer"
+                  className="text-brand-gold text-sm underline hover:text-brand-gold-dark transition-colors"
+                >
+                  Still want to talk to a designer?
+                </a>
+              </div>
+            </div>
+          </motion.div>
+        </main>
+      </div>
+    );
+  }
+
   // ─── Reveal Page ─────────────────────────────────────────────────────────
 
   if (submitted) {
+    const mins = Math.floor(countdown / 60);
+    const secs = countdown % 60;
+    const timerExpired = countdown === 0;
+
     return (
       <div className="min-h-screen bg-brand-cream flex flex-col">
         <header className="py-4 border-b border-zinc-200">
@@ -401,33 +722,20 @@ export default function SurveyPage() {
                   is a perfect fit for our premium white shaker line.
                 </p>
 
-                {/* Free Shipping callout */}
-                {qualifiesForFreeShipping && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="bg-green-50 border border-green-200 rounded-xl p-4 text-center"
-                  >
-                    <p className="text-green-700 font-bold text-lg">
-                      &#127881; FREE Shipping Included! &#127881;
+                {/* Shipping callout */}
+                {qualifiesForFreeShipping ? (
+                  <div className="bg-brand-warm-gray rounded-xl p-4 text-center">
+                    <p className="text-brand-text-secondary text-sm">
+                      Shipping runs $499 - $699 depending on order size.{" "}
+                      <span className="font-medium">
+                        Orders over $4,000 paid in full ship free! *Doesn&apos;t apply with financing options, only Paid in Full.
+                      </span>
                     </p>
-                    <p className="text-green-600 text-xs mt-1">
-                      Orders over $4,000 paid in full ship free. You just saved
-                      $499 - $699.
-                    </p>
-                  </motion.div>
-                )}
-
-                {!qualifiesForFreeShipping && (
+                  </div>
+                ) : (
                   <div className="bg-brand-warm-gray rounded-xl p-4 text-center">
                     <p className="text-brand-text-secondary text-sm">
                       Shipping runs $499 - $699 depending on order size.
-                      {data.financing !== "financing" && (
-                        <span className="font-medium">
-                          {" "}Orders over $4,000 paid in full ship free!
-                        </span>
-                      )}
                     </p>
                   </div>
                 )}
@@ -449,7 +757,6 @@ export default function SurveyPage() {
                 {/* What you get */}
                 <ul className="text-left space-y-3">
                   {[
-                    "20% off your entire cabinet order",
                     "Free 3D design rendering of your space",
                     "One-on-one consultation with a designer",
                     "Solid hardwood, dovetail drawers, soft-close",
@@ -476,12 +783,28 @@ export default function SurveyPage() {
                   </p>
                 </div>
 
+                {/* Countdown timer */}
+                <div className="bg-brand-charcoal rounded-xl p-4 text-center">
+                  <p className="text-white/70 text-xs mb-1">
+                    Your spot and pricing are held for:
+                  </p>
+                  {timerExpired ? (
+                    <p className="text-red-400 text-sm font-semibold">
+                      Time expired — prices may have changed. Book now to secure your spot.
+                    </p>
+                  ) : (
+                    <p className="text-brand-gold text-3xl font-bold tabular-nums">
+                      {String(mins).padStart(2, "0")}:{String(secs).padStart(2, "0")}
+                    </p>
+                  )}
+                </div>
+
                 {/* CTA */}
                 <a
                   href="/choose-designer"
                   className="block w-full bg-brand-gold hover:bg-brand-gold-dark text-brand-charcoal font-semibold text-center py-4 rounded-xl transition-colors text-base"
                 >
-                  Book Your Free 3D Design Consult
+                  Book Your Free 3D Design Consult Now &amp; Get 20% off my entire order
                 </a>
 
                 <p className="text-xs text-brand-text-muted">
@@ -499,6 +822,16 @@ export default function SurveyPage() {
 
   return (
     <div className="min-h-screen bg-brand-cream flex flex-col">
+      {/* Exit Intent Popup */}
+      <AnimatePresence>
+        {showExitPopup && (
+          <ExitIntentPopup
+            onClose={() => setShowExitPopup(false)}
+            onContinue={() => setShowExitPopup(false)}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Header */}
       <header className="py-4 border-b border-zinc-200">
         <div className="max-w-2xl mx-auto px-4 flex justify-center">
@@ -539,10 +872,7 @@ export default function SurveyPage() {
                   subtitle="We ship flat-packed cabinets direct to your door across the U.S."
                 />
                 <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    if (data.zipCode.length === 5) next();
-                  }}
+                  onSubmit={handleZipSubmit}
                   className="mt-8"
                 >
                   <label
@@ -580,8 +910,22 @@ export default function SurveyPage() {
               </motion.div>
             )}
 
-            {/* ── Step 1: Project Space ── */}
+            {/* ── Step 1: Congrats Slide ── */}
             {step === 1 && (
+              <motion.div
+                key="congrats"
+                variants={pageVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.25 }}
+              >
+                <CongratsSlide onContinue={next} />
+              </motion.div>
+            )}
+
+            {/* ── Step 2: Project Space ── */}
+            {step === 2 && (
               <motion.div
                 key="space"
                 variants={pageVariants}
@@ -614,8 +958,58 @@ export default function SurveyPage() {
               </motion.div>
             )}
 
-            {/* ── Step 2: Style ── */}
-            {step === 2 && (
+            {/* ── Step 3: White Shaker Qualifier ── */}
+            {step === 3 && (
+              <motion.div
+                key="white-shaker"
+                variants={pageVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.25 }}
+              >
+                <h1 className="text-2xl md:text-3xl font-bold text-brand-text-primary tracking-tight">
+                  Before we go further
+                </h1>
+                <div className="mt-4 mb-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="bg-brand-gold/10 border border-brand-gold/30 rounded-xl p-4">
+                    <div className="text-sm font-semibold text-brand-text-primary mb-1">What is white shaker?</div>
+                    <div className="text-xs text-brand-text-secondary leading-relaxed">
+                      A classic cabinet style with a simple frame-and-panel door in white. Clean, timeless, and works with almost any countertop or backsplash.
+                    </div>
+                  </div>
+                  <div className="bg-brand-gold/10 border border-brand-gold/30 rounded-xl p-4">
+                    <div className="text-sm font-semibold text-brand-text-primary mb-1">What does ready to assemble mean?</div>
+                    <div className="text-xs text-brand-text-secondary leading-relaxed">
+                      Cabinets ship flat-packed to your door. You or your contractor assembles them on-site. Each cabinet typically takes about 30 minutes. Jessen provides step-by-step video guides to make it fast and easy.
+                    </div>
+                  </div>
+                </div>
+                <p className="text-sm text-brand-text-secondary mb-4">
+                  Jessen Cabinets specializes exclusively in white shaker, ready to assemble cabinets. Does that work for your project?
+                </p>
+                <div className="space-y-3">
+                  {whiteShakerOptions.map((opt) => (
+                    <OptionCard
+                      key={opt.value}
+                      selected={data.whiteShaker === opt.value}
+                      onClick={() => selectWhiteShaker(opt.value)}
+                    >
+                      <span className="text-sm font-medium text-brand-text-primary block">
+                        {opt.label}
+                      </span>
+                      <span className="text-xs text-brand-text-muted block mt-0.5">
+                        {opt.sub}
+                      </span>
+                    </OptionCard>
+                  ))}
+                </div>
+                <BackButton onClick={back} />
+              </motion.div>
+            )}
+
+            {/* ── Step 4: Style ── */}
+            {step === 4 && (
               <motion.div
                 key="style"
                 variants={pageVariants}
@@ -648,114 +1042,8 @@ export default function SurveyPage() {
               </motion.div>
             )}
 
-            {/* ── Step 3: Project Scope ── */}
-            {step === 3 && (
-              <motion.div
-                key="scope"
-                variants={pageVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{ duration: 0.25 }}
-              >
-                <StepHeading
-                  title="What does your project look like?"
-                  subtitle="This helps us understand the size of the job."
-                />
-                <div className="mt-8 space-y-3">
-                  {scopeOptions.map((opt) => (
-                    <OptionCard
-                      key={opt.value}
-                      selected={data.scope === opt.value}
-                      onClick={() => selectAndAdvance("scope", opt.value)}
-                    >
-                      <span className="text-sm font-medium text-brand-text-primary block">
-                        {opt.label}
-                      </span>
-                      <span className="text-xs text-brand-text-muted block mt-0.5">
-                        {opt.sub}
-                      </span>
-                    </OptionCard>
-                  ))}
-                </div>
-                <BackButton onClick={back} />
-              </motion.div>
-            )}
-
-            {/* ── Step 4: Cabinet Count ── */}
-            {step === 4 && (
-              <motion.div
-                key="count"
-                variants={pageVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{ duration: 0.25 }}
-              >
-                <StepHeading
-                  title="How many cabinets do you think you'll need?"
-                  subtitle="Just a rough estimate. Your designer will help finalize the count."
-                />
-                <div className="mt-8 space-y-3">
-                  {cabinetCountOptions.map((opt) => (
-                    <OptionCard
-                      key={opt.value}
-                      selected={data.cabinetCount === opt.value}
-                      onClick={() =>
-                        selectAndAdvance("cabinetCount", opt.value)
-                      }
-                    >
-                      <span className="text-sm font-medium text-brand-text-primary block">
-                        {opt.label}
-                      </span>
-                      <span className="text-xs text-brand-text-muted block mt-0.5">
-                        {opt.sub}
-                      </span>
-                    </OptionCard>
-                  ))}
-                </div>
-                <BackButton onClick={back} />
-              </motion.div>
-            )}
-
-            {/* ── Step 5: Assembly / Installer ── */}
+            {/* ── Step 5: Timeline ── */}
             {step === 5 && (
-              <motion.div
-                key="installer"
-                variants={pageVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{ duration: 0.25 }}
-              >
-                <StepHeading
-                  title="Do you have someone to assemble and install?"
-                  subtitle="Our cabinets ship flat-packed and ready to assemble. Average cabinet takes about 30 minutes."
-                />
-                <div className="mt-8 space-y-3">
-                  {installerOptions.map((opt) => (
-                    <OptionCard
-                      key={opt.value}
-                      selected={data.hasInstaller === opt.value}
-                      onClick={() =>
-                        selectAndAdvance("hasInstaller", opt.value)
-                      }
-                    >
-                      <span className="text-sm font-medium text-brand-text-primary block">
-                        {opt.label}
-                      </span>
-                      <span className="text-xs text-brand-text-muted block mt-0.5">
-                        {opt.sub}
-                      </span>
-                    </OptionCard>
-                  ))}
-                </div>
-                <BackButton onClick={back} />
-              </motion.div>
-            )}
-
-            {/* ── Step 6: Timeline ── */}
-            {step === 6 && (
               <motion.div
                 key="timeline"
                 variants={pageVariants}
@@ -788,39 +1076,8 @@ export default function SurveyPage() {
               </motion.div>
             )}
 
-            {/* ── Step 7: Budget ── */}
-            {step === 7 && (
-              <motion.div
-                key="budget"
-                variants={pageVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{ duration: 0.25 }}
-              >
-                <StepHeading
-                  title="Do you have a budget in mind?"
-                  subtitle="Just a ballpark. Helps us recommend the right package."
-                />
-                <div className="mt-8 space-y-3">
-                  {budgetOptions.map((opt) => (
-                    <OptionCard
-                      key={opt.value}
-                      selected={data.budget === opt.value}
-                      onClick={() => selectAndAdvance("budget", opt.value)}
-                    >
-                      <span className="text-sm font-medium text-brand-text-primary">
-                        {opt.label}
-                      </span>
-                    </OptionCard>
-                  ))}
-                </div>
-                <BackButton onClick={back} />
-              </motion.div>
-            )}
-
-            {/* ── Step 8: Financing ── */}
-            {step === 8 && (
+            {/* ── Step 6: Financing ── */}
+            {step === 6 && (
               <motion.div
                 key="financing"
                 variants={pageVariants}
@@ -830,7 +1087,7 @@ export default function SurveyPage() {
                 transition={{ duration: 0.25 }}
               >
                 <StepHeading
-                  title="How are you planning to pay?"
+                  title="Do you need financing?"
                   subtitle="We offer flexible financing with 0% interest if paid within 12 months."
                 />
                 <div className="mt-8 space-y-3">
@@ -853,8 +1110,8 @@ export default function SurveyPage() {
               </motion.div>
             )}
 
-            {/* ── Step 9: Contact Info ── */}
-            {step === 9 && (
+            {/* ── Step 7: Contact Info (skipped if skipContact=true) ── */}
+            {step === 7 && !skipContact && (
               <motion.div
                 key="contact"
                 variants={pageVariants}
@@ -870,7 +1127,10 @@ export default function SurveyPage() {
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
-                    next();
+                    // Fire contact webhook then submit
+                    fireWebhook("contact", data, false, true, true).then(() => {
+                      handleSubmit(e);
+                    });
                   }}
                   className="mt-8 space-y-4"
                 >
@@ -945,19 +1205,20 @@ export default function SurveyPage() {
                   </div>
                   <button
                     type="submit"
-                    className="w-full bg-brand-gold hover:bg-brand-gold-dark text-brand-charcoal font-semibold py-3.5 rounded-xl transition-colors cursor-pointer"
+                    disabled={submitting}
+                    className="w-full bg-brand-gold hover:bg-brand-gold-dark disabled:opacity-60 text-brand-charcoal font-semibold py-3.5 rounded-xl transition-colors cursor-pointer"
                   >
-                    See My Results
+                    {submitting ? "Checking..." : "See My Results"}
                   </button>
                 </form>
                 <BackButton onClick={back} />
               </motion.div>
             )}
 
-            {/* ── Step 10: Confirmation / Submit ── */}
-            {step === 10 && (
+            {/* ── Step 7 (skipContact=true): Auto-advance handled by useEffect ── */}
+            {step === 7 && skipContact && (
               <motion.div
-                key="confirm"
+                key="contact-skip"
                 variants={pageVariants}
                 initial="enter"
                 animate="center"
@@ -965,86 +1226,48 @@ export default function SurveyPage() {
                 transition={{ duration: 0.25 }}
               >
                 <StepHeading
-                  title={`Here's what you told us, ${data.firstName}.`}
-                  subtitle="Look good? Hit the button and we'll check your eligibility."
+                  title="Almost there..."
+                  subtitle="Checking your answers."
                 />
-
-                <div className="mt-8 bg-white rounded-xl border border-zinc-200 divide-y divide-zinc-100">
-                  <SummaryRow label="Zip code" value={data.zipCode} />
-                  <SummaryRow
-                    label="Room"
-                    value={
-                      projectSpaces.find((s) => s.value === data.projectSpace)
-                        ?.label || data.projectSpace
-                    }
-                  />
-                  <SummaryRow
-                    label="Priority"
-                    value={
-                      styleOptions.find((s) => s.value === data.style)?.label ||
-                      data.style
-                    }
-                  />
-                  <SummaryRow
-                    label="Project"
-                    value={
-                      scopeOptions.find((s) => s.value === data.scope)?.label ||
-                      data.scope
-                    }
-                  />
-                  <SummaryRow
-                    label="Cabinets"
-                    value={
-                      cabinetCountOptions.find(
-                        (s) => s.value === data.cabinetCount
-                      )?.label || data.cabinetCount
-                    }
-                  />
-                  <SummaryRow
-                    label="Assembly"
-                    value={
-                      installerOptions.find(
-                        (s) => s.value === data.hasInstaller
-                      )?.label || data.hasInstaller
-                    }
-                  />
-                  <SummaryRow
-                    label="Timeline"
-                    value={
-                      timelineOptions.find((s) => s.value === data.timeline)
-                        ?.label || data.timeline
-                    }
-                  />
-                  <SummaryRow
-                    label="Budget"
-                    value={
-                      budgetOptions.find((s) => s.value === data.budget)
-                        ?.label || data.budget
-                    }
-                  />
-                  <SummaryRow
-                    label="Payment"
-                    value={
-                      financingOptions.find((s) => s.value === data.financing)
-                        ?.label || data.financing
-                    }
-                  />
-                  <SummaryRow label="Email" value={data.email} />
-                </div>
-
-                <button
-                  onClick={handleSubmit}
-                  disabled={submitting}
-                  className="mt-6 w-full bg-brand-gold hover:bg-brand-gold-dark disabled:opacity-60 text-brand-charcoal font-semibold py-3.5 rounded-xl transition-colors cursor-pointer"
-                >
-                  {submitting ? "Checking..." : "See If I Qualify"}
-                </button>
-                <BackButton onClick={back} />
               </motion.div>
             )}
           </AnimatePresence>
         </div>
       </main>
+    </div>
+  );
+}
+
+// ─── Congrats Slide Component ────────────────────────────────────────────────
+
+function CongratsSlide({ onContinue }: { onContinue: () => void }) {
+  useEffect(() => {
+    const t = setTimeout(onContinue, 2000);
+    return () => clearTimeout(t);
+  }, [onContinue]);
+
+  return (
+    <div className="text-center py-8">
+      <motion.div
+        initial={{ scale: 0.5, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.4, type: "spring", stiffness: 120 }}
+        className="w-20 h-20 rounded-full bg-brand-gold/20 border-2 border-brand-gold flex items-center justify-center mx-auto mb-6"
+      >
+        <span className="text-brand-gold text-4xl font-bold">&#10003;</span>
+      </motion.div>
+      <h1 className="text-2xl md:text-3xl font-bold text-brand-text-primary tracking-tight mb-3">
+        Great news — we ship to your area!
+      </h1>
+      <p className="text-brand-text-secondary text-sm leading-relaxed max-w-sm mx-auto mb-8">
+        Jessen Cabinets delivers flat-packed, ready-to-assemble cabinets direct to your door.
+      </p>
+      <button
+        onClick={onContinue}
+        className="bg-brand-gold hover:bg-brand-gold-dark text-brand-charcoal font-semibold py-3.5 px-8 rounded-xl transition-colors cursor-pointer"
+      >
+        Let&apos;s Get Started
+      </button>
     </div>
   );
 }
