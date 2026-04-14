@@ -1,443 +1,154 @@
-import Image from "next/image";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import LeadForm from "@/components/LeadForm";
-import ScrollTopButton from "@/components/ScrollTopButton";
-import { heroImage, sectionBgImages } from "@/lib/images";
-import {
-  ShieldCheck,
-  Star,
-  Hammer,
-  Truck,
-  Package,
-  CurrencyDollar,
-  Wrench,
-} from "@phosphor-icons/react/dist/ssr";
+'use client';
 
-export default function OptInPage() {
+import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+
+export default function HomePage() {
+  const router = useRouter();
+
   return (
-    <>
-      <Header />
-      <main>
-        {/* Hero Section - white overlay at 87% opacity */}
-        <section className="relative overflow-hidden">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url('${heroImage}')` }}
-          />
-          <div className="absolute inset-0 bg-white/[0.87]" />
-          <div className="relative max-w-6xl mx-auto px-4 py-16 md:py-24">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
-              {/* Left Column - Copy */}
-              <div className="pt-4">
-                <div className="inline-block bg-brand-gold/20 border border-brand-gold/40 rounded-full px-4 py-1.5 mb-6">
-                  <span className="text-brand-charcoal text-sm font-medium">
-                    Free Design Consultation
-                  </span>
-                </div>
-
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-tight text-balance mb-6 text-brand-text-primary">
-                  Your Dream Kitchen Starts with the Right Cabinets
-                </h1>
-
-                <p className="text-brand-text-secondary text-lg leading-relaxed mb-8 max-w-lg">
-                  White shaker cabinets. Solid hardwood construction. Dovetail
-                  drawers. Ready to assemble, shipped flat-packed to your door.
-                  Free shipping on orders over $4,000. Get a personalized
-                  consultation and see exactly how your space can transform.
-                </p>
-
-                {/* Trust Signals */}
-                <div className="grid grid-cols-2 gap-4 mb-8">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-brand-gold/15 flex items-center justify-center flex-shrink-0">
-                      <Star
-                        size={20}
-                        weight="fill"
-                        className="text-brand-gold-dark"
-                      />
-                    </div>
-                    <span className="text-brand-text-secondary text-sm">
-                      5-Star Reviewed
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-brand-gold/15 flex items-center justify-center flex-shrink-0">
-                      <Hammer
-                        size={20}
-                        weight="fill"
-                        className="text-brand-gold-dark"
-                      />
-                    </div>
-                    <span className="text-brand-text-secondary text-sm">
-                      Solid Hardwood Construction
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-brand-gold/15 flex items-center justify-center flex-shrink-0">
-                      <ShieldCheck
-                        size={20}
-                        weight="fill"
-                        className="text-brand-gold-dark"
-                      />
-                    </div>
-                    <span className="text-brand-text-secondary text-sm">
-                      Dovetail Drawers
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-brand-gold/15 flex items-center justify-center flex-shrink-0">
-                      <Package
-                        size={20}
-                        weight="fill"
-                        className="text-brand-gold-dark"
-                      />
-                    </div>
-                    <span className="text-brand-text-secondary text-sm">
-                      Ready to Assemble
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right Column - Form */}
-              <div className="bg-brand-charcoal/90 backdrop-blur-sm border border-brand-charcoal/20 rounded-2xl p-6 sm:p-8 shadow-xl">
-                <div className="text-center mb-6">
-                  <h2 className="text-white text-xl font-semibold mb-2">
-                    Claim Your Free Design Consultation
-                  </h2>
-                  <p className="text-white/60 text-sm">
-                    Work with a dedicated designer to plan your perfect kitchen.
-                  </p>
-                </div>
-                <LeadForm />
-              </div>
-            </div>
+    <div className="min-h-screen flex flex-col" style={{ background: '#F8F7F4' }}>
+      {/* Header */}
+      <header
+        className="py-4 px-4 sm:px-6"
+        style={{
+          background: 'linear-gradient(160deg, #1B2A4A 0%, #0f1c30 100%)',
+          borderBottom: '1px solid rgba(201, 168, 76, 0.15)',
+        }}
+      >
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <div>
+            <p className="font-bold text-white text-base tracking-tight">James Miller</p>
+            <p className="text-gray-400 text-xs tracking-wide">West Capital Lending &middot; NMLS 2024710</p>
           </div>
-        </section>
+          <span
+            className="hidden sm:inline text-[10px] font-semibold px-3 py-1.5 rounded-full uppercase tracking-widest"
+            style={{
+              background: 'rgba(201, 168, 76, 0.12)',
+              color: '#C9A84C',
+              border: '1px solid rgba(201, 168, 76, 0.2)',
+            }}
+          >
+            DSCR Specialist
+          </span>
+        </div>
+      </header>
 
-        {/* Value Props Section */}
-        <section className="py-16 md:py-24 bg-white">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="text-center mb-14">
-              <h2 className="text-2xl md:text-3xl font-bold text-brand-text-primary mb-4">
-                Why Homeowners Choose Jessen
-              </h2>
-              <p className="text-brand-text-secondary text-base max-w-2xl mx-auto">
-                From your first consultation to the day your cabinets arrive, we
-                handle every detail so you can focus on enjoying the
-                transformation.
-              </p>
+      {/* Hero */}
+      <main className="flex-1 flex flex-col items-center justify-center px-4 py-12 sm:py-20">
+        <div className="max-w-2xl mx-auto w-full text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
+          >
+            {/* Badge */}
+            <div
+              className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-widest"
+              style={{
+                background: 'rgba(201, 168, 76, 0.1)',
+                color: '#C9A84C',
+                border: '1px solid rgba(201, 168, 76, 0.25)',
+              }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" />
+              Free Qualification Check
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-14 items-center">
-              {/* Left - Real Kitchen Image */}
-              <div className="relative rounded-2xl overflow-hidden h-80 md:h-[460px]">
-                <Image
-                  src={sectionBgImages.valueProps}
-                  alt="White shaker cabinet kitchen by Jessen Cabinets"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-brand-text-primary tracking-tight leading-tight mb-5">
+              Does Your Investment Property Qualify for a{' '}
+              <span style={{ color: '#C9A84C' }}>DSCR Loan?</span>
+            </h1>
+
+            <p className="text-brand-text-secondary text-lg sm:text-xl leading-relaxed mb-8 max-w-xl mx-auto">
+              Find out in 60 seconds. Answer 5 quick questions, see your results instantly, and book a free strategy session with Jordan.
+            </p>
+
+            <motion.button
+              onClick={() => router.push('/survey')}
+              whileTap={{ scale: 0.97 }}
+              className="inline-flex items-center gap-3 font-semibold text-lg px-8 py-4 rounded-2xl shadow-lg transition-all duration-200 cursor-pointer"
+              style={{
+                background: 'linear-gradient(135deg, #C9A84C 0%, #a87d1e 100%)',
+                color: '#fff',
+                boxShadow: '0 4px 24px rgba(201, 168, 76, 0.35)',
+              }}
+            >
+              Check My Property Now
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </motion.button>
+
+            <p className="mt-4 text-sm text-brand-text-muted">No credit check. No obligation. Takes 60 seconds.</p>
+          </motion.div>
+
+          {/* Trust strip */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2, ease: [0.32, 0.72, 0, 1] }}
+            className="mt-14 grid grid-cols-2 sm:grid-cols-4 gap-4"
+          >
+            {[
+              { number: '$100M+', label: 'DSCR Loans Closed' },
+              { number: '50', label: 'States Licensed' },
+              { number: '70%+', label: 'Pull-Through Rate' },
+              { number: '85%', label: 'DSCR Specialization' },
+            ].map((stat) => (
+              <div
+                key={stat.label}
+                className="flex flex-col items-center py-5 rounded-2xl"
+                style={{ background: '#fff', border: '1px solid #E5E7EB' }}
+              >
+                <p className="font-bold text-2xl tracking-tight" style={{ color: '#C9A84C' }}>{stat.number}</p>
+                <p className="text-brand-text-muted text-[11px] text-center mt-1 font-medium uppercase tracking-wider">{stat.label}</p>
               </div>
+            ))}
+          </motion.div>
 
-              {/* Right - Benefits */}
-              <div className="space-y-8">
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-brand-gold/10 flex items-center justify-center flex-shrink-0">
-                    <span className="text-brand-gold font-bold text-lg">1</span>
+          {/* How it works */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3, ease: [0.32, 0.72, 0, 1] }}
+            className="mt-8 text-left rounded-2xl p-6 sm:p-8"
+            style={{ background: '#fff', border: '1px solid #E5E7EB' }}
+          >
+            <h2 className="text-sm font-semibold text-brand-text-primary mb-5 text-center uppercase tracking-wider">How It Works</h2>
+            <div className="space-y-5">
+              {[
+                { n: '1', title: 'Answer 5 quick questions', desc: 'Takes about 60 seconds. No personal info required upfront.' },
+                { n: '2', title: 'See your qualification results', desc: 'Know immediately whether your property fits the DSCR criteria.' },
+                { n: '3', title: 'Book your free strategy session', desc: 'Jordan reviews your file before the call. You leave knowing exactly what you qualify for.' },
+              ].map((step) => (
+                <div key={step.n} className="flex gap-4 items-start">
+                  <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 font-bold text-sm text-white"
+                    style={{ background: 'linear-gradient(135deg, #1B2A4A, #223563)' }}
+                  >
+                    {step.n}
                   </div>
                   <div>
-                    <h3 className="text-brand-text-primary font-semibold text-lg mb-1">
-                      Expert Design Consultation
-                    </h3>
-                    <p className="text-brand-text-secondary text-sm leading-relaxed">
-                      Work directly with a dedicated designer who listens to
-                      your vision and guides you through layouts, materials, and
-                      finishes for your space.
-                    </p>
+                    <p className="font-semibold text-brand-text-primary text-sm">{step.title}</p>
+                    <p className="text-brand-text-secondary text-sm mt-0.5 leading-relaxed">{step.desc}</p>
                   </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-brand-gold/10 flex items-center justify-center flex-shrink-0">
-                    <span className="text-brand-gold font-bold text-lg">2</span>
-                  </div>
-                  <div>
-                    <h3 className="text-brand-text-primary font-semibold text-lg mb-1">
-                      Solid Hardwood, Built to Last
-                    </h3>
-                    <p className="text-brand-text-secondary text-sm leading-relaxed">
-                      No particle board. No shortcuts. Every cabinet features
-                      solid hardwood construction, dovetail drawers, and
-                      high-quality hardware.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-brand-gold/10 flex items-center justify-center flex-shrink-0">
-                    <span className="text-brand-gold font-bold text-lg">3</span>
-                  </div>
-                  <div>
-                    <h3 className="text-brand-text-primary font-semibold text-lg mb-1">
-                      Ready to Assemble, Delivered to You
-                    </h3>
-                    <p className="text-brand-text-secondary text-sm leading-relaxed">
-                      Your cabinets ship directly to your door, ready to
-                      assemble. Work with your own installer or tackle it as a
-                      DIY project.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-brand-gold/10 flex items-center justify-center flex-shrink-0">
-                    <span className="text-brand-gold font-bold text-lg">4</span>
-                  </div>
-                  <div>
-                    <h3 className="text-brand-text-primary font-semibold text-lg mb-1">
-                      White Shaker Style, Always in Stock
-                    </h3>
-                    <p className="text-brand-text-secondary text-sm leading-relaxed">
-                      Our signature white shaker cabinets are always available.
-                      Base, wall, and tall cabinets in the sizes you need, ready
-                      when you are. Painted white on the inside AND outside — no other RTA company does that.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Kitchen Gallery */}
-        <section className="py-16 md:py-20 bg-brand-cream">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="text-center mb-10">
-              <h2 className="text-2xl md:text-3xl font-bold text-brand-text-primary mb-3">
-                Real Kitchens. Real Results.
-              </h2>
-              <p className="text-brand-text-secondary text-base max-w-xl mx-auto">
-                Every project features our signature white shaker cabinets,
-                crafted from solid hardwood with dovetail drawers.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-              {sectionBgImages.gallery.map((img, i) => (
-                <div
-                  key={i}
-                  className={`relative rounded-xl overflow-hidden ${
-                    i === 0 ? "col-span-2 row-span-2 h-64 md:h-[400px]" : "h-40 md:h-48"
-                  }`}
-                >
-                  <Image
-                    src={img.src}
-                    alt={img.alt}
-                    fill
-                    className="object-cover hover:scale-105 transition-transform duration-500"
-                    sizes={
-                      i === 0
-                        ? "(max-width: 768px) 100vw, 66vw"
-                        : "(max-width: 768px) 50vw, 33vw"
-                    }
-                  />
                 </div>
               ))}
             </div>
-          </div>
-        </section>
-
-        {/* Shipping, Assembly & Financing */}
-        <section className="py-16 md:py-20 bg-white">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="text-center mb-14">
-              <h2 className="text-2xl md:text-3xl font-bold text-brand-text-primary mb-4">
-                How It Works: Order to Install
-              </h2>
-              <p className="text-brand-text-secondary text-base max-w-2xl mx-auto">
-                Our cabinets ship flat-packed and ready to assemble. No
-                warehouse middleman, no inflated markup. Just quality cabinets
-                delivered to your door.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="text-center p-6">
-                <div className="w-14 h-14 rounded-2xl bg-brand-gold/10 flex items-center justify-center mx-auto mb-4">
-                  <Truck
-                    size={28}
-                    weight="fill"
-                    className="text-brand-gold-dark"
-                  />
-                </div>
-                <h3 className="text-brand-text-primary font-semibold text-lg mb-2">
-                  Free Shipping Over $4,000
-                </h3>
-                <p className="text-brand-text-secondary text-sm leading-relaxed">
-                  Orders over $4,000 paid in full ship free. Otherwise shipping
-                  runs $499 - $699 depending on order size. Delivered direct to
-                  your door.
-                </p>
-              </div>
-
-              <div className="text-center p-6">
-                <div className="w-14 h-14 rounded-2xl bg-brand-gold/10 flex items-center justify-center mx-auto mb-4">
-                  <Wrench
-                    size={28}
-                    weight="fill"
-                    className="text-brand-gold-dark"
-                  />
-                </div>
-                <h3 className="text-brand-text-primary font-semibold text-lg mb-2">
-                  Ready to Assemble
-                </h3>
-                <p className="text-brand-text-secondary text-sm leading-relaxed">
-                  Shipped flat-packed for safe delivery. Average cabinet takes
-                  about 30 minutes to assemble. DIY-friendly or hand it to your
-                  contractor.
-                </p>
-              </div>
-
-              <div className="text-center p-6">
-                <div className="w-14 h-14 rounded-2xl bg-brand-gold/10 flex items-center justify-center mx-auto mb-4">
-                  <CurrencyDollar
-                    size={28}
-                    weight="fill"
-                    className="text-brand-gold-dark"
-                  />
-                </div>
-                <h3 className="text-brand-text-primary font-semibold text-lg mb-2">
-                  Financing Available
-                </h3>
-                <p className="text-brand-text-secondary text-sm leading-relaxed">
-                  0% interest if paid in full within 12 months. Flexible monthly
-                  payments to fit any budget. Get the kitchen you want now,
-                  pay over time.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Social Proof - Real testimonials from jessencabinets.com */}
-        <section className="py-16 bg-white">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="text-center mb-10">
-              <h2 className="text-2xl md:text-3xl font-bold text-brand-text-primary mb-3">
-                What Our Customers Say
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-brand-cream rounded-xl p-6 shadow-sm">
-                <div className="flex gap-1 mb-3">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      size={16}
-                      weight="fill"
-                      className="text-brand-gold"
-                    />
-                  ))}
-                </div>
-                <p className="text-brand-text-secondary text-sm leading-relaxed mb-4">
-                  &quot;My experience with Jessen cabinets was wonderful. They
-                  were so helpful with assisting me in designing my kitchen and
-                  made the ordering process very smooth.&quot;
-                </p>
-                <div className="text-brand-text-primary text-sm font-medium">
-                  B. Burdett
-                </div>
-              </div>
-
-              <div className="bg-brand-cream rounded-xl p-6 shadow-sm">
-                <div className="flex gap-1 mb-3">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      size={16}
-                      weight="fill"
-                      className="text-brand-gold"
-                    />
-                  ))}
-                </div>
-                <p className="text-brand-text-secondary text-sm leading-relaxed mb-4">
-                  &quot;Richard and Guido were at the door waiting to help me
-                  when I arrived. They took time to listen to my project needs
-                  and provided multiple solutions.&quot;
-                </p>
-                <div className="text-brand-text-primary text-sm font-medium">
-                  J. Davis
-                </div>
-              </div>
-
-              <div className="bg-brand-cream rounded-xl p-6 shadow-sm">
-                <div className="flex gap-1 mb-3">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      size={16}
-                      weight="fill"
-                      className="text-brand-gold"
-                    />
-                  ))}
-                </div>
-                <p className="text-brand-text-secondary text-sm leading-relaxed mb-4">
-                  &quot;High quality cabinets in stock with reasonable pricing.
-                  They did a great job on the cabinets I purchased for
-                  installation.&quot;
-                </p>
-                <div className="text-brand-text-primary text-sm font-medium">
-                  C. Touton
-                </div>
-              </div>
-
-              <div className="bg-brand-cream rounded-xl p-6 shadow-sm">
-                <div className="flex gap-1 mb-3">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      size={16}
-                      weight="fill"
-                      className="text-brand-gold"
-                    />
-                  ))}
-                </div>
-                <p className="text-brand-text-secondary text-sm leading-relaxed mb-4">
-                  &quot;I highly recommend Jessen Cabinets! A terrific product
-                  at a great price with fantastic customer service.&quot;
-                </p>
-                <div className="text-brand-text-primary text-sm font-medium">
-                  B. Carrington
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Bottom CTA */}
-        <section className="py-16 md:py-20 relative overflow-hidden">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url('${sectionBgImages.bottomCta}')` }}
-          />
-          <div className="absolute inset-0 bg-brand-charcoal/80" />
-          <div className="relative max-w-2xl mx-auto px-4 text-center">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-              Ready to Transform Your Kitchen?
-            </h2>
-            <p className="text-white/70 mb-8 max-w-lg mx-auto">
-              Your free design consultation is just a scroll away. Fill out the
-              form above and pick the designer who fits your project best.
-            </p>
-            <ScrollTopButton />
-          </div>
-        </section>
+          </motion.div>
+        </div>
       </main>
-      <Footer />
-    </>
+
+      {/* Footer */}
+      <footer className="py-6 px-4 text-center border-t" style={{ borderColor: '#E5E7EB' }}>
+        <p className="text-brand-text-muted text-xs">
+          &copy; {new Date().getFullYear()} James Miller &middot; West Capital Lending &middot; NMLS 2024710 &middot;{' '}
+          <a href="/privacy-policy" className="underline hover:text-brand-text-secondary transition-colors">Privacy Policy</a>
+          {' '}&middot;{' '}
+          <a href="/terms-of-service" className="underline hover:text-brand-text-secondary transition-colors">Terms</a>
+        </p>
+      </footer>
+    </div>
   );
 }

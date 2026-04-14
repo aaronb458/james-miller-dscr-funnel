@@ -26,21 +26,6 @@ export const designers: Designer[] = [
       "https://api.leadconnectorhq.com/widget/booking/zJhQa1OgSFxbW2ulmclx",
   },
   {
-    slug: "madison-batchelder",
-    name: "Madison Batchelder",
-    firstName: "Madison",
-    bio: "My career in design began with an apprenticeship at a small family-owned custom shop - it reminded me of playing Tetris! I love taking the time to learn how the space serves your family, and working together to best optimize it for years to come. Over the last 6 years I have also spent time focusing on appliances and other materials such as flooring and countertops, and can't wait to share my overall expertise with you!",
-    specialties: [
-      "Custom Cabinetry",
-      "Appliances & Materials",
-      "Space Optimization",
-    ],
-    experience: "6+ years",
-    imageUrl: "/images/designers/madison.jpg",
-    calendarUrl:
-      "https://api.leadconnectorhq.com/widget/booking/MhIGLo3CVdCbhvmatleo",
-  },
-  {
     slug: "carmie-morton",
     name: "Carmie Morton",
     firstName: "Carmie",

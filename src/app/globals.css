@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --background: #FAF8F2;
-  --foreground: #1A1A1A;
+  --background: #F8F7F4;
+  --foreground: #111827;
 }
 
 body {
@@ -17,8 +17,8 @@ input:focus,
 select:focus,
 textarea:focus {
   outline: none;
-  border-color: #F7CE1F;
-  box-shadow: 0 0 0 3px rgba(247, 206, 31, 0.15);
+  border-color: #C9A84C;
+  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
 }
 
 /* Smooth scrolling */
@@ -28,7 +28,7 @@ html {
 
 /* Custom checkbox styling */
 input[type="checkbox"] {
-  accent-color: #F7CE1F;
+  accent-color: #C9A84C;
 }
 
 /* Calendar iframe responsive */
@@ -43,4 +43,50 @@ input[type="checkbox"] {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* CTA pulse animation — gentle scale loop to signal interactivity */
+@keyframes pulse-scale {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+.cta-pulse {
+  animation: pulse-scale 2s ease-in-out infinite;
+}
+
+/* Arrow icon inside CTA — slides right on hover */
+.cta-arrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.cta-pulse:hover .cta-arrow {
+  transform: translateX(4px);
+}
+
+/* Gold shimmer sweep for First Available card */
+@keyframes gold-shimmer {
+  0% { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(200%) skewX(-15deg); }
+}
+
+.gold-shimmer-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(247, 206, 31, 0.08),
+    rgba(247, 206, 31, 0.15),
+    rgba(247, 206, 31, 0.08),
+    transparent
+  );
+  animation: gold-shimmer 4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
 }
