@@ -24,8 +24,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ["var(--font-inter)", "system-ui", "sans-serif"],
-        body: ["var(--font-inter)", "system-ui", "sans-serif"],
+        display: ["var(--font-outfit)", "system-ui", "sans-serif"],
+        body: ["var(--font-outfit)", "system-ui", "sans-serif"],
       },
     },
   },

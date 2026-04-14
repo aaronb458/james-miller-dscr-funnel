@@ -83,16 +83,28 @@ const stepVariants = {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function ProgressBar({ step }: { step: number }) {
-  const progress = ((step + 1) / TOTAL_STEPS) * 100;
+  const current = step + 1;
+  const progress = (current / TOTAL_STEPS) * 100;
   return (
-    <div className="w-full h-1 rounded-full overflow-hidden" style={{ background: 'rgba(201, 168, 76, 0.15)' }}>
-      <motion.div
-        className="h-full rounded-full"
-        style={{ background: 'linear-gradient(90deg, #a87d1e 0%, #C9A84C 60%, #d4b06a 100%)' }}
-        initial={{ width: 0 }}
-        animate={{ width: `${progress}%` }}
-        transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
-      />
+    <div className="flex items-center gap-3">
+      <div
+        className="flex-1 h-2 rounded-full overflow-hidden"
+        style={{ background: 'rgba(201, 168, 76, 0.12)', border: '1px solid rgba(201,168,76,0.1)' }}
+      >
+        <motion.div
+          className="h-full rounded-full"
+          style={{ background: 'linear-gradient(90deg, #a87d1e 0%, #C9A84C 70%, #d4b06a 100%)' }}
+          initial={{ width: 0 }}
+          animate={{ width: `${progress}%` }}
+          transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
+        />
+      </div>
+      <span
+        className="text-xs font-semibold tabular-nums shrink-0"
+        style={{ color: '#C9A84C', minWidth: '40px', textAlign: 'right' }}
+      >
+        {current}/{TOTAL_STEPS}
+      </span>
     </div>
   );
 }
@@ -109,20 +121,27 @@ function OptionCard({
   return (
     <motion.button
       onClick={onClick}
+      whileHover={{ scale: selected ? 1 : 1.008 }}
       whileTap={{ scale: 0.985 }}
-      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-      className="w-full text-left rounded-xl px-5 py-4 transition-all duration-200 cursor-pointer"
+      transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+      className="w-full text-left rounded-xl px-5 py-4 cursor-pointer"
       style={{
-        background: selected ? 'rgba(201, 168, 76, 0.06)' : '#ffffff',
+        background: selected ? 'rgba(201, 168, 76, 0.07)' : '#ffffff',
         border: selected ? '2px solid #C9A84C' : '2px solid #E5E7EB',
+        boxShadow: selected
+          ? '0 2px 12px rgba(201,168,76,0.15)'
+          : '0 1px 3px rgba(0,0,0,0.04)',
+        transition: 'background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease',
       }}
     >
       <div className="flex items-center gap-3">
+        {/* Selection indicator */}
         <div
-          className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200"
+          className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0"
           style={{
             borderColor: selected ? '#C9A84C' : '#D1D5DB',
             background: selected ? '#C9A84C' : 'transparent',
+            transition: 'all 0.18s ease',
           }}
         >
           {selected && (
@@ -131,9 +150,18 @@ function OptionCard({
             </svg>
           )}
         </div>
-        <p className="font-semibold text-sm leading-snug" style={{ color: selected ? '#1B2A4A' : '#111827' }}>
+        <p
+          className="font-semibold text-sm leading-snug flex-1"
+          style={{ color: selected ? '#1B2A4A' : '#374151' }}
+        >
           {label}
         </p>
+        {/* Right arrow indicator on unselected hover hint */}
+        {!selected && (
+          <svg className="w-4 h-4 opacity-25 shrink-0" fill="none" viewBox="0 0 24 24" stroke="#1B2A4A" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
+        )}
       </div>
     </motion.button>
   );
@@ -764,7 +792,7 @@ export default function SurveyPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: '#F8F7F4' }}>
+    <div className="min-h-[100dvh] flex flex-col" style={{ background: '#F8F7F4' }}>
       {/* Header */}
       <header
         className="py-4 px-4 sm:px-6"
@@ -796,7 +824,11 @@ export default function SurveyPage() {
       <main className="flex-1 flex items-start justify-center px-4 pt-6 pb-12">
         <div
           className="w-full max-w-lg rounded-2xl p-6 sm:p-8 overflow-hidden"
-          style={{ background: '#fff', border: '1px solid #E5E7EB' }}
+          style={{
+            background: '#fff',
+            border: '1px solid #E5E7EB',
+            boxShadow: '0 4px 24px rgba(27,42,74,0.05)',
+          }}
         >
           <div className="relative">
             <AnimatePresence mode="wait" custom={direction}>

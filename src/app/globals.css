@@ -5,11 +5,14 @@
 :root {
   --background: #F8F7F4;
   --foreground: #111827;
+  --font-outfit: 'Outfit', system-ui, sans-serif;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Form input focus states */
@@ -45,14 +48,39 @@ input[type="checkbox"] {
   }
 }
 
+/* Hero noise texture overlay — lightweight grain for depth */
+.hero-noise::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 128px 128px;
+  mix-blend-mode: overlay;
+}
+
+/* Dot pattern for hero background depth */
+.dot-pattern {
+  background-image: radial-gradient(circle, rgba(201,168,76,0.18) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Progress bar track */
+.progress-track {
+  background: rgba(201, 168, 76, 0.12);
+  border-radius: 99px;
+}
+
 /* CTA pulse animation — gentle scale loop to signal interactivity */
 @keyframes pulse-scale {
   0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.03); }
+  50% { transform: scale(1.025); }
 }
 
 .cta-pulse {
-  animation: pulse-scale 2s ease-in-out infinite;
+  animation: pulse-scale 2.4s ease-in-out infinite;
 }
 
 /* Arrow icon inside CTA — slides right on hover */
@@ -65,10 +93,15 @@ input[type="checkbox"] {
   transform: translateX(4px);
 }
 
-/* Gold shimmer sweep for First Available card */
+/* Gold shimmer sweep */
 @keyframes gold-shimmer {
   0% { transform: translateX(-100%) skewX(-15deg); }
   100% { transform: translateX(200%) skewX(-15deg); }
+}
+
+.gold-shimmer-card {
+  position: relative;
+  overflow: hidden;
 }
 
 .gold-shimmer-card::before {
@@ -81,12 +114,79 @@ input[type="checkbox"] {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(247, 206, 31, 0.08),
-    rgba(247, 206, 31, 0.15),
-    rgba(247, 206, 31, 0.08),
+    rgba(201, 168, 76, 0.07),
+    rgba(201, 168, 76, 0.12),
+    rgba(201, 168, 76, 0.07),
     transparent
   );
   animation: gold-shimmer 4s ease-in-out infinite;
   pointer-events: none;
   z-index: 1;
+}
+
+/* Stat card hover lift */
+.stat-card {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(27, 42, 74, 0.08);
+}
+
+/* Option card hover — directional fill from left */
+.option-card-hover {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Button tactile press */
+.btn-tactile:active {
+  transform: scale(0.98) translateY(1px);
+}
+
+/* Input group clean spacing */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Trust badge placeholder marking */
+.placeholder-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #D97706;
+  background: rgba(217, 119, 6, 0.1);
+  border: 1px dashed rgba(217, 119, 6, 0.4);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Confirmation icon ring pulse */
+@keyframes ring-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0.4); }
+  70% { box-shadow: 0 0 0 12px rgba(201, 168, 76, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0); }
+}
+
+.icon-ring-pulse {
+  animation: ring-pulse 2.5s cubic-bezier(0.66, 0, 0, 1) infinite;
+}
+
+/* Step number in How It Works — navy gradient orb */
+.step-orb {
+  background: linear-gradient(135deg, #1B2A4A 0%, #223563 100%);
+  box-shadow: 0 2px 8px rgba(27, 42, 74, 0.25);
+}
+
+/* Section divider line with gold center */
+.divider-gold {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent);
 }

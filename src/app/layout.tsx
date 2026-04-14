@@ -1,19 +1,19 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Outfit } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
-const inter = Inter({
+const outfit = Outfit({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-outfit",
   display: "swap",
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
   title: "DSCR Loan Qualifier | James Miller | West Capital Lending",
   description:
-    "See if your investment property qualifies for a DSCR loan. Answer 5 quick questions and book a free strategy session with Jordan.",
+    "See if your investment property qualifies for a DSCR loan. Answer 6 quick questions and book a free strategy session with James.",
   openGraph: {
     title: "DSCR Loan Qualifier | James Miller",
     description:
@@ -54,7 +54,7 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-      <body className={`${inter.variable} font-body antialiased`}>
+      <body className={`${outfit.variable} font-body antialiased`}>
         {children}
       </body>
     </html>
