@@ -9,11 +9,11 @@ import confetti from "canvas-confetti";
 
 interface SurveyData {
   zipCode: string;
-  projectSpace: string;
   whiteShaker: string;
-  style: string;
+  style: string[];
   timeline: string;
   financing: string;
+  measurements: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -21,15 +21,6 @@ interface SurveyData {
 }
 
 // ─── Step Definitions ────────────────────────────────────────────────────────
-
-const projectSpaces = [
-  { value: "kitchen", label: "Kitchen", icon: "🍳" },
-  { value: "bathroom", label: "Bathroom or Vanity", icon: "🚿" },
-  { value: "laundry", label: "Laundry Room", icon: "👕" },
-  { value: "pantry", label: "Pantry or Storage Room", icon: "🏺" },
-  { value: "mudroom", label: "Mudroom", icon: "🚪" },
-  { value: "other", label: "Multiple Rooms", icon: "🏠" },
-];
 
 const whiteShakerOptions = [
   {
@@ -97,7 +88,25 @@ const financingOptions = [
   },
 ];
 
-// Steps: 0=zip, 1=congrats, 2=projectSpace, 3=whiteShaker, 4=style, 5=timeline, 6=financing, 7=contact
+const measurementOptions = [
+  {
+    value: "yes",
+    label: "Yes, I have them ready",
+    sub: "Perfect, we'll use them on your consult",
+  },
+  {
+    value: "not-yet",
+    label: "Not yet, but I can get them",
+    sub: "No worries, we'll send you our free measuring guide",
+  },
+  {
+    value: "not-sure",
+    label: "I'm not sure what I need",
+    sub: "We'll send you everything you need",
+  },
+];
+
+// Steps: 0=zip, 1=congrats, 2=whiteShaker, 3=style(multi), 4=measurements, 5=timeline, 6=financing, 7=contact
 const TOTAL_STEPS = 8;
 const WEBHOOK_URL =
   "https://services.leadconnectorhq.com/hooks/cObQXIqcbjUWRdqwM6aq/webhook-trigger/6a8a72a8-04be-42c8-a827-857eb88f44b5";
@@ -169,10 +178,10 @@ function StepHeading({
 }) {
   return (
     <>
-      <h1 className="text-2xl md:text-3xl font-bold text-brand-text-primary tracking-tight">
+      <h1 className="text-[22px] md:text-[28px] font-bold text-brand-text-primary tracking-tight leading-tight">
         {title}
       </h1>
-      <p className="text-brand-text-secondary mt-2 text-sm">{subtitle}</p>
+      <p className="text-brand-text-secondary mt-2 text-base">{subtitle}</p>
     </>
   );
 }
@@ -233,12 +242,12 @@ function ExitIntentPopup({
         <h2 className="text-2xl font-bold text-brand-text-primary mb-3">
           Don&apos;t Miss Out!
         </h2>
-        <p className="text-brand-text-secondary text-sm leading-relaxed mb-6">
+        <p className="text-brand-text-secondary text-base leading-relaxed mb-6">
           Your free $500 3D design consult and 20% discount are still waiting for you.
         </p>
         <button
           onClick={onContinue}
-          className="w-full bg-brand-gold hover:bg-brand-gold-dark text-brand-charcoal font-semibold py-3.5 rounded-xl transition-colors cursor-pointer mb-3"
+          className="w-full bg-brand-gold hover:bg-brand-gold-dark text-brand-charcoal font-semibold py-3.5 rounded-xl transition-colors cursor-pointer mb-3 text-base"
         >
           Continue My Application
         </button>
@@ -260,8 +269,15 @@ export default function SurveyPage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [disqualified, setDisqualified] = useState(false);
+  const [zipDisqualified, setZipDisqualified] = useState(false);
+  const [zipDqEmailSubmitted, setZipDqEmailSubmitted] = useState(false);
+  const [zipDqEmail, setZipDqEmail] = useState("");
+  const [zipDqEmailSubmitting, setZipDqEmailSubmitting] = useState(false);
   const [showExitPopup, setShowExitPopup] = useState(false);
   const [countdown, setCountdown] = useState(1200); // 20:00 in seconds
+
+  // Track time on page for exit intent
+  const pageLoadTimeRef = useRef<number>(Date.now());
 
   // Refs for exit/submit tracking
   const submittedRef = useRef(false);
@@ -271,11 +287,11 @@ export default function SurveyPage() {
   const [skipContact, setSkipContact] = useState(false);
   const [data, setData] = useState<SurveyData>({
     zipCode: "",
-    projectSpace: "",
     whiteShaker: "",
-    style: "",
+    style: [],
     timeline: "",
     financing: "",
+    measurements: "",
     firstName: "",
     lastName: "",
     email: "",
@@ -340,6 +356,14 @@ export default function SurveyPage() {
             : null;
         const utmData = utmRaw ? JSON.parse(utmRaw) : {};
 
+        const styleValue = Array.isArray(currentData.style)
+          ? currentData.style.join(",")
+          : currentData.style;
+
+        const sendMeasuringGuide =
+          currentData.measurements === "not-yet" ||
+          currentData.measurements === "not-sure";
+
         await fetch(WEBHOOK_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -362,11 +386,12 @@ export default function SurveyPage() {
             utm_content: utmData.utm_content || "",
             utm_term: utmData.utm_term || "",
             survey_zip_code: currentData.zipCode,
-            survey_project_space: currentData.projectSpace,
-            survey_style: currentData.style,
+            survey_style: styleValue,
             survey_timeline: currentData.timeline,
             survey_financing: currentData.financing,
             survey_white_shaker_confirmed: currentData.whiteShaker || "",
+            survey_measurements: currentData.measurements || "",
+            send_measuring_guide: sendMeasuringGuide,
             step_completed: stepName,
             is_booked: isBooked,
             is_qualified: isQualified,
@@ -412,14 +437,47 @@ export default function SurveyPage() {
       const isAlabama = prefix >= 350 && prefix <= 369;
 
       if (isHawaii || isAlabama) {
-        // Fire zip DQ webhook then disqualify
+        // Fire zip DQ webhook then show shipping DQ page
         fireWebhook("zip_dq", data, false, false, true);
-        setDisqualified(true);
+        setZipDisqualified(true);
       } else {
         next(); // advance to congrats slide (step 1)
       }
     },
     [data, next, fireWebhook]
+  );
+
+  // Zip DQ email capture submit
+  const handleZipDqEmailSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!zipDqEmail || zipDqEmailSubmitting) return;
+      setZipDqEmailSubmitting(true);
+      try {
+        const zip = data.zipCode;
+        const isHawaii = zip.startsWith("967") || zip.startsWith("968");
+        const state = isHawaii ? "Hawaii" : "Alabama";
+        await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: zipDqEmail,
+            step_completed: "zip_dq",
+            is_qualified: false,
+            survey_zip_code: zip,
+            zip_dq_state: state,
+            submitted_at: new Date().toISOString(),
+            page_url: typeof window !== "undefined" ? window.location.href : "",
+          }),
+          mode: "no-cors",
+        }).catch(() => {});
+      } catch {
+        // Silent fail
+      }
+      setZipDqEmailSubmitting(false);
+      setZipDqEmailSubmitted(true);
+    },
+    [zipDqEmail, zipDqEmailSubmitting, data.zipCode]
   );
 
   const qualifiesForFreeShipping = data.financing !== "financing";
@@ -450,7 +508,6 @@ export default function SurveyPage() {
             }
           ).posthog!.capture("survey_submit", {
             ab_variant: "full-survey",
-            project_space: data.projectSpace,
             timeline: data.timeline,
             ...utmData,
           });
@@ -510,15 +567,15 @@ export default function SurveyPage() {
   }, [step, skipContact, data, fireWebhook]);
 
   // Fire milestone webhooks for skipContact users when style/timeline complete
-  // These fire via selectAndAdvance — we watch step changes
+  // Steps: 0=zip, 1=congrats, 2=whiteShaker, 3=style, 4=measurements, 5=timeline, 6=financing, 7=contact
   const prevStepRef = useRef(step);
   useEffect(() => {
     if (!skipContact) return;
     const prev = prevStepRef.current;
     prevStepRef.current = step;
 
-    // style is step 4, timeline is step 5
-    if (prev === 4 && step === 5) {
+    // style is step 3, timeline is step 5
+    if (prev === 3 && step === 4) {
       fireWebhook("style", data, false, true, true);
     }
     if (prev === 5 && step === 6) {
@@ -557,12 +614,21 @@ export default function SurveyPage() {
       if (submittedRef.current) return;
       if (exitFiredRef.current) return;
       if (step === 0) return;
-      // Check sessionStorage flag
+      // Don't fire while user is actively typing
+      if (
+        document.activeElement &&
+        (document.activeElement.tagName === "INPUT" ||
+          document.activeElement.tagName === "TEXTAREA" ||
+          document.activeElement.tagName === "SELECT")
+      ) return;
+      // Check sessionStorage flag — once per session only
       try {
         if (sessionStorage.getItem("exitPopupShown")) return;
       } catch { /* ignore */ }
-      // Mouse moving upward and near top
-      if (e.clientY < window.innerHeight * 0.05) {
+      // Must be on page at least 30 seconds
+      if (Date.now() - pageLoadTimeRef.current < 30000) return;
+      // Mouse must exit above top 10% of viewport (not 5%)
+      if (e.clientY < window.innerHeight * 0.10) {
         exitFiredRef.current = true;
         try { sessionStorage.setItem("exitPopupShown", "1"); } catch { /* ignore */ }
         setShowExitPopup(true);
@@ -580,15 +646,29 @@ export default function SurveyPage() {
     const handleVisibility = () => {
       if (!document.hidden) return;
 
-      // Exit intent popup (mobile)
-      if (!submittedRef.current && !exitFiredRef.current && step > 0) {
-        try {
-          if (!sessionStorage.getItem("exitPopupShown")) {
-            exitFiredRef.current = true;
-            sessionStorage.setItem("exitPopupShown", "1");
-            setShowExitPopup(true);
-          }
-        } catch { /* ignore */ }
+      // Exit intent popup (mobile) — only after 20 seconds on page
+      if (
+        !submittedRef.current &&
+        !exitFiredRef.current &&
+        step > 0 &&
+        Date.now() - pageLoadTimeRef.current >= 20000
+      ) {
+        // Don't fire while user is actively typing
+        const active = document.activeElement;
+        const isTyping = active && (
+          active.tagName === "INPUT" ||
+          active.tagName === "TEXTAREA" ||
+          active.tagName === "SELECT"
+        );
+        if (!isTyping) {
+          try {
+            if (!sessionStorage.getItem("exitPopupShown")) {
+              exitFiredRef.current = true;
+              sessionStorage.setItem("exitPopupShown", "1");
+              setShowExitPopup(true);
+            }
+          } catch { /* ignore */ }
+        }
       }
 
       // Exit webhook — only if we have contact info
@@ -628,6 +708,85 @@ export default function SurveyPage() {
     };
   }, [step, fireWebhook]);
 
+  // ─── Zip / Shipping DQ Screen ────────────────────────────────────────────
+
+  if (zipDisqualified) {
+    const zip = data.zipCode;
+    const isHawaii = zip.startsWith("967") || zip.startsWith("968");
+    const stateName = isHawaii ? "Hawaii" : "Alabama";
+
+    return (
+      <div className="min-h-screen bg-brand-charcoal flex flex-col">
+        <header className="py-4 border-b border-white/10">
+          <div className="max-w-2xl mx-auto px-4 flex justify-center">
+            <Image
+              src="/images/logo.png"
+              alt="Jessen Cabinets"
+              width={160}
+              height={53}
+              className="h-10 w-auto"
+            />
+          </div>
+        </header>
+
+        <main className="flex-1 flex items-center justify-center px-4 py-12">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, type: "spring", stiffness: 80 }}
+            className="max-w-lg w-full text-center"
+          >
+            <div className="bg-white/5 border border-white/10 rounded-2xl px-6 py-10 space-y-6">
+              {/* Icon */}
+              <div className="w-14 h-14 rounded-full bg-brand-gold/20 border border-brand-gold/30 flex items-center justify-center mx-auto">
+                <span className="text-brand-gold text-2xl">📦</span>
+              </div>
+
+              <div className="space-y-3">
+                <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
+                  We don&apos;t ship to {stateName} yet
+                </h1>
+                <p className="text-white/70 text-base leading-relaxed">
+                  Jessen Cabinets currently ships to the continental US only. We&apos;re working on expanding — leave your email and we&apos;ll let you know when we reach you.
+                </p>
+              </div>
+
+              {zipDqEmailSubmitted ? (
+                <div className="bg-brand-gold/10 border border-brand-gold/30 rounded-xl px-5 py-4">
+                  <p className="text-brand-gold font-semibold text-base">
+                    You&apos;re on the list. We&apos;ll reach out as soon as we ship to {stateName}.
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handleZipDqEmailSubmit} className="space-y-3">
+                  <input
+                    type="email"
+                    required
+                    placeholder="Your email address"
+                    value={zipDqEmail}
+                    onChange={(e) => setZipDqEmail(e.target.value)}
+                    className="w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3.5 text-white placeholder:text-white/40 focus:border-brand-gold focus:ring-0 focus:outline-none text-base"
+                  />
+                  <button
+                    type="submit"
+                    disabled={zipDqEmailSubmitting}
+                    className="w-full bg-brand-gold hover:bg-brand-gold-dark disabled:opacity-60 text-brand-charcoal font-semibold py-3.5 rounded-xl transition-colors cursor-pointer text-base"
+                  >
+                    {zipDqEmailSubmitting ? "Saving..." : "Notify Me When You Ship Here"}
+                  </button>
+                </form>
+              )}
+
+              <p className="text-white/30 text-xs">
+                No spam. One email when we expand.
+              </p>
+            </div>
+          </motion.div>
+        </main>
+      </div>
+    );
+  }
+
   // ─── Disqualification Screen ─────────────────────────────────────────────
 
   if (disqualified) {
@@ -656,13 +815,13 @@ export default function SurveyPage() {
               <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
                 We may not be the right fit
               </h1>
-              <p className="text-white/70 text-sm leading-relaxed">
+              <p className="text-white/70 text-base leading-relaxed">
                 We carry one style and one color. It&apos;s timeless, never goes out of style, and has worked in hundreds of kitchens — but if you&apos;re looking for something different, a custom cabinet shop might be a better match.
               </p>
               <div className="pt-2">
                 <a
                   href="/choose-designer"
-                  className="text-brand-gold text-sm underline hover:text-brand-gold-dark transition-colors"
+                  className="text-brand-gold text-base underline hover:text-brand-gold-dark transition-colors"
                 >
                   Still want to talk to a designer?
                 </a>
@@ -711,61 +870,72 @@ export default function SurveyPage() {
                 <h1 className="text-brand-charcoal text-2xl md:text-3xl font-bold mt-1">
                   You Qualify for Our Premium White Shaker Cabinets!
                 </h1>
-                <p className="text-brand-charcoal text-base font-semibold mt-2">
-                  Plus a FREE $500 3D Design Consultation
-                </p>
               </div>
 
               <div className="px-6 py-8 space-y-6">
-                <p className="text-brand-text-secondary text-sm leading-relaxed">
-                  Based on your answers, we ship to your area and your project
-                  is a perfect fit for our premium white shaker line.
+                <p className="text-brand-text-secondary text-base leading-relaxed">
+                  We ship to your area and your project is a great fit for our premium white shaker line.
                 </p>
 
-                {/* Shipping callout */}
-                {qualifiesForFreeShipping ? (
-                  <div className="bg-brand-warm-gray rounded-xl p-4 text-center">
-                    <p className="text-brand-text-secondary text-sm">
-                      Shipping runs $499 - $699 depending on order size.{" "}
-                      <span className="font-medium">
-                        Orders over $4,000 paid in full ship free! *Doesn&apos;t apply with financing options, only Paid in Full.
-                      </span>
-                    </p>
-                  </div>
-                ) : (
-                  <div className="bg-brand-warm-gray rounded-xl p-4 text-center">
-                    <p className="text-brand-text-secondary text-sm">
-                      Shipping runs $499 - $699 depending on order size.
-                    </p>
-                  </div>
-                )}
+                {/* CTA — prominent, distinct color from gold header */}
+                <a
+                  href="/choose-designer"
+                  className="cta-pulse block w-full text-center font-semibold text-white text-lg leading-snug rounded-xl transition-all duration-150 cursor-pointer px-6 py-4"
+                  style={{
+                    backgroundColor: "#FF9900",
+                    boxShadow: "0 6px 0 #CC7A00",
+                    minHeight: "56px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexDirection: "column",
+                  }}
+                  onMouseEnter={(e) => {
+                    const el = e.currentTarget;
+                    el.style.animationPlayState = "paused";
+                    el.style.transform = "translateY(-2px)";
+                    el.style.filter = "brightness(1.08)";
+                    el.style.boxShadow = "0 8px 0 #CC7A00";
+                  }}
+                  onMouseLeave={(e) => {
+                    const el = e.currentTarget;
+                    el.style.animationPlayState = "running";
+                    el.style.transform = "translateY(0)";
+                    el.style.filter = "brightness(1)";
+                    el.style.boxShadow = "0 6px 0 #CC7A00";
+                  }}
+                  onMouseDown={(e) => {
+                    const el = e.currentTarget;
+                    el.style.animationPlayState = "paused";
+                    el.style.transform = "translateY(2px)";
+                    el.style.boxShadow = "0 2px 0 #CC7A00";
+                  }}
+                  onMouseUp={(e) => {
+                    const el = e.currentTarget;
+                    el.style.transform = "translateY(-2px)";
+                    el.style.boxShadow = "0 8px 0 #CC7A00";
+                  }}
+                >
+                  <span className="block">Book Your Free 3D Design Consult Now &amp;</span>
+                  <span className="block">Get 20% off my entire order <span className="cta-arrow">&#8594;</span></span>
+                </a>
 
-                {/* Bonus */}
-                <div className="bg-brand-warm-gray rounded-xl p-5 border border-zinc-100">
-                  <p className="text-xs font-semibold tracking-widest text-brand-gold-dark uppercase">
-                    Bonus included
-                  </p>
-                  <h2 className="text-xl font-bold text-brand-text-primary mt-2">
-                    Free 3D Design Consultation
-                  </h2>
-                  <p className="text-brand-text-secondary text-sm mt-1">
-                    A $500 value. See your project in full 3D before you buy.
-                    No obligation.
-                  </p>
-                </div>
+                <p className="text-xs text-brand-text-muted -mt-3">
+                  Limited availability. Spots fill up fast.
+                </p>
 
                 {/* What you get */}
                 <ul className="text-left space-y-3">
                   {[
-                    "Free 3D design rendering of your space",
                     "One-on-one consultation with a designer",
+                    "Free 3D design rendering — see your space before you buy",
                     "Solid hardwood, dovetail drawers, soft-close",
                     "Ready to assemble, shipped flat-packed to your door",
-                    "Average cabinet assembles in about 30 minutes",
+                    "Each cabinet assembles in about 30 minutes",
                   ].map((item) => (
                     <li
                       key={item}
-                      className="flex items-start gap-3 text-sm text-brand-text-secondary"
+                      className="flex items-start gap-3 text-base text-brand-text-secondary"
                     >
                       <span className="text-brand-gold text-lg leading-none mt-px">
                         &#10003;
@@ -775,22 +945,49 @@ export default function SurveyPage() {
                   ))}
                 </ul>
 
+                {/* 3D Design Consult — integrated naturally, not as a "bonus" header */}
+                <div className="bg-brand-warm-gray rounded-xl p-5 border border-zinc-100 text-left">
+                  <h2 className="text-lg font-bold text-brand-text-primary">
+                    Free 3D Design Consultation — a $500 value
+                  </h2>
+                  <p className="text-brand-text-secondary text-base mt-1">
+                    See your project in full 3D before you buy. No obligation.
+                  </p>
+                </div>
+
+                {/* Shipping callout */}
+                {qualifiesForFreeShipping ? (
+                  <div className="bg-brand-warm-gray rounded-xl p-4 text-center">
+                    <p className="text-brand-text-secondary text-base">
+                      Shipping runs $499–$699 depending on order size.{" "}
+                      <span className="font-medium">
+                        Orders over $4,000 paid in full ship free.
+                      </span>
+                    </p>
+                  </div>
+                ) : (
+                  <div className="bg-brand-warm-gray rounded-xl p-4 text-center">
+                    <p className="text-brand-text-secondary text-base">
+                      Shipping runs $499–$699 depending on order size.
+                    </p>
+                  </div>
+                )}
+
                 {/* Financing note */}
                 <div className="border-t border-zinc-100 pt-5">
-                  <p className="text-xs text-brand-text-muted">
-                    Financing available. 0% interest if paid in full within 12
-                    months. Flexible monthly payments for every budget.
+                  <p className="text-sm text-brand-text-muted">
+                    Financing available. 0% interest if paid in full within 12 months.
                   </p>
                 </div>
 
                 {/* Countdown timer */}
                 <div className="bg-brand-charcoal rounded-xl p-4 text-center">
-                  <p className="text-white/70 text-xs mb-1">
+                  <p className="text-white/70 text-sm mb-1">
                     Your spot and pricing are held for:
                   </p>
                   {timerExpired ? (
-                    <p className="text-red-400 text-sm font-semibold">
-                      Time expired — prices may have changed. Book now to secure your spot.
+                    <p className="text-red-400 text-base font-semibold">
+                      Time expired — book now to secure your spot.
                     </p>
                   ) : (
                     <p className="text-brand-gold text-3xl font-bold tabular-nums">
@@ -798,18 +995,6 @@ export default function SurveyPage() {
                     </p>
                   )}
                 </div>
-
-                {/* CTA */}
-                <a
-                  href="/choose-designer"
-                  className="block w-full bg-brand-gold hover:bg-brand-gold-dark text-brand-charcoal font-semibold text-center py-4 rounded-xl transition-colors text-base"
-                >
-                  Book Your Free 3D Design Consult Now &amp; Get 20% off my entire order
-                </a>
-
-                <p className="text-xs text-brand-text-muted">
-                  Limited availability. Spots fill up fast.
-                </p>
               </div>
             </div>
           </motion.div>
@@ -821,7 +1006,7 @@ export default function SurveyPage() {
   // ─── Survey Shell ────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-brand-cream flex flex-col">
+    <div className="min-h-screen bg-brand-cream flex flex-col" style={{ fontSize: "16px" }}>
       {/* Exit Intent Popup */}
       <AnimatePresence>
         {showExitPopup && (
@@ -877,7 +1062,7 @@ export default function SurveyPage() {
                 >
                   <label
                     htmlFor="zip"
-                    className="block text-sm font-medium text-brand-text-primary mb-2"
+                    className="block text-base font-medium text-brand-text-primary mb-2"
                   >
                     Zip code
                   </label>
@@ -902,7 +1087,7 @@ export default function SurveyPage() {
                   <button
                     type="submit"
                     disabled={data.zipCode.length !== 5}
-                    className="mt-6 w-full bg-brand-gold hover:bg-brand-gold-dark disabled:opacity-40 disabled:cursor-not-allowed text-brand-charcoal font-semibold py-3.5 rounded-xl transition-colors cursor-pointer"
+                    className="mt-6 w-full bg-brand-gold hover:bg-brand-gold-dark disabled:opacity-40 disabled:cursor-not-allowed text-brand-charcoal font-semibold py-3.5 rounded-xl transition-colors cursor-pointer text-lg"
                   >
                     Check Availability
                   </button>
@@ -920,46 +1105,12 @@ export default function SurveyPage() {
                 exit="exit"
                 transition={{ duration: 0.25 }}
               >
-                <CongratsSlide onContinue={next} />
+                <CongratsSlide onContinue={next} onConfetti={fireConfetti} />
               </motion.div>
             )}
 
-            {/* ── Step 2: Project Space ── */}
+            {/* ── Step 2: White Shaker Qualifier ── */}
             {step === 2 && (
-              <motion.div
-                key="space"
-                variants={pageVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{ duration: 0.25 }}
-              >
-                <StepHeading
-                  title="What room are you working on?"
-                  subtitle="Pick the space that needs new cabinets."
-                />
-                <div className="mt-8 grid grid-cols-2 gap-3">
-                  {projectSpaces.map((space) => (
-                    <OptionCard
-                      key={space.value}
-                      selected={data.projectSpace === space.value}
-                      onClick={() =>
-                        selectAndAdvance("projectSpace", space.value)
-                      }
-                    >
-                      <span className="text-2xl block mb-1">{space.icon}</span>
-                      <span className="text-sm font-medium text-brand-text-primary">
-                        {space.label}
-                      </span>
-                    </OptionCard>
-                  ))}
-                </div>
-                <BackButton onClick={back} />
-              </motion.div>
-            )}
-
-            {/* ── Step 3: White Shaker Qualifier ── */}
-            {step === 3 && (
               <motion.div
                 key="white-shaker"
                 variants={pageVariants}
@@ -968,24 +1119,24 @@ export default function SurveyPage() {
                 exit="exit"
                 transition={{ duration: 0.25 }}
               >
-                <h1 className="text-2xl md:text-3xl font-bold text-brand-text-primary tracking-tight">
+                <h1 className="text-[22px] md:text-[28px] font-bold text-brand-text-primary tracking-tight leading-tight">
                   Before we go further
                 </h1>
                 <div className="mt-4 mb-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="bg-brand-gold/10 border border-brand-gold/30 rounded-xl p-4">
-                    <div className="text-sm font-semibold text-brand-text-primary mb-1">What is white shaker?</div>
-                    <div className="text-xs text-brand-text-secondary leading-relaxed">
-                      A classic cabinet style with a simple frame-and-panel door in white. Clean, timeless, and works with almost any countertop or backsplash.
+                    <div className="text-base font-semibold text-brand-text-primary mb-1">What is white shaker?</div>
+                    <div className="text-sm text-brand-text-secondary leading-relaxed">
+                      A classic cabinet style with a simple frame-and-panel door in white. Clean, timeless, and works with almost any countertop or backsplash. Painted white on the inside AND outside — no other RTA company does that.
                     </div>
                   </div>
                   <div className="bg-brand-gold/10 border border-brand-gold/30 rounded-xl p-4">
-                    <div className="text-sm font-semibold text-brand-text-primary mb-1">What does ready to assemble mean?</div>
-                    <div className="text-xs text-brand-text-secondary leading-relaxed">
-                      Cabinets ship flat-packed to your door. You or your contractor assembles them on-site. Each cabinet typically takes about 30 minutes. Jessen provides step-by-step video guides to make it fast and easy.
+                    <div className="text-base font-semibold text-brand-text-primary mb-1">What does ready to assemble mean?</div>
+                    <div className="text-sm text-brand-text-secondary leading-relaxed">
+                      Cabinets ship flat-packed to your door. You or your contractor assembles them on-site. Each cabinet typically takes about 30 minutes.
                     </div>
                   </div>
                 </div>
-                <p className="text-sm text-brand-text-secondary mb-4">
+                <p className="text-base text-brand-text-secondary mb-4">
                   Jessen Cabinets specializes exclusively in white shaker, ready to assemble cabinets. Does that work for your project?
                 </p>
                 <div className="space-y-3">
@@ -995,10 +1146,10 @@ export default function SurveyPage() {
                       selected={data.whiteShaker === opt.value}
                       onClick={() => selectWhiteShaker(opt.value)}
                     >
-                      <span className="text-sm font-medium text-brand-text-primary block">
+                      <span className="text-base font-medium text-brand-text-primary block">
                         {opt.label}
                       </span>
-                      <span className="text-xs text-brand-text-muted block mt-0.5">
+                      <span className="text-sm text-brand-text-muted block mt-0.5">
                         {opt.sub}
                       </span>
                     </OptionCard>
@@ -1008,8 +1159,8 @@ export default function SurveyPage() {
               </motion.div>
             )}
 
-            {/* ── Step 4: Style ── */}
-            {step === 4 && (
+            {/* ── Step 3: Style (multi-select) ── */}
+            {step === 3 && (
               <motion.div
                 key="style"
                 variants={pageVariants}
@@ -1020,19 +1171,69 @@ export default function SurveyPage() {
               >
                 <StepHeading
                   title="What matters most to you in a cabinet?"
-                  subtitle="There's no wrong answer. This helps us tailor your consultation."
+                  subtitle="Select all that apply. This helps us tailor your consultation."
                 />
                 <div className="mt-8 space-y-3">
                   {styleOptions.map((opt) => (
                     <OptionCard
                       key={opt.value}
-                      selected={data.style === opt.value}
-                      onClick={() => selectAndAdvance("style", opt.value)}
+                      selected={data.style.includes(opt.value)}
+                      onClick={() => {
+                        setData((prev) => {
+                          const current = prev.style;
+                          const updated = current.includes(opt.value)
+                            ? current.filter((v) => v !== opt.value)
+                            : [...current, opt.value];
+                          return { ...prev, style: updated };
+                        });
+                      }}
                     >
-                      <span className="text-sm font-medium text-brand-text-primary block">
+                      <span className="text-base font-medium text-brand-text-primary block">
                         {opt.label}
                       </span>
-                      <span className="text-xs text-brand-text-muted block mt-0.5">
+                      <span className="text-sm text-brand-text-muted block mt-0.5">
+                        {opt.sub}
+                      </span>
+                    </OptionCard>
+                  ))}
+                </div>
+                {data.style.length > 0 && (
+                  <button
+                    onClick={() => setStep((s) => s + 1)}
+                    className="mt-6 w-full bg-brand-gold hover:bg-brand-gold-dark text-brand-charcoal font-semibold py-3.5 rounded-xl transition-colors cursor-pointer text-lg"
+                  >
+                    Continue
+                  </button>
+                )}
+                <BackButton onClick={back} />
+              </motion.div>
+            )}
+
+            {/* ── Step 4: Measurements ── */}
+            {step === 4 && (
+              <motion.div
+                key="measurements"
+                variants={pageVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.25 }}
+              >
+                <StepHeading
+                  title="Do you have your room measurements ready?"
+                  subtitle="No worries if not — we'll help you get set up."
+                />
+                <div className="mt-8 space-y-3">
+                  {measurementOptions.map((opt) => (
+                    <OptionCard
+                      key={opt.value}
+                      selected={data.measurements === opt.value}
+                      onClick={() => selectAndAdvance("measurements", opt.value)}
+                    >
+                      <span className="text-base font-medium text-brand-text-primary block">
+                        {opt.label}
+                      </span>
+                      <span className="text-sm text-brand-text-muted block mt-0.5">
                         {opt.sub}
                       </span>
                     </OptionCard>
@@ -1063,10 +1264,10 @@ export default function SurveyPage() {
                       selected={data.timeline === opt.value}
                       onClick={() => selectAndAdvance("timeline", opt.value)}
                     >
-                      <span className="text-sm font-medium text-brand-text-primary block">
+                      <span className="text-base font-medium text-brand-text-primary block">
                         {opt.label}
                       </span>
-                      <span className="text-xs text-brand-text-muted block mt-0.5">
+                      <span className="text-sm text-brand-text-muted block mt-0.5">
                         {opt.sub}
                       </span>
                     </OptionCard>
@@ -1097,10 +1298,10 @@ export default function SurveyPage() {
                       selected={data.financing === opt.value}
                       onClick={() => selectAndAdvance("financing", opt.value)}
                     >
-                      <span className="text-sm font-medium text-brand-text-primary block">
+                      <span className="text-base font-medium text-brand-text-primary block">
                         {opt.label}
                       </span>
-                      <span className="text-xs text-brand-text-muted block mt-0.5">
+                      <span className="text-sm text-brand-text-muted block mt-0.5">
                         {opt.sub}
                       </span>
                     </OptionCard>
@@ -1138,7 +1339,7 @@ export default function SurveyPage() {
                     <div>
                       <label
                         htmlFor="firstName"
-                        className="block text-sm font-medium text-brand-text-primary mb-1"
+                        className="block text-base font-medium text-brand-text-primary mb-1"
                       >
                         First name
                       </label>
@@ -1148,14 +1349,14 @@ export default function SurveyPage() {
                         required
                         value={data.firstName}
                         onChange={(e) => update("firstName", e.target.value)}
-                        className="w-full rounded-xl border-2 border-zinc-200 bg-white px-4 py-3 text-sm text-brand-text-primary placeholder:text-zinc-400 focus:border-brand-gold focus:ring-0"
+                        className="w-full rounded-xl border-2 border-zinc-200 bg-white px-4 py-3 text-base text-brand-text-primary placeholder:text-zinc-400 focus:border-brand-gold focus:ring-0"
                         autoFocus
                       />
                     </div>
                     <div>
                       <label
                         htmlFor="lastName"
-                        className="block text-sm font-medium text-brand-text-primary mb-1"
+                        className="block text-base font-medium text-brand-text-primary mb-1"
                       >
                         Last name
                       </label>
@@ -1165,14 +1366,14 @@ export default function SurveyPage() {
                         required
                         value={data.lastName}
                         onChange={(e) => update("lastName", e.target.value)}
-                        className="w-full rounded-xl border-2 border-zinc-200 bg-white px-4 py-3 text-sm text-brand-text-primary placeholder:text-zinc-400 focus:border-brand-gold focus:ring-0"
+                        className="w-full rounded-xl border-2 border-zinc-200 bg-white px-4 py-3 text-base text-brand-text-primary placeholder:text-zinc-400 focus:border-brand-gold focus:ring-0"
                       />
                     </div>
                   </div>
                   <div>
                     <label
                       htmlFor="email"
-                      className="block text-sm font-medium text-brand-text-primary mb-1"
+                      className="block text-base font-medium text-brand-text-primary mb-1"
                     >
                       Email
                     </label>
@@ -1183,13 +1384,13 @@ export default function SurveyPage() {
                       value={data.email}
                       onChange={(e) => update("email", e.target.value)}
                       placeholder="you@email.com"
-                      className="w-full rounded-xl border-2 border-zinc-200 bg-white px-4 py-3 text-sm text-brand-text-primary placeholder:text-zinc-400 focus:border-brand-gold focus:ring-0"
+                      className="w-full rounded-xl border-2 border-zinc-200 bg-white px-4 py-3 text-base text-brand-text-primary placeholder:text-zinc-400 focus:border-brand-gold focus:ring-0"
                     />
                   </div>
                   <div>
                     <label
                       htmlFor="phone"
-                      className="block text-sm font-medium text-brand-text-primary mb-1"
+                      className="block text-base font-medium text-brand-text-primary mb-1"
                     >
                       Phone
                     </label>
@@ -1200,13 +1401,14 @@ export default function SurveyPage() {
                       value={data.phone}
                       onChange={(e) => update("phone", e.target.value)}
                       placeholder="(555) 555-5555"
-                      className="w-full rounded-xl border-2 border-zinc-200 bg-white px-4 py-3 text-sm text-brand-text-primary placeholder:text-zinc-400 focus:border-brand-gold focus:ring-0"
+                      className="w-full rounded-xl border-2 border-zinc-200 bg-white px-4 py-3 text-base text-brand-text-primary placeholder:text-zinc-400 focus:border-brand-gold focus:ring-0"
                     />
                   </div>
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="w-full bg-brand-gold hover:bg-brand-gold-dark disabled:opacity-60 text-brand-charcoal font-semibold py-3.5 rounded-xl transition-colors cursor-pointer"
+                    className="w-full bg-brand-gold hover:bg-brand-gold-dark disabled:opacity-60 text-brand-charcoal font-semibold py-3.5 rounded-xl transition-colors cursor-pointer text-lg"
+                    style={{ minHeight: "56px" }}
                   >
                     {submitting ? "Checking..." : "See My Results"}
                   </button>
@@ -1240,11 +1442,23 @@ export default function SurveyPage() {
 
 // ─── Congrats Slide Component ────────────────────────────────────────────────
 
-function CongratsSlide({ onContinue }: { onContinue: () => void }) {
+function CongratsSlide({
+  onContinue,
+  onConfetti,
+}: {
+  onContinue: () => void;
+  onConfetti: () => void;
+}) {
+  const hasFiredRef = useRef(false);
+
   useEffect(() => {
+    if (!hasFiredRef.current) {
+      hasFiredRef.current = true;
+      onConfetti();
+    }
     const t = setTimeout(onContinue, 2000);
     return () => clearTimeout(t);
-  }, [onContinue]);
+  }, [onContinue, onConfetti]);
 
   return (
     <div className="text-center py-8">
@@ -1256,15 +1470,15 @@ function CongratsSlide({ onContinue }: { onContinue: () => void }) {
       >
         <span className="text-brand-gold text-4xl font-bold">&#10003;</span>
       </motion.div>
-      <h1 className="text-2xl md:text-3xl font-bold text-brand-text-primary tracking-tight mb-3">
+      <h1 className="text-[22px] md:text-[28px] font-bold text-brand-text-primary tracking-tight mb-3">
         Great news — we ship to your area!
       </h1>
-      <p className="text-brand-text-secondary text-sm leading-relaxed max-w-sm mx-auto mb-8">
+      <p className="text-brand-text-secondary text-base leading-relaxed max-w-sm mx-auto mb-8">
         Jessen Cabinets delivers flat-packed, ready-to-assemble cabinets direct to your door.
       </p>
       <button
         onClick={onContinue}
-        className="bg-brand-gold hover:bg-brand-gold-dark text-brand-charcoal font-semibold py-3.5 px-8 rounded-xl transition-colors cursor-pointer"
+        className="bg-brand-gold hover:bg-brand-gold-dark text-brand-charcoal font-semibold py-3.5 px-8 rounded-xl transition-colors cursor-pointer text-lg"
       >
         Let&apos;s Get Started
       </button>

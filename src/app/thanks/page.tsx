@@ -74,25 +74,35 @@ export default function ThanksPage() {
             {/* Personalized heading with designer info */}
             {designer ? (
               <>
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-text-primary tracking-tight mb-3">
-                  {leadName
-                    ? `${leadName}, Your Consultation with ${designer.firstName} Is Confirmed!`
-                    : `Your Consultation with ${designer.firstName} Is Confirmed!`}
-                </h1>
-                <div className="flex items-center justify-center gap-3 mb-4">
-                  <div className="relative w-12 h-12 rounded-full overflow-hidden ring-2 ring-brand-gold ring-offset-2">
-                    <Image
-                      src={designer.imageUrl}
-                      alt={designer.name}
-                      fill
-                      className="object-cover object-top"
-                      sizes="48px"
-                    />
-                  </div>
-                  <span className="text-brand-text-secondary text-base">
-                    {designer.name}
-                  </span>
-                </div>
+                {designer.slug === "first-available" || designer.name === "First Available Designer" ? (
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-text-primary tracking-tight mb-3">
+                    {leadName
+                      ? `${leadName}, Your Consultation Is Confirmed!`
+                      : "Your Consultation Is Confirmed!"}
+                  </h1>
+                ) : (
+                  <>
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-text-primary tracking-tight mb-3">
+                      {leadName
+                        ? `${leadName}, Your Consultation with ${designer.firstName} Is Confirmed!`
+                        : `Your Consultation with ${designer.firstName} Is Confirmed!`}
+                    </h1>
+                    <div className="flex items-center justify-center gap-3 mb-4">
+                      <div className="relative w-12 h-12 rounded-full overflow-hidden ring-2 ring-brand-gold ring-offset-2">
+                        <Image
+                          src={designer.imageUrl}
+                          alt={designer.name}
+                          fill
+                          className="object-cover object-top"
+                          sizes="48px"
+                        />
+                      </div>
+                      <span className="text-brand-text-secondary text-base">
+                        {designer.name}
+                      </span>
+                    </div>
+                  </>
+                )}
               </>
             ) : (
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-text-primary tracking-tight mb-3">

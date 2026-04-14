@@ -322,7 +322,7 @@ export default function StartPage() {
                   <p className="text-brand-text-secondary text-sm leading-relaxed">
                     Our signature white shaker cabinets are always available.
                     Base, wall, and tall cabinets in the sizes you need, ready
-                    when you are.
+                    when you are. Painted white on the inside AND outside — no other RTA company does that.
                   </p>
                 </div>
               </div>
