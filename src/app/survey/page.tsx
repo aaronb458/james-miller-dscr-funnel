@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const TOTAL_STEPS = 6;
+const TOTAL_STEPS = 7;
 const GHL_WEBHOOK_URL = 'YOUR_GHL_WEBHOOK_URL_HERE';
 const CONTACT_KEY = 'jm_contact';
 const SURVEY_KEY = 'jm_survey';
@@ -14,6 +14,8 @@ const SURVEY_KEY = 'jm_survey';
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface SurveyData {
+  // Step 0 (new routing question)
+  loan_type: string;
   // Step 1
   property_value: string;
   // Step 2
@@ -37,6 +39,13 @@ interface SurveyData {
 }
 
 // ─── Step Options ─────────────────────────────────────────────────────────────
+
+const loanTypeOptions = [
+  { value: 'cash_out_refi', label: 'Pull cash out (Cash-Out Refinance)' },
+  { value: 'rate_term_refi', label: 'Lower my rate or payment (Rate & Term Refi)' },
+  { value: 'purchase', label: 'Purchase a new investment property' },
+  { value: 'not_sure', label: "I'm not sure yet" },
+];
 
 const propertyValueOptions = [
   { value: 'under_300k', label: 'Under $300K' },
@@ -256,6 +265,7 @@ export default function SurveyPage() {
   const webhookFiredRef = useRef(false);
 
   const [data, setData] = useState<SurveyData>({
+    loan_type: '',
     property_value: '',
     current_balance: '',
     cash_out_amount: '',
@@ -355,6 +365,7 @@ export default function SurveyPage() {
         address: data.address,
       }));
       sessionStorage.setItem(SURVEY_KEY, JSON.stringify({
+        loan_type: data.loan_type,
         property_value: data.property_value,
         current_balance: data.current_balance,
         cash_out_amount: data.cash_out_amount,
@@ -375,6 +386,7 @@ export default function SurveyPage() {
       phone,
       address: data.address,
       sms_consent: data.sms_consent,
+      loan_type: data.loan_type,
       property_value: data.property_value,
       current_balance: data.current_balance,
       cash_out_amount: data.cash_out_amount,
@@ -410,11 +422,33 @@ export default function SurveyPage() {
   const renderStep = () => {
     switch (step) {
 
-      // ── Step 1: Property Value ────────────────────────────────────────────
+      // ── Step 0 (new): Loan Type / Intent Routing ──────────────────────────
       case 0:
         return (
           <div>
             <StepLabel step={0} />
+            <h1 className="text-xl sm:text-2xl font-bold text-brand-text-primary tracking-tight leading-snug mb-2">
+              What are you looking to do with your investment property?
+            </h1>
+            <p className="text-sm text-brand-text-secondary mb-6">We&apos;ll match you to the right loan structure.</p>
+            <div className="space-y-3">
+              {loanTypeOptions.map((opt) => (
+                <OptionCard
+                  key={opt.value}
+                  selected={data.loan_type === opt.value}
+                  onClick={() => selectAndAdvance('loan_type', opt.value)}
+                  label={opt.label}
+                />
+              ))}
+            </div>
+          </div>
+        );
+
+      // ── Step 1: Property Value ────────────────────────────────────────────
+      case 1:
+        return (
+          <div>
+            <StepLabel step={1} />
             <h1 className="text-xl sm:text-2xl font-bold text-brand-text-primary tracking-tight leading-snug mb-2">
               What&apos;s your best estimate of the property&apos;s current value?
             </h1>
@@ -429,14 +463,15 @@ export default function SurveyPage() {
                 />
               ))}
             </div>
+            <BackButton onClick={goBack} />
           </div>
         );
 
       // ── Step 2: Current Balance ───────────────────────────────────────────
-      case 1:
+      case 2:
         return (
           <div>
-            <StepLabel step={1} />
+            <StepLabel step={2} />
             <h1 className="text-xl sm:text-2xl font-bold text-brand-text-primary tracking-tight leading-snug mb-2">
               Roughly how much do you currently owe on the property?
             </h1>
@@ -456,10 +491,10 @@ export default function SurveyPage() {
         );
 
       // ── Step 3: Cash-out ─────────────────────────────────────────────────
-      case 2:
+      case 3:
         return (
           <div>
-            <StepLabel step={2} />
+            <StepLabel step={3} />
             <h1 className="text-xl sm:text-2xl font-bold text-brand-text-primary tracking-tight leading-snug mb-2">
               Are you looking to pull any cash out?
             </h1>
@@ -479,14 +514,14 @@ export default function SurveyPage() {
         );
 
       // ── Step 4: Credit Score ──────────────────────────────────────────────
-      case 3:
+      case 4:
         return (
           <div>
-            <StepLabel step={3} />
+            <StepLabel step={4} />
             <h1 className="text-xl sm:text-2xl font-bold text-brand-text-primary tracking-tight leading-snug mb-2">
-              What&apos;s your best estimate of your credit score?
+              What&apos;s your estimated credit score?
             </h1>
-            <p className="text-sm text-brand-text-secondary mb-6">No credit pull required. This is just to match you to the right product.</p>
+            <p className="text-sm text-brand-text-secondary mb-6">All scores welcome — we have programs starting at 500. This just helps James find the best product match for you.</p>
             <div className="space-y-3">
               {creditScoreOptions.map((opt) => (
                 <OptionCard
@@ -502,10 +537,10 @@ export default function SurveyPage() {
         );
 
       // ── Step 5: Nice to Haves (optional) ─────────────────────────────────
-      case 4:
+      case 5:
         return (
           <div>
-            <StepLabel step={4} />
+            <StepLabel step={5} />
             <h1 className="text-xl sm:text-2xl font-bold text-brand-text-primary tracking-tight leading-snug mb-1">
               A few more details
             </h1>
@@ -623,10 +658,10 @@ export default function SurveyPage() {
         );
 
       // ── Step 6: Contact Info ──────────────────────────────────────────────
-      case 5:
+      case 6:
         return (
           <div>
-            <StepLabel step={5} />
+            <StepLabel step={6} />
             <h1 className="text-xl sm:text-2xl font-bold text-brand-text-primary tracking-tight leading-snug mb-2">
               Almost there. Where should we send your results?
             </h1>
@@ -743,7 +778,7 @@ export default function SurveyPage() {
                   className="mt-0.5 w-4 h-4 rounded shrink-0"
                 />
                 <span className="text-xs leading-relaxed text-brand-text-muted">
-                  By checking this box, you consent to receive SMS messages from James Miller / West Capital Lending about your DSCR loan inquiry. Msg &amp; data rates may apply. Reply STOP to unsubscribe.
+                  By checking this box, you consent to receive SMS messages from James Miller / West Capital Lending about your loan inquiry. Msg &amp; data rates may apply. Reply STOP to unsubscribe.
                 </span>
               </label>
 
@@ -804,7 +839,7 @@ export default function SurveyPage() {
         <div className="max-w-lg mx-auto flex items-center justify-between">
           <div>
             <p className="font-bold text-white text-sm tracking-tight">James Miller</p>
-            <p className="text-gray-400 text-[11px] tracking-wide">West Capital Lending &middot; DSCR Specialist</p>
+            <p className="text-gray-400 text-[11px] tracking-wide">West Capital Lending &middot; Investment Property Loans</p>
           </div>
           <span
             className="text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase tracking-widest"

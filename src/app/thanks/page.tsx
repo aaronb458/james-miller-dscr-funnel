@@ -61,7 +61,7 @@ export default function ThanksPage() {
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div>
             <p className="font-bold text-white text-sm tracking-tight">James Miller</p>
-            <p className="text-gray-400 text-[11px] tracking-wide">West Capital Lending &middot; DSCR Specialist</p>
+            <p className="text-gray-400 text-[11px] tracking-wide">West Capital Lending &middot; Investment Property Loans</p>
           </div>
           <span
             className="text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase tracking-widest"

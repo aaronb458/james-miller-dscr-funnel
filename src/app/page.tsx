@@ -76,7 +76,7 @@ function VSLVideo() {
         >
           <iframe
             src={embedUrl}
-            title="DSCR Loan Overview with James Miller"
+            title="Investment Property Loans with James Miller"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
@@ -132,7 +132,7 @@ function Header() {
             border: '1px solid rgba(201, 168, 76, 0.2)',
           }}
         >
-          DSCR Specialist
+          Investment Property Loans
         </span>
       </div>
     </header>
@@ -202,12 +202,12 @@ export default function HomePage() {
                 className="font-display text-4xl sm:text-5xl lg:text-[3.25rem] font-bold text-white tracking-tight leading-[1.08] mb-5"
                 style={{ textShadow: '0 2px 16px rgba(0,0,0,0.3)' }}
               >
-                Does Your Investment Property Qualify for a{' '}
-                <span style={{ color: '#C9A84C' }}>DSCR Loan?</span>
+                No W-2s. No Tax Returns.{' '}
+                <span style={{ color: '#C9A84C' }}>Just Your Property.</span>
               </h1>
 
               <p className="text-gray-300 text-lg leading-relaxed mb-8 max-w-lg">
-                Find out in 60 seconds. Answer 6 quick questions, see your results instantly, and book a free strategy session with James.
+                We specialize in investment property loans that qualify based on rental income — not your personal income or employment status. Find out if you qualify in 60 seconds.
               </p>
 
               <motion.button
@@ -252,10 +252,10 @@ export default function HomePage() {
             className="grid grid-cols-2 sm:grid-cols-4 gap-4"
           >
             {[
-              { number: '[X]', label: 'DSCR Loans Closed', unit: '', placeholder: true },
+              { number: '[X]', label: 'Investment Loans Closed', unit: '', placeholder: true },
               { number: '[X]', label: 'States Licensed', unit: '', placeholder: true },
               { number: '[X]', label: 'Avg Close Time', unit: 'days', placeholder: true },
-              { number: '[X]%', label: 'DSCR Specialization', unit: '', placeholder: true },
+              { number: '[X]%', label: 'Investment Property Focus', unit: '', placeholder: true },
             ].map((stat) => (
               <div
                 key={stat.label}
@@ -296,8 +296,8 @@ export default function HomePage() {
             </h2>
             <div className="space-y-6">
               {[
-                { n: '1', title: 'Answer 6 quick questions', desc: 'Takes about 60 seconds. No personal info required upfront.' },
-                { n: '2', title: 'See your qualification results', desc: 'Know immediately whether your property fits the DSCR criteria.' },
+                { n: '1', title: 'Answer 7 quick questions', desc: 'Takes about 60 seconds. No personal info required upfront.' },
+                { n: '2', title: 'See your qualification results', desc: 'Know immediately whether your property is a good fit and what loan structure makes sense.' },
                 { n: '3', title: 'Book your free strategy session', desc: 'James reviews your file before the call. You leave knowing exactly what you qualify for.' },
               ].map((step, i) => (
                 <motion.div

@@ -13,11 +13,11 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   title: "DSCR Loan Qualifier | James Miller | West Capital Lending",
   description:
-    "See if your investment property qualifies for a DSCR loan. Answer 6 quick questions and book a free strategy session with James.",
+    "No W-2s. No tax returns. Investment property loans that qualify based on rental income. Answer 7 quick questions and book a free strategy session with James Miller.",
   openGraph: {
     title: "DSCR Loan Qualifier | James Miller",
     description:
-      "Qualify your investment property for a DSCR loan in 60 seconds. Book a free strategy session.",
+      "Investment property loans with no tax returns required. Qualify based on rental income in 60 seconds. Book a free strategy session.",
     type: "website",
   },
 };

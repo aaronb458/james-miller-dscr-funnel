@@ -17,6 +17,7 @@ interface ContactData {
 }
 
 interface SurveyData {
+  loan_type: string;
   property_value: string;
   current_balance: string;
   cash_out_amount: string;
@@ -39,10 +40,32 @@ function hasCashOut(survey: SurveyData): boolean {
   return survey.cash_out_amount !== 'no' && survey.cash_out_amount !== '';
 }
 
+function getLoanTypeLabel(loan_type: string): string {
+  switch (loan_type) {
+    case 'cash_out_refi': return 'cash-out refinance';
+    case 'rate_term_refi': return 'rate & term refinance';
+    case 'purchase': return 'purchase';
+    default: return 'investment property loan';
+  }
+}
+
+function getLoanTypeBullet(loan_type: string): string | null {
+  switch (loan_type) {
+    case 'cash_out_refi':
+      return 'A cash-out refinance lets you pull equity out of your property without selling it — and qualifies based on the rental income, not your tax returns';
+    case 'rate_term_refi':
+      return 'A rate & term refinance can lower your monthly payment and improve your cash flow — with far less paperwork than a conventional loan';
+    case 'purchase':
+      return 'Investment property purchases qualify based on the rental income the property can generate — your personal income stays out of it';
+    default:
+      return null;
+  }
+}
+
 function getQualifyBullets(survey: SurveyData | null): { text: string }[] {
   if (!survey) {
     return [
-      { text: 'DSCR loans qualify based on rental income, not your tax returns or W-2s' },
+      { text: 'These loans qualify based on rental income — not your tax returns or W-2s' },
       { text: 'Your personal income is irrelevant — the property pays for itself' },
       { text: 'Close faster, with less documentation than traditional financing' },
     ];
@@ -50,17 +73,20 @@ function getQualifyBullets(survey: SurveyData | null): { text: string }[] {
 
   const bullets: { text: string }[] = [];
 
-  if (hasStrongEquity(survey)) {
-    bullets.push({ text: 'You have strong equity to work with — that opens up better rates and cash-out options' });
+  // Bullet 1: loan type context
+  const loanTypeBullet = getLoanTypeBullet(survey.loan_type);
+  if (loanTypeBullet) {
+    bullets.push({ text: loanTypeBullet });
+  } else if (hasStrongEquity(survey)) {
+    bullets.push({ text: 'You have strong equity to work with — that opens up better rates and more flexible options' });
   } else if (survey.current_balance === 'free_and_clear') {
     bullets.push({ text: 'Owning free and clear gives you maximum flexibility — you can structure this loan exactly how you need it' });
-  } else if (['under_300k', '300k_600k'].includes(survey.property_value)) {
-    bullets.push({ text: 'DSCR loans are available at your property value range — we will find the right product for your deal' });
   } else {
-    bullets.push({ text: 'DSCR loans qualify based on rental income, not your tax returns or W-2s' });
+    bullets.push({ text: 'These loans qualify based on rental income, not your tax returns or W-2s' });
   }
 
-  if (hasCashOut(survey)) {
+  // Bullet 2: cash-out / rental income context
+  if (hasCashOut(survey) && survey.loan_type === 'cash_out_refi') {
     const cashMap: Record<string, string> = {
       '50k_100k': '$50K–$100K',
       '100k_250k': '$100K–$250K',
@@ -68,21 +94,24 @@ function getQualifyBullets(survey: SurveyData | null): { text: string }[] {
       '500k_plus': '$500K+',
     };
     const cashLabel = cashMap[survey.cash_out_amount] ?? 'cash';
-    bullets.push({ text: `Your goal to pull ${cashLabel} in cash is achievable — DSCR cash-out refi does not require income verification` });
+    bullets.push({ text: `Your goal to pull ${cashLabel} in cash is achievable — no income verification required` });
   } else if (survey.is_rented === 'yes') {
-    bullets.push({ text: 'You have documented rental income — that is the cleanest possible DSCR profile' });
+    bullets.push({ text: 'You have documented rental income — that is the cleanest possible profile for this type of loan' });
+  } else if (hasStrongEquity(survey)) {
+    bullets.push({ text: 'Your equity position gives you real leverage — more options, better terms' });
   } else {
-    bullets.push({ text: 'Your personal income is irrelevant to DSCR qualification — the property cash flow is what matters' });
+    bullets.push({ text: 'Your personal income is irrelevant to qualification — the property cash flow is what matters' });
   }
 
+  // Bullet 3: credit / self-employed / speed
   if (survey.credit_score === '720_plus') {
-    bullets.push({ text: 'Your excellent credit score qualifies you for the best available DSCR rates' });
+    bullets.push({ text: 'Your credit score puts you in the top tier — best available rates and terms' });
   } else if (survey.credit_score === '680_720') {
-    bullets.push({ text: 'Your credit score puts you in the standard DSCR tier — solid options available' });
+    bullets.push({ text: 'Your credit score puts you in a solid range — good options available' });
   } else if (survey.self_employed === 'yes') {
-    bullets.push({ text: 'Self-employed investors are exactly who DSCR is designed for — no tax return headaches, no W-2 required' });
+    bullets.push({ text: 'Self-employed investors are exactly who this loan type is built for — no tax return headaches, no W-2 required' });
   } else {
-    bullets.push({ text: 'DSCR loans close faster than conventional financing with significantly less documentation' });
+    bullets.push({ text: 'These loans close faster than conventional financing with significantly less documentation' });
   }
 
   return bullets;
@@ -102,7 +131,7 @@ const expectItems = [
   },
   {
     title: 'See real rate ranges',
-    desc: "You will get a realistic picture of what DSCR financing looks like for your deal.",
+    desc: "You will get a realistic picture of what financing looks like for your deal.",
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -163,6 +192,7 @@ export default function QualifyPage() {
   }, []);
 
   const bullets = getQualifyBullets(survey);
+  const loanTypeLabel = survey ? getLoanTypeLabel(survey.loan_type) : 'investment property loan';
 
   return (
     <div className="min-h-[100dvh] flex flex-col" style={{ background: '#F8F7F4' }}>
@@ -177,7 +207,7 @@ export default function QualifyPage() {
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div>
             <p className="font-bold text-white text-sm tracking-tight">James Miller</p>
-            <p className="text-gray-400 text-[11px] tracking-wide">West Capital Lending &middot; DSCR Specialist</p>
+            <p className="text-gray-400 text-[11px] tracking-wide">West Capital Lending &middot; Investment Property Loans</p>
           </div>
           <span
             className="text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase tracking-widest"
@@ -230,7 +260,7 @@ export default function QualifyPage() {
                 {contact?.firstName ? `Good news, ${contact.firstName}.` : 'Good news.'}
               </h1>
               <p className="text-center text-brand-text-secondary text-base mb-8 max-w-sm mx-auto leading-relaxed">
-                Based on your answers, you look like a strong DSCR candidate.
+                Based on your answers, your property looks like a strong fit for a {loanTypeLabel}.
               </p>
 
               {/* Why bullets */}
@@ -242,7 +272,7 @@ export default function QualifyPage() {
                 }}
               >
                 <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: '#C9A84C' }}>
-                  Why DSCR is the right fit
+                  Why this is the right fit
                 </p>
                 <div className="space-y-4">
                   {bullets.map((bullet, i) => (
