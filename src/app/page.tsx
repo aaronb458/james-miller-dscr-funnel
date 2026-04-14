@@ -3,6 +3,72 @@
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 
+// ─── VSL Video Component ───────────────────────────────────────────────────────
+
+function VSLVideo() {
+  const vslUrl = process.env.NEXT_PUBLIC_VSL_VIDEO_URL;
+  if (!vslUrl) return null;
+
+  // Detect YouTube vs direct video
+  const isYouTube = /youtube\.com|youtu\.be/.test(vslUrl);
+
+  if (isYouTube) {
+    // Extract video ID and build embed URL
+    let embedUrl = vslUrl;
+    const ytMatch = vslUrl.match(/(?:v=|youtu\.be\/)([^&?/]+)/);
+    if (ytMatch) {
+      embedUrl = `https://www.youtube.com/embed/${ytMatch[1]}?rel=0&modestbranding=1`;
+    }
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
+        className="w-full max-w-2xl mx-auto mb-8 px-4"
+        style={{ paddingTop: '0' }}
+      >
+        <div
+          className="w-full rounded-2xl overflow-hidden shadow-lg"
+          style={{ position: 'relative', paddingBottom: '56.25%', height: 0, border: '1px solid rgba(201,168,76,0.2)' }}
+        >
+          <iframe
+            src={embedUrl}
+            title="DSCR Loan Overview"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
+          />
+        </div>
+      </motion.div>
+    );
+  }
+
+  // Direct video (mp4, etc.)
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
+      className="w-full max-w-2xl mx-auto mb-8 px-4"
+    >
+      <div
+        className="w-full rounded-2xl overflow-hidden shadow-lg"
+        style={{ position: 'relative', paddingBottom: '56.25%', height: 0, border: '1px solid rgba(201,168,76,0.2)' }}
+      >
+        <video
+          src={vslUrl}
+          controls
+          playsInline
+          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: '#0f1c30' }}
+        />
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
+
 export default function HomePage() {
   const router = useRouter();
 
@@ -35,8 +101,12 @@ export default function HomePage() {
       </header>
 
       {/* Hero */}
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-12 sm:py-20">
+      <main className="flex-1 flex flex-col items-center justify-center px-4 py-10 sm:py-16">
         <div className="max-w-2xl mx-auto w-full text-center">
+
+          {/* VSL Video — renders only when NEXT_PUBLIC_VSL_VIDEO_URL is set */}
+          <VSLVideo />
+
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -61,7 +131,7 @@ export default function HomePage() {
             </h1>
 
             <p className="text-brand-text-secondary text-lg sm:text-xl leading-relaxed mb-8 max-w-xl mx-auto">
-              Find out in 60 seconds. Answer 5 quick questions, see your results instantly, and book a free strategy session with Jordan.
+              Find out in 60 seconds. Answer 6 quick questions, see your results instantly, and book a free strategy session with James.
             </p>
 
             <motion.button
@@ -118,9 +188,9 @@ export default function HomePage() {
             <h2 className="text-sm font-semibold text-brand-text-primary mb-5 text-center uppercase tracking-wider">How It Works</h2>
             <div className="space-y-5">
               {[
-                { n: '1', title: 'Answer 5 quick questions', desc: 'Takes about 60 seconds. No personal info required upfront.' },
+                { n: '1', title: 'Answer 6 quick questions', desc: 'Takes about 60 seconds. No personal info required upfront.' },
                 { n: '2', title: 'See your qualification results', desc: 'Know immediately whether your property fits the DSCR criteria.' },
-                { n: '3', title: 'Book your free strategy session', desc: 'Jordan reviews your file before the call. You leave knowing exactly what you qualify for.' },
+                { n: '3', title: 'Book your free strategy session', desc: 'James reviews your file before the call. You leave knowing exactly what you qualify for.' },
               ].map((step) => (
                 <div key={step.n} className="flex gap-4 items-start">
                   <div

@@ -13,19 +13,33 @@ interface ContactData {
   lastName: string;
   email: string;
   phone: string;
+  address?: string;
 }
 
 interface SurveyData {
-  property_intent: string;
-  property_type: string;
-  rental_income: string;
   property_value: string;
-  timeline: string;
+  current_balance: string;
+  cash_out_amount: string;
+  credit_score: string;
+  self_employed: string;
+  is_rented: string;
+  rental_income: string;
+  taxes_insurance: string;
+}
+
+// ─── Equity helper ────────────────────────────────────────────────────────────
+
+function hasStrongEquity(survey: SurveyData): boolean {
+  const highValue = ['600k_1m', '1m_2m', '2m_plus'].includes(survey.property_value);
+  const lowBalance = ['under_100k', '100k_250k', 'free_and_clear'].includes(survey.current_balance);
+  return highValue && lowBalance;
+}
+
+function hasCashOut(survey: SurveyData): boolean {
+  return survey.cash_out_amount !== 'no' && survey.cash_out_amount !== '';
 }
 
 function getQualifyBullets(survey: SurveyData | null): string[] {
-  const bullets: string[] = [];
-
   if (!survey) {
     return [
       'DSCR loans qualify based on rental income, not your tax returns or W-2s',
@@ -34,29 +48,42 @@ function getQualifyBullets(survey: SurveyData | null): string[] {
     ];
   }
 
-  // Bullet 1: based on property type
-  if (survey.property_type === 'sfr') {
-    bullets.push('Single family rentals are ideal DSCR candidates — strong demand, easy to appraise');
-  } else if (survey.property_type === '2_4_unit' || survey.property_type === '5_plus') {
-    bullets.push('Multi-family properties often hit DSCR thresholds easily — multiple income streams strengthen your ratio');
+  const bullets: string[] = [];
+
+  // Bullet 1: equity position
+  if (hasStrongEquity(survey)) {
+    bullets.push('You have strong equity to work with — that opens up better rates and cash-out options');
+  } else if (survey.current_balance === 'free_and_clear') {
+    bullets.push('Owning free and clear gives you maximum flexibility — you can structure this loan exactly how you need it');
+  } else if (['under_300k', '300k_600k'].includes(survey.property_value)) {
+    bullets.push('DSCR loans are available at your property value range — we will find the right product for your deal');
   } else {
     bullets.push('DSCR loans qualify based on rental income, not your tax returns or W-2s');
   }
 
-  // Bullet 2: based on rental income
-  if (survey.rental_income === 'yes_rented') {
+  // Bullet 2: cash-out intent
+  if (hasCashOut(survey)) {
+    const cashMap: Record<string, string> = {
+      '50k_100k': '$50K–$100K',
+      '100k_250k': '$100K–$250K',
+      '250k_500k': '$250K–$500K',
+      '500k_plus': '$500K+',
+    };
+    const cashLabel = cashMap[survey.cash_out_amount] ?? 'cash';
+    bullets.push(`Your goal to pull ${cashLabel} in cash is achievable — DSCR cash-out refi does not require income verification`);
+  } else if (survey.is_rented === 'yes') {
     bullets.push('You have documented rental income — that is the cleanest possible DSCR profile');
-  } else if (survey.rental_income === 'yes_will_rent') {
-    bullets.push("We use market rent appraisal data to project income — you don't need tenants in place to qualify");
   } else {
     bullets.push('Your personal income is irrelevant to DSCR qualification — the property cash flow is what matters');
   }
 
-  // Bullet 3: based on timeline
-  if (survey.timeline === 'asap') {
-    bullets.push('With your ASAP timeline, Jordan can get your file moving this week — DSCR closes faster than conventional');
-  } else if (survey.timeline === '1_3_months') {
-    bullets.push('Your 1-3 month timeline gives us room to optimize your rate and structure the deal right');
+  // Bullet 3: credit score / self-employed note
+  if (survey.credit_score === '720_plus') {
+    bullets.push('Your excellent credit score qualifies you for the best available DSCR rates');
+  } else if (survey.credit_score === '680_720') {
+    bullets.push('Your credit score puts you in the standard DSCR tier — solid options available');
+  } else if (survey.self_employed === 'yes') {
+    bullets.push('Self-employed investors are exactly who DSCR is designed for — no tax return headaches, no W-2 required');
   } else {
     bullets.push('DSCR loans close faster than conventional financing with significantly less documentation');
   }
@@ -201,14 +228,14 @@ export default function QualifyPage() {
                 boxShadow: '0 4px 20px rgba(201, 168, 76, 0.35)',
               }}
             >
-              Book Your Free Strategy Call with Jordan
+              Book Your Free Strategy Call with James
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
               </svg>
             </motion.button>
 
             <p className="text-center text-xs text-brand-text-muted mt-3">
-              Free. No obligation. Jordan reviews your profile before the call.
+              Free. No obligation. James reviews your profile before the call.
             </p>
           </motion.div>
 
@@ -225,8 +252,8 @@ export default function QualifyPage() {
             </h2>
             <div className="space-y-4">
               {[
-                { icon: '📋', title: 'Review your property profile', desc: 'Jordan walks through your situation and confirms which loan products fit.' },
-                { icon: '💰', title: 'See real rate ranges', desc: "You'll get a realistic picture of what DSCR financing looks like for your deal." },
+                { icon: '📋', title: 'Review your property profile', desc: 'James walks through your situation and confirms which loan products fit.' },
+                { icon: '💰', title: 'See real rate ranges', desc: "You will get a realistic picture of what DSCR financing looks like for your deal." },
                 { icon: '📅', title: 'Build a clear path forward', desc: 'Whether you close next month or in 6 months, you leave knowing exactly what to do next.' },
               ].map((item) => (
                 <div key={item.title} className="flex gap-4 items-start">

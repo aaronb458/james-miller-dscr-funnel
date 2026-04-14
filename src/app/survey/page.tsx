@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const TOTAL_STEPS = 6; // 5 qualifier questions + contact info
+const TOTAL_STEPS = 6;
 const GHL_WEBHOOK_URL = 'YOUR_GHL_WEBHOOK_URL_HERE';
 const CONTACT_KEY = 'jm_contact';
 const SURVEY_KEY = 'jm_survey';
@@ -14,55 +14,62 @@ const SURVEY_KEY = 'jm_survey';
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface SurveyData {
-  property_intent: string;
-  property_type: string;
-  rental_income: string;
+  // Step 1
   property_value: string;
-  timeline: string;
+  // Step 2
+  current_balance: string;
+  // Step 3
+  cash_out_amount: string;
+  // Step 4
+  credit_score: string;
+  // Step 5 — optional
+  self_employed: string;
+  is_rented: string;
+  rental_income: string;
+  taxes_insurance: string;
+  // Step 6 — contact
   firstName: string;
   lastName: string;
   email: string;
   phone: string;
+  address: string;
   sms_consent: boolean;
 }
 
 // ─── Step Options ─────────────────────────────────────────────────────────────
 
-const propertyIntentOptions = [
-  { value: 'purchase', label: 'Purchase a new property', sub: 'Looking to acquire and finance a rental' },
-  { value: 'refinance', label: 'Refinance existing', sub: 'Better rate or terms on a property I own' },
-  { value: 'both', label: 'Both', sub: 'Looking at purchase and refinance options' },
-  { value: 'not_sure', label: 'Not sure yet', sub: 'Exploring what options are available' },
-];
-
-const propertyTypeOptions = [
-  { value: 'sfr', label: 'Single family home', sub: 'Standalone 1-unit residential property' },
-  { value: '2_4_unit', label: '2-4 unit multi-family', sub: 'Duplex, triplex, or fourplex' },
-  { value: '5_plus', label: '5+ unit multi-family', sub: 'Larger apartment complex' },
-  { value: 'commercial', label: 'Commercial', sub: 'Retail, office, or mixed-use building' },
-  { value: 'not_sure', label: 'Not sure', sub: 'We can help you figure out the best fit' },
-];
-
-const rentalIncomeOptions = [
-  { value: 'yes_rented', label: "Yes, it's already rented", sub: 'Income is established and documented' },
-  { value: 'yes_will_rent', label: 'Yes, I plan to rent it', sub: 'Projected rental income from market data' },
-  { value: 'not_sure', label: "I'm not sure yet", sub: 'Exploring the investment angle' },
-  { value: 'no', label: 'No', sub: 'This property will not generate rental income' },
-];
-
 const propertyValueOptions = [
-  { value: 'under_300k', label: 'Under $300K', sub: '' },
-  { value: '300k_600k', label: '$300K - $600K', sub: '' },
-  { value: '600k_1m', label: '$600K - $1M', sub: '' },
-  { value: '1m_2m', label: '$1M - $2M', sub: '' },
-  { value: '2m_plus', label: '$2M+', sub: '' },
+  { value: 'under_300k', label: 'Under $300K' },
+  { value: '300k_600k', label: '$300K – $600K' },
+  { value: '600k_1m', label: '$600K – $1M' },
+  { value: '1m_2m', label: '$1M – $2M' },
+  { value: '2m_plus', label: '$2M+' },
 ];
 
-const timelineOptions = [
-  { value: 'asap', label: 'ASAP (within 30 days)', sub: 'Deal is under contract or actively shopping' },
-  { value: '1_3_months', label: '1-3 months', sub: 'Getting the details together' },
-  { value: '3_6_months', label: '3-6 months', sub: 'Planning ahead, not rushed' },
-  { value: 'researching', label: 'Just researching', sub: 'Doing research before committing' },
+const currentBalanceOptions = [
+  { value: 'under_100k', label: 'Under $100K' },
+  { value: '100k_250k', label: '$100K – $250K' },
+  { value: '250k_500k', label: '$250K – $500K' },
+  { value: '500k_750k', label: '$500K – $750K' },
+  { value: '750k_plus', label: '$750K+' },
+  { value: 'free_and_clear', label: 'Own it free and clear' },
+];
+
+const cashOutOptions = [
+  { value: 'no', label: 'No' },
+  { value: '50k_100k', label: 'Yes, $50K – $100K' },
+  { value: '100k_250k', label: 'Yes, $100K – $250K' },
+  { value: '250k_500k', label: 'Yes, $250K – $500K' },
+  { value: '500k_plus', label: 'Yes, $500K+' },
+  { value: 'not_sure', label: 'Not sure yet' },
+];
+
+const creditScoreOptions = [
+  { value: '720_plus', label: '720+ (Excellent)' },
+  { value: '680_720', label: '680 – 720 (Good)' },
+  { value: '640_680', label: '640 – 680 (Fair)' },
+  { value: 'below_640', label: 'Below 640' },
+  { value: 'not_sure', label: 'Not sure' },
 ];
 
 // ─── Animation Variants ───────────────────────────────────────────────────────
@@ -94,12 +101,10 @@ function OptionCard({
   selected,
   onClick,
   label,
-  sub,
 }: {
   selected: boolean;
   onClick: () => void;
   label: string;
-  sub?: string;
 }) {
   return (
     <motion.button
@@ -112,9 +117,9 @@ function OptionCard({
         border: selected ? '2px solid #C9A84C' : '2px solid #E5E7EB',
       }}
     >
-      <div className="flex items-start gap-3">
+      <div className="flex items-center gap-3">
         <div
-          className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all duration-200"
+          className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200"
           style={{
             borderColor: selected ? '#C9A84C' : '#D1D5DB',
             background: selected ? '#C9A84C' : 'transparent',
@@ -126,16 +131,9 @@ function OptionCard({
             </svg>
           )}
         </div>
-        <div className="flex-1">
-          <p className="font-semibold text-sm leading-snug" style={{ color: selected ? '#1B2A4A' : '#111827' }}>
-            {label}
-          </p>
-          {sub && (
-            <p className="text-xs mt-0.5 leading-relaxed" style={{ color: selected ? '#4B5563' : '#9CA3AF' }}>
-              {sub}
-            </p>
-          )}
-        </div>
+        <p className="font-semibold text-sm leading-snug" style={{ color: selected ? '#1B2A4A' : '#111827' }}>
+          {label}
+        </p>
       </div>
     </motion.button>
   );
@@ -164,6 +162,62 @@ function StepLabel({ step }: { step: number }) {
   );
 }
 
+function InputField({
+  label,
+  value,
+  onChange,
+  type,
+  inputMode,
+  autoComplete,
+  placeholder,
+  error,
+  prefix,
+  suffix,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  type?: string;
+  inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode'];
+  autoComplete?: string;
+  placeholder?: string;
+  error?: string;
+  prefix?: string;
+  suffix?: string;
+}) {
+  return (
+    <div>
+      <label className="block text-xs font-semibold text-brand-text-secondary mb-1.5 uppercase tracking-wide">
+        {label}
+      </label>
+      <div className="relative flex items-center">
+        {prefix && (
+          <span className="absolute left-4 text-sm font-medium" style={{ color: '#9CA3AF' }}>{prefix}</span>
+        )}
+        <input
+          type={type ?? 'text'}
+          inputMode={inputMode}
+          autoComplete={autoComplete}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="w-full px-4 py-3 rounded-xl border-2 text-sm font-medium text-brand-text-primary placeholder-gray-400 transition-all duration-200"
+          style={{
+            background: '#fff',
+            borderColor: error ? '#EF4444' : '#E5E7EB',
+            paddingLeft: prefix ? '28px' : undefined,
+            paddingRight: suffix ? '56px' : undefined,
+          }}
+        />
+        {suffix && (
+          <span className="absolute right-4 text-sm font-medium" style={{ color: '#9CA3AF' }}>{suffix}</span>
+        )}
+      </div>
+      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+    </div>
+  );
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function SurveyPage() {
@@ -174,21 +228,24 @@ export default function SurveyPage() {
   const webhookFiredRef = useRef(false);
 
   const [data, setData] = useState<SurveyData>({
-    property_intent: '',
-    property_type: '',
-    rental_income: '',
     property_value: '',
-    timeline: '',
+    current_balance: '',
+    cash_out_amount: '',
+    credit_score: '',
+    self_employed: '',
+    is_rented: '',
+    rental_income: '',
+    taxes_insurance: '',
     firstName: '',
     lastName: '',
     email: '',
     phone: '',
+    address: '',
     sms_consent: false,
   });
 
   const [errors, setErrors] = useState<Partial<Record<keyof SurveyData, string>>>({});
 
-  // Ensure UTMs are available
   useEffect(() => {
     if (typeof window === 'undefined') return;
   }, []);
@@ -216,6 +273,11 @@ export default function SurveyPage() {
     [update]
   );
 
+  const advanceStep = useCallback(() => {
+    setDirection(1);
+    setStep((s) => s + 1);
+  }, []);
+
   const getUTMs = () => {
     try {
       const raw = sessionStorage.getItem('jm_utm');
@@ -239,6 +301,7 @@ export default function SurveyPage() {
     } else if (data.phone.replace(/\D/g, '').length < 10) {
       newErrors.phone = 'Enter a valid 10-digit phone number';
     }
+    if (!data.address.trim()) newErrors.address = 'Property address is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }, [data]);
@@ -261,13 +324,17 @@ export default function SurveyPage() {
         lastName: data.lastName,
         email: data.email,
         phone,
+        address: data.address,
       }));
       sessionStorage.setItem(SURVEY_KEY, JSON.stringify({
-        property_intent: data.property_intent,
-        property_type: data.property_type,
-        rental_income: data.rental_income,
         property_value: data.property_value,
-        timeline: data.timeline,
+        current_balance: data.current_balance,
+        cash_out_amount: data.cash_out_amount,
+        credit_score: data.credit_score,
+        self_employed: data.self_employed,
+        is_rented: data.is_rented,
+        rental_income: data.rental_income,
+        taxes_insurance: data.taxes_insurance,
       }));
     } catch { /* sessionStorage not available */ }
 
@@ -278,12 +345,16 @@ export default function SurveyPage() {
       lastName: data.lastName,
       email: data.email,
       phone,
+      address: data.address,
       sms_consent: data.sms_consent,
-      property_intent: data.property_intent,
-      property_type: data.property_type,
-      rental_income: data.rental_income,
       property_value: data.property_value,
-      timeline: data.timeline,
+      current_balance: data.current_balance,
+      cash_out_amount: data.cash_out_amount,
+      credit_score: data.credit_score,
+      self_employed: data.self_employed || null,
+      is_rented: data.is_rented || null,
+      rental_income: data.rental_income || null,
+      taxes_insurance: data.taxes_insurance || null,
       funnel_source: 'dscr-qualifier',
       step_completed: 'survey_complete',
       is_booked: false,
@@ -310,82 +381,16 @@ export default function SurveyPage() {
 
   const renderStep = () => {
     switch (step) {
+
+      // ── Step 1: Property Value ────────────────────────────────────────────
       case 0:
         return (
           <div>
             <StepLabel step={0} />
             <h1 className="text-xl sm:text-2xl font-bold text-brand-text-primary tracking-tight leading-snug mb-2">
-              Are you looking to purchase a new investment property or refinance an existing one?
+              What&apos;s your best estimate of the property&apos;s current value?
             </h1>
-            <p className="text-sm text-brand-text-secondary mb-6">Select the option that best describes your situation.</p>
-            <div className="space-y-3">
-              {propertyIntentOptions.map((opt) => (
-                <OptionCard
-                  key={opt.value}
-                  selected={data.property_intent === opt.value}
-                  onClick={() => selectAndAdvance('property_intent', opt.value)}
-                  label={opt.label}
-                  sub={opt.sub}
-                />
-              ))}
-            </div>
-          </div>
-        );
-
-      case 1:
-        return (
-          <div>
-            <StepLabel step={1} />
-            <h1 className="text-xl sm:text-2xl font-bold text-brand-text-primary tracking-tight leading-snug mb-2">
-              What type of property?
-            </h1>
-            <p className="text-sm text-brand-text-secondary mb-6">DSCR works differently depending on property type.</p>
-            <div className="space-y-3">
-              {propertyTypeOptions.map((opt) => (
-                <OptionCard
-                  key={opt.value}
-                  selected={data.property_type === opt.value}
-                  onClick={() => selectAndAdvance('property_type', opt.value)}
-                  label={opt.label}
-                  sub={opt.sub}
-                />
-              ))}
-            </div>
-            <BackButton onClick={goBack} />
-          </div>
-        );
-
-      case 2:
-        return (
-          <div>
-            <StepLabel step={2} />
-            <h1 className="text-xl sm:text-2xl font-bold text-brand-text-primary tracking-tight leading-snug mb-2">
-              Does the property generate (or will it generate) rental income?
-            </h1>
-            <p className="text-sm text-brand-text-secondary mb-6">DSCR loans qualify based on rental income, not your personal income.</p>
-            <div className="space-y-3">
-              {rentalIncomeOptions.map((opt) => (
-                <OptionCard
-                  key={opt.value}
-                  selected={data.rental_income === opt.value}
-                  onClick={() => selectAndAdvance('rental_income', opt.value)}
-                  label={opt.label}
-                  sub={opt.sub}
-                />
-              ))}
-            </div>
-            <BackButton onClick={goBack} />
-          </div>
-        );
-
-      case 3:
-        return (
-          <div>
-            <StepLabel step={3} />
-            <h1 className="text-xl sm:text-2xl font-bold text-brand-text-primary tracking-tight leading-snug mb-2">
-              What is the estimated property value?
-            </h1>
-            <p className="text-sm text-brand-text-secondary mb-6">Ballpark is fine. This helps us find the right loan product.</p>
+            <p className="text-sm text-brand-text-secondary mb-6">Ballpark is fine.</p>
             <div className="space-y-3">
               {propertyValueOptions.map((opt) => (
                 <OptionCard
@@ -393,7 +398,28 @@ export default function SurveyPage() {
                   selected={data.property_value === opt.value}
                   onClick={() => selectAndAdvance('property_value', opt.value)}
                   label={opt.label}
-                  sub={opt.sub}
+                />
+              ))}
+            </div>
+          </div>
+        );
+
+      // ── Step 2: Current Balance ───────────────────────────────────────────
+      case 1:
+        return (
+          <div>
+            <StepLabel step={1} />
+            <h1 className="text-xl sm:text-2xl font-bold text-brand-text-primary tracking-tight leading-snug mb-2">
+              Roughly how much do you currently owe on the property?
+            </h1>
+            <p className="text-sm text-brand-text-secondary mb-6">Current mortgage balance, or select free and clear if there&apos;s no mortgage.</p>
+            <div className="space-y-3">
+              {currentBalanceOptions.map((opt) => (
+                <OptionCard
+                  key={opt.value}
+                  selected={data.current_balance === opt.value}
+                  onClick={() => selectAndAdvance('current_balance', opt.value)}
+                  label={opt.label}
                 />
               ))}
             </div>
@@ -401,29 +427,174 @@ export default function SurveyPage() {
           </div>
         );
 
+      // ── Step 3: Cash-out ─────────────────────────────────────────────────
+      case 2:
+        return (
+          <div>
+            <StepLabel step={2} />
+            <h1 className="text-xl sm:text-2xl font-bold text-brand-text-primary tracking-tight leading-snug mb-2">
+              Are you looking to pull any cash out?
+            </h1>
+            <p className="text-sm text-brand-text-secondary mb-6">This helps James find the right loan structure for your situation.</p>
+            <div className="space-y-3">
+              {cashOutOptions.map((opt) => (
+                <OptionCard
+                  key={opt.value}
+                  selected={data.cash_out_amount === opt.value}
+                  onClick={() => selectAndAdvance('cash_out_amount', opt.value)}
+                  label={opt.label}
+                />
+              ))}
+            </div>
+            <BackButton onClick={goBack} />
+          </div>
+        );
+
+      // ── Step 4: Credit Score ──────────────────────────────────────────────
+      case 3:
+        return (
+          <div>
+            <StepLabel step={3} />
+            <h1 className="text-xl sm:text-2xl font-bold text-brand-text-primary tracking-tight leading-snug mb-2">
+              What&apos;s your best estimate of your credit score?
+            </h1>
+            <p className="text-sm text-brand-text-secondary mb-6">No credit pull required. This is just to match you to the right product.</p>
+            <div className="space-y-3">
+              {creditScoreOptions.map((opt) => (
+                <OptionCard
+                  key={opt.value}
+                  selected={data.credit_score === opt.value}
+                  onClick={() => selectAndAdvance('credit_score', opt.value)}
+                  label={opt.label}
+                />
+              ))}
+            </div>
+            <BackButton onClick={goBack} />
+          </div>
+        );
+
+      // ── Step 5: Nice to Haves (optional) ─────────────────────────────────
       case 4:
         return (
           <div>
             <StepLabel step={4} />
-            <h1 className="text-xl sm:text-2xl font-bold text-brand-text-primary tracking-tight leading-snug mb-2">
-              What is your timeline?
+            <h1 className="text-xl sm:text-2xl font-bold text-brand-text-primary tracking-tight leading-snug mb-1">
+              A few more details
             </h1>
-            <p className="text-sm text-brand-text-secondary mb-6">No wrong answers here. Helps Jordan prepare for the call.</p>
-            <div className="space-y-3">
-              {timelineOptions.map((opt) => (
-                <OptionCard
-                  key={opt.value}
-                  selected={data.timeline === opt.value}
-                  onClick={() => selectAndAdvance('timeline', opt.value)}
-                  label={opt.label}
-                  sub={opt.sub}
+            <p className="text-sm mb-6" style={{ color: '#C9A84C', fontWeight: 600 }}>Optional — skip any that don&apos;t apply</p>
+
+            <div className="space-y-6">
+              {/* Self-employed */}
+              <div>
+                <p className="text-sm font-semibold text-brand-text-primary mb-3">Are you self-employed?</p>
+                <div className="flex gap-3">
+                  {['Yes', 'No'].map((opt) => (
+                    <button
+                      key={opt}
+                      onClick={() => update('self_employed', opt.toLowerCase())}
+                      className="flex-1 py-3 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer"
+                      style={{
+                        background: data.self_employed === opt.toLowerCase() ? 'rgba(201, 168, 76, 0.06)' : '#ffffff',
+                        border: data.self_employed === opt.toLowerCase() ? '2px solid #C9A84C' : '2px solid #E5E7EB',
+                        color: data.self_employed === opt.toLowerCase() ? '#1B2A4A' : '#6B7280',
+                      }}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Is the property rented */}
+              <div>
+                <p className="text-sm font-semibold text-brand-text-primary mb-3">Is the property currently rented?</p>
+                <div className="space-y-2">
+                  {[
+                    { value: 'yes', label: "Yes, it's rented" },
+                    { value: 'no', label: 'No' },
+                    { value: 'not_yet', label: 'Not yet' },
+                  ].map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => {
+                        update('is_rented', opt.value);
+                        if (opt.value !== 'yes') update('rental_income', '');
+                      }}
+                      className="w-full text-left py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-200 cursor-pointer"
+                      style={{
+                        background: data.is_rented === opt.value ? 'rgba(201, 168, 76, 0.06)' : '#ffffff',
+                        border: data.is_rented === opt.value ? '2px solid #C9A84C' : '2px solid #E5E7EB',
+                        color: data.is_rented === opt.value ? '#1B2A4A' : '#6B7280',
+                      }}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                {/* Conditional rental income input */}
+                <AnimatePresence>
+                  {data.is_rented === 'yes' && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="mt-3 overflow-hidden"
+                    >
+                      <InputField
+                        label="Monthly rental income"
+                        value={data.rental_income}
+                        onChange={(v) => update('rental_income', v)}
+                        inputMode="numeric"
+                        placeholder="e.g. 2,400"
+                        prefix="$"
+                        suffix="/mo"
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Taxes + insurance */}
+              <div>
+                <p className="text-sm font-semibold text-brand-text-primary mb-1">
+                  What are the monthly property taxes + insurance (combined)?
+                </p>
+                <p className="text-xs text-brand-text-muted mb-3">Leave blank if you don&apos;t know</p>
+                <InputField
+                  label=""
+                  value={data.taxes_insurance}
+                  onChange={(v) => update('taxes_insurance', v)}
+                  inputMode="numeric"
+                  placeholder="I don't know"
+                  prefix="$"
+                  suffix="/mo"
                 />
-              ))}
+              </div>
+            </div>
+
+            <div className="mt-6 flex flex-col gap-3">
+              <motion.button
+                onClick={advanceStep}
+                whileTap={{ scale: 0.97 }}
+                className="w-full flex items-center justify-center gap-2 font-semibold text-base py-4 rounded-2xl transition-all duration-200 cursor-pointer"
+                style={{
+                  background: 'linear-gradient(135deg, #C9A84C 0%, #a87d1e 100%)',
+                  color: '#fff',
+                  boxShadow: '0 4px 20px rgba(201, 168, 76, 0.3)',
+                }}
+              >
+                Continue
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </motion.button>
             </div>
             <BackButton onClick={goBack} />
           </div>
         );
 
+      // ── Step 6: Contact Info ──────────────────────────────────────────────
       case 5:
         return (
           <div>
@@ -432,7 +603,7 @@ export default function SurveyPage() {
               Almost there. Where should we send your results?
             </h1>
             <p className="text-sm text-brand-text-secondary mb-6">
-              Jordan will reach out to confirm your session. No spam, ever.
+              James will review your profile before reaching out. No spam, ever.
             </p>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
@@ -453,9 +624,7 @@ export default function SurveyPage() {
                       borderColor: errors.firstName ? '#EF4444' : '#E5E7EB',
                     }}
                   />
-                  {errors.firstName && (
-                    <p className="mt-1 text-xs text-red-500">{errors.firstName}</p>
-                  )}
+                  {errors.firstName && <p className="mt-1 text-xs text-red-500">{errors.firstName}</p>}
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-brand-text-secondary mb-1.5 uppercase tracking-wide">
@@ -474,32 +643,8 @@ export default function SurveyPage() {
                       borderColor: errors.lastName ? '#EF4444' : '#E5E7EB',
                     }}
                   />
-                  {errors.lastName && (
-                    <p className="mt-1 text-xs text-red-500">{errors.lastName}</p>
-                  )}
+                  {errors.lastName && <p className="mt-1 text-xs text-red-500">{errors.lastName}</p>}
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-brand-text-secondary mb-1.5 uppercase tracking-wide">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  value={data.email}
-                  onChange={(e) => update('email', e.target.value)}
-                  placeholder="you@email.com"
-                  className="w-full px-4 py-3 rounded-xl border-2 text-sm font-medium text-brand-text-primary placeholder-gray-400 transition-all duration-200"
-                  style={{
-                    background: '#fff',
-                    borderColor: errors.email ? '#EF4444' : '#E5E7EB',
-                  }}
-                />
-                {errors.email && (
-                  <p className="mt-1 text-xs text-red-500">{errors.email}</p>
-                )}
               </div>
 
               <div>
@@ -519,9 +664,46 @@ export default function SurveyPage() {
                     borderColor: errors.phone ? '#EF4444' : '#E5E7EB',
                   }}
                 />
-                {errors.phone && (
-                  <p className="mt-1 text-xs text-red-500">{errors.phone}</p>
-                )}
+                {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone}</p>}
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-brand-text-secondary mb-1.5 uppercase tracking-wide">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  value={data.email}
+                  onChange={(e) => update('email', e.target.value)}
+                  placeholder="you@email.com"
+                  className="w-full px-4 py-3 rounded-xl border-2 text-sm font-medium text-brand-text-primary placeholder-gray-400 transition-all duration-200"
+                  style={{
+                    background: '#fff',
+                    borderColor: errors.email ? '#EF4444' : '#E5E7EB',
+                  }}
+                />
+                {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-brand-text-secondary mb-1.5 uppercase tracking-wide">
+                  Property Address
+                </label>
+                <input
+                  type="text"
+                  autoComplete="street-address"
+                  value={data.address}
+                  onChange={(e) => update('address', e.target.value)}
+                  placeholder="123 Main St, City, State"
+                  className="w-full px-4 py-3 rounded-xl border-2 text-sm font-medium text-brand-text-primary placeholder-gray-400 transition-all duration-200"
+                  style={{
+                    background: '#fff',
+                    borderColor: errors.address ? '#EF4444' : '#E5E7EB',
+                  }}
+                />
+                {errors.address && <p className="mt-1 text-xs text-red-500">{errors.address}</p>}
               </div>
 
               {/* SMS Consent */}
