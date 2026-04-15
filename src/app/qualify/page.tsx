@@ -18,6 +18,7 @@ interface ContactData {
 
 interface SurveyData {
   loan_type: string;
+  hard_money_loan: string;
   property_value: string;
   current_balance: string;
   cash_out_amount: string;
@@ -114,6 +115,11 @@ function getQualifyBullets(survey: SurveyData | null): { text: string }[] {
     bullets.push({ text: 'These loans close faster than conventional financing with significantly less documentation' });
   }
 
+  // Hard money priority bullet — prepended so it always appears first
+  if (survey.hard_money_loan === 'yes') {
+    bullets.unshift({ text: "You're in a hard money loan -- that gives us a clear path to move fast and get you into a better position" });
+  }
+
   return bullets;
 }
 
@@ -193,6 +199,7 @@ export default function QualifyPage() {
 
   const bullets = getQualifyBullets(survey);
   const loanTypeLabel = survey ? getLoanTypeLabel(survey.loan_type) : 'investment property loan';
+  const isRateAndTerm = survey?.loan_type === 'rate_term_refi';
 
   return (
     <div className="min-h-[100dvh] flex flex-col" style={{ background: '#F8F7F4' }}>
@@ -252,14 +259,18 @@ export default function QualifyPage() {
                 </div>
               </div>
 
-              {/* Headline -- large, confident */}
+              {/* Headline -- large, confident (varies by intent) */}
               <h1
                 className="heading-display font-display text-[2rem] sm:text-[2.75rem] text-brand-text-primary text-center mb-3"
               >
-                {contact?.firstName ? `Good news, ${contact.firstName}.` : 'Good news.'}
+                {isRateAndTerm
+                  ? (contact?.firstName ? `Let\u2019s find your options, ${contact.firstName}.` : `Let\u2019s find your options.`)
+                  : (contact?.firstName ? `Good news, ${contact.firstName}.` : 'Good news.')}
               </h1>
               <p className="body-relaxed text-center text-brand-text-secondary text-base sm:text-lg mb-10 max-w-md mx-auto">
-                Based on your answers, your property looks like a strong fit for a {loanTypeLabel}.
+                {isRateAndTerm
+                  ? 'We can definitely look at your options. Let\u2019s get on a call and see what makes sense for your situation.'
+                  : `Based on your answers, your property looks like a strong fit for a ${loanTypeLabel}.`}
               </p>
 
               {/* Why bullets */}
@@ -271,7 +282,7 @@ export default function QualifyPage() {
                 }}
               >
                 <p className="text-label mb-5" style={{ color: '#C9A84C', fontSize: '11px' }}>
-                  Why this is the right fit
+                  {isRateAndTerm ? 'What to know about your situation' : 'Why this is the right fit'}
                 </p>
                 <div className="space-y-5">
                   {bullets.map((bullet, i) => (

@@ -217,8 +217,35 @@ export default function HomePage() {
                 <span style={{ color: '#C9A84C' }}>Just Your Property.</span>
               </h1>
 
-              <p className="body-relaxed text-gray-300 text-lg mb-12 max-w-lg">
-                We specialize in investment property loans that qualify based on rental income — not your personal income or employment status. Find out if you qualify in 60 seconds.
+              <p className="body-relaxed text-gray-300 text-lg mb-5 max-w-lg">
+                We specialize in investment property loans that qualify based on rental income — not your personal income or employment status.
+              </p>
+
+              {/* Ideal lead signals */}
+              <div className="mb-7 space-y-2.5">
+                {[
+                  { icon: '✓', text: 'Low leverage or free-and-clear? You&apos;re a home run.' },
+                  { icon: '✓', text: 'Looking to pull cash out of your equity?' },
+                  { icon: '⚡', text: 'Need to exit a hard money loan? We close fast.' },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <span
+                      className="text-sm font-bold shrink-0 mt-0.5"
+                      style={{ color: i === 2 ? '#f59e0b' : '#C9A84C' }}
+                    >
+                      {item.icon}
+                    </span>
+                    <p
+                      className="text-sm font-medium"
+                      style={{ color: i === 2 ? '#fde68a' : 'rgba(255,255,255,0.82)' }}
+                      dangerouslySetInnerHTML={{ __html: item.text }}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <p className="text-sm mb-12" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                Loans from $100K. Primary sweet spot: $250K+. All scores welcome — programs start at 500.
               </p>
 
               <motion.button

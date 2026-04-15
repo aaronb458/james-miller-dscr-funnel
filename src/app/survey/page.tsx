@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const TOTAL_STEPS = 7;
+const TOTAL_STEPS = 8;
 const GHL_WEBHOOK_URL = 'YOUR_GHL_WEBHOOK_URL_HERE';
 const CONTACT_KEY = 'jm_contact';
 const SURVEY_KEY = 'jm_survey';
@@ -14,22 +14,24 @@ const SURVEY_KEY = 'jm_survey';
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface SurveyData {
-  // Step 0 (new routing question)
+  // Step 0 — intent routing
   loan_type: string;
-  // Step 1
-  property_value: string;
+  // Step 1 — hard money qualifier
+  hard_money_loan: string;
   // Step 2
-  current_balance: string;
+  property_value: string;
   // Step 3
-  cash_out_amount: string;
+  current_balance: string;
   // Step 4
+  cash_out_amount: string;
+  // Step 5
   credit_score: string;
-  // Step 5 — optional
+  // Step 6 — optional
   self_employed: string;
   is_rented: string;
   rental_income: string;
   taxes_insurance: string;
-  // Step 6 — contact
+  // Step 7 — contact
   firstName: string;
   lastName: string;
   email: string;
@@ -272,6 +274,7 @@ export default function SurveyPage() {
 
   const [data, setData] = useState<SurveyData>({
     loan_type: '',
+    hard_money_loan: '',
     property_value: '',
     current_balance: '',
     cash_out_amount: '',
@@ -372,6 +375,7 @@ export default function SurveyPage() {
       }));
       sessionStorage.setItem(SURVEY_KEY, JSON.stringify({
         loan_type: data.loan_type,
+        hard_money_loan: data.hard_money_loan,
         property_value: data.property_value,
         current_balance: data.current_balance,
         cash_out_amount: data.cash_out_amount,
@@ -393,6 +397,7 @@ export default function SurveyPage() {
       address: data.address,
       sms_consent: data.sms_consent,
       loan_type: data.loan_type,
+      hard_money_loan: data.hard_money_loan === 'yes' ? true : data.hard_money_loan === 'no' ? false : null,
       property_value: data.property_value,
       current_balance: data.current_balance,
       cash_out_amount: data.cash_out_amount,
@@ -450,11 +455,39 @@ export default function SurveyPage() {
           </div>
         );
 
-      // ── Step 1: Property Value ────────────────────────────────────────────
+      // ── Step 1: Hard Money Loan Qualifier ────────────────────────────────
       case 1:
         return (
           <div>
             <StepLabel step={1} />
+            <h1 className="heading-display font-display text-xl sm:text-2xl text-brand-text-primary mb-2">
+              Do you currently have a hard money loan you need to exit?
+            </h1>
+            <p className="body-relaxed text-sm text-brand-text-secondary mb-8">
+              Hard money borrowers are a priority — we move fast to get you into better terms.
+            </p>
+            <div className="space-y-3">
+              {[
+                { value: 'yes', label: 'Yes — I need to get out of a hard money loan' },
+                { value: 'no', label: 'No' },
+              ].map((opt) => (
+                <OptionCard
+                  key={opt.value}
+                  selected={data.hard_money_loan === opt.value}
+                  onClick={() => selectAndAdvance('hard_money_loan', opt.value)}
+                  label={opt.label}
+                />
+              ))}
+            </div>
+            <BackButton onClick={goBack} />
+          </div>
+        );
+
+      // ── Step 2: Property Value ────────────────────────────────────────────
+      case 2:
+        return (
+          <div>
+            <StepLabel step={2} />
             <h1 className="heading-display font-display text-xl sm:text-2xl text-brand-text-primary mb-2">
               What&apos;s your best estimate of the property&apos;s current value?
             </h1>
@@ -473,11 +506,11 @@ export default function SurveyPage() {
           </div>
         );
 
-      // ── Step 2: Current Balance ───────────────────────────────────────────
-      case 2:
+      // ── Step 3: Current Balance ───────────────────────────────────────────
+      case 3:
         return (
           <div>
-            <StepLabel step={2} />
+            <StepLabel step={3} />
             <h1 className="heading-display font-display text-xl sm:text-2xl text-brand-text-primary mb-2">
               Roughly how much do you currently owe on the property?
             </h1>
@@ -496,11 +529,11 @@ export default function SurveyPage() {
           </div>
         );
 
-      // ── Step 3: Cash-out ─────────────────────────────────────────────────
-      case 3:
+      // ── Step 4: Cash-out ─────────────────────────────────────────────────
+      case 4:
         return (
           <div>
-            <StepLabel step={3} />
+            <StepLabel step={4} />
             <h1 className="heading-display font-display text-xl sm:text-2xl text-brand-text-primary mb-2">
               Are you looking to pull any cash out?
             </h1>
@@ -519,11 +552,11 @@ export default function SurveyPage() {
           </div>
         );
 
-      // ── Step 4: Credit Score ──────────────────────────────────────────────
-      case 4:
+      // ── Step 5: Credit Score ──────────────────────────────────────────────
+      case 5:
         return (
           <div>
-            <StepLabel step={4} />
+            <StepLabel step={5} />
             <h1 className="heading-display font-display text-xl sm:text-2xl text-brand-text-primary mb-2">
               What&apos;s your estimated credit score?
             </h1>
@@ -542,11 +575,11 @@ export default function SurveyPage() {
           </div>
         );
 
-      // ── Step 5: Nice to Haves (optional) ─────────────────────────────────
-      case 5:
+      // ── Step 6: Nice to Haves (optional) ─────────────────────────────────
+      case 6:
         return (
           <div>
-            <StepLabel step={5} />
+            <StepLabel step={6} />
             <h1 className="heading-display font-display text-xl sm:text-2xl text-brand-text-primary mb-1">
               A few more details
             </h1>
@@ -663,11 +696,11 @@ export default function SurveyPage() {
           </div>
         );
 
-      // ── Step 6: Contact Info ──────────────────────────────────────────────
-      case 6:
+      // ── Step 7: Contact Info ──────────────────────────────────────────────
+      case 7:
         return (
           <div>
-            <StepLabel step={6} />
+            <StepLabel step={7} />
             <h1 className="heading-display font-display text-xl sm:text-2xl text-brand-text-primary mb-2">
               Almost there. Where should we send your results?
             </h1>
