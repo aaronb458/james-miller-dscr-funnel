@@ -60,19 +60,19 @@ export default function ThanksPage() {
       >
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div>
-            <p className="font-bold text-white text-sm tracking-tight">James Miller</p>
+            <p className="font-bold text-white text-sm" style={{ letterSpacing: '-0.02em' }}>James Miller</p>
             <p className="text-gray-400 text-[11px] tracking-wide">West Capital Lending &middot; Investment Property Loans</p>
           </div>
           <span
-            className="text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase tracking-widest"
-            style={{ background: 'rgba(201, 168, 76, 0.12)', color: '#C9A84C', border: '1px solid rgba(201, 168, 76, 0.2)' }}
+            className="text-label px-2.5 py-1 rounded-full"
+            style={{ fontSize: '10px', background: 'rgba(201, 168, 76, 0.12)', color: '#C9A84C', border: '1px solid rgba(201, 168, 76, 0.2)' }}
           >
             Confirmed
           </span>
         </div>
       </header>
 
-      <main className="flex-1 flex items-center justify-center px-4 py-12">
+      <main className="flex-1 flex items-center justify-center px-4 py-14">
         <div className="max-w-lg mx-auto w-full">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -82,15 +82,15 @@ export default function ThanksPage() {
             style={{
               background: '#fff',
               border: '1px solid rgba(229, 231, 235, 0.8)',
-              boxShadow: '0 12px 40px rgba(27,42,74,0.08), 0 2px 6px rgba(0,0,0,0.03)',
+              boxShadow: '0 16px 48px rgba(27,42,74,0.08), 0 2px 6px rgba(0,0,0,0.03)',
             }}
           >
             {/* Gold top accent with animated sweep */}
-            <div className="h-2 w-full success-bar" />
+            <div className="h-1.5 w-full success-bar" />
 
-            <div className="p-8 sm:p-10 text-center">
+            <div className="p-8 sm:p-12 text-center">
               {/* Confirmation icon with pulse ring */}
-              <div className="flex justify-center mb-6">
+              <div className="flex justify-center mb-7">
                 <div
                   className="icon-ring-pulse w-20 h-20 rounded-full flex items-center justify-center"
                   style={{
@@ -104,20 +104,20 @@ export default function ThanksPage() {
                 </div>
               </div>
 
-              <h1 className="font-display text-3xl sm:text-4xl font-bold text-brand-text-primary tracking-tight mb-3">
+              <h1 className="heading-display font-display text-[1.75rem] sm:text-[2.5rem] text-brand-text-primary mb-4">
                 {contact?.firstName
                   ? `You're all set, ${contact.firstName}.`
                   : "You're all set."}
               </h1>
-              <p className="text-brand-text-secondary leading-relaxed mb-8 max-w-sm mx-auto">
+              <p className="body-relaxed text-brand-text-secondary mb-10 max-w-sm mx-auto">
                 Your strategy call with James is confirmed. He&apos;ll review your profile before reaching out so the conversation is already productive before it starts.
               </p>
 
               {/* Divider */}
-              <div className="divider-gold mb-8" />
+              <div className="divider-gold mb-10" />
 
               {/* Next steps */}
-              <div className="space-y-5 text-left">
+              <div className="space-y-6 text-left">
                 {nextSteps.map((item, i) => (
                   <motion.div
                     key={item.title}
@@ -127,14 +127,14 @@ export default function ThanksPage() {
                     className="flex gap-4 items-start"
                   >
                     <div
-                      className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                      className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                       style={{ background: 'rgba(27,42,74,0.06)', color: '#1B2A4A' }}
                     >
                       {item.icon}
                     </div>
                     <div className="pt-0.5">
-                      <p className="font-semibold text-sm text-brand-text-primary">{item.title}</p>
-                      <p className="text-sm text-brand-text-secondary mt-0.5 leading-relaxed">{item.desc}</p>
+                      <p className="font-semibold text-[15px] text-brand-text-primary" style={{ letterSpacing: '-0.01em' }}>{item.title}</p>
+                      <p className="body-relaxed text-sm text-brand-text-secondary mt-1">{item.desc}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -144,7 +144,7 @@ export default function ThanksPage() {
         </div>
       </main>
 
-      <footer className="py-4 px-4 text-center">
+      <footer className="py-6 px-4 text-center">
         <p className="text-brand-text-muted text-xs">
           &copy; {new Date().getFullYear()} James Miller &middot; West Capital Lending &middot; NMLS 2024710 &middot;{' '}
           <a href="/privacy-policy" className="underline hover:text-brand-text-secondary transition-colors">Privacy Policy</a>

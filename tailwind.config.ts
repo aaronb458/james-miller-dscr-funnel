@@ -27,6 +27,10 @@ const config: Config = {
         display: ["var(--font-outfit)", "system-ui", "sans-serif"],
         body: ["var(--font-outfit)", "system-ui", "sans-serif"],
       },
+      borderRadius: {
+        'card': '14px',
+        'btn': '14px',
+      },
     },
   },
   plugins: [],

@@ -52,11 +52,11 @@ function getLoanTypeLabel(loan_type: string): string {
 function getLoanTypeBullet(loan_type: string): string | null {
   switch (loan_type) {
     case 'cash_out_refi':
-      return 'A cash-out refinance lets you pull equity out of your property without selling it — and qualifies based on the rental income, not your tax returns';
+      return 'A cash-out refinance lets you pull equity out of your property without selling it -- and qualifies based on the rental income, not your tax returns';
     case 'rate_term_refi':
-      return 'A rate & term refinance can lower your monthly payment and improve your cash flow — with far less paperwork than a conventional loan';
+      return 'A rate & term refinance can lower your monthly payment and improve your cash flow -- with far less paperwork than a conventional loan';
     case 'purchase':
-      return 'Investment property purchases qualify based on the rental income the property can generate — your personal income stays out of it';
+      return 'Investment property purchases qualify based on the rental income the property can generate -- your personal income stays out of it';
     default:
       return null;
   }
@@ -65,8 +65,8 @@ function getLoanTypeBullet(loan_type: string): string | null {
 function getQualifyBullets(survey: SurveyData | null): { text: string }[] {
   if (!survey) {
     return [
-      { text: 'These loans qualify based on rental income — not your tax returns or W-2s' },
-      { text: 'Your personal income is irrelevant — the property pays for itself' },
+      { text: 'These loans qualify based on rental income -- not your tax returns or W-2s' },
+      { text: 'Your personal income is irrelevant -- the property pays for itself' },
       { text: 'Close faster, with less documentation than traditional financing' },
     ];
   }
@@ -78,9 +78,9 @@ function getQualifyBullets(survey: SurveyData | null): { text: string }[] {
   if (loanTypeBullet) {
     bullets.push({ text: loanTypeBullet });
   } else if (hasStrongEquity(survey)) {
-    bullets.push({ text: 'You have strong equity to work with — that opens up better rates and more flexible options' });
+    bullets.push({ text: 'You have strong equity to work with -- that opens up better rates and more flexible options' });
   } else if (survey.current_balance === 'free_and_clear') {
-    bullets.push({ text: 'Owning free and clear gives you maximum flexibility — you can structure this loan exactly how you need it' });
+    bullets.push({ text: 'Owning free and clear gives you maximum flexibility -- you can structure this loan exactly how you need it' });
   } else {
     bullets.push({ text: 'These loans qualify based on rental income, not your tax returns or W-2s' });
   }
@@ -88,28 +88,28 @@ function getQualifyBullets(survey: SurveyData | null): { text: string }[] {
   // Bullet 2: cash-out / rental income context
   if (hasCashOut(survey) && survey.loan_type === 'cash_out_refi') {
     const cashMap: Record<string, string> = {
-      '50k_100k': '$50K–$100K',
-      '100k_250k': '$100K–$250K',
-      '250k_500k': '$250K–$500K',
+      '50k_100k': '$50K-$100K',
+      '100k_250k': '$100K-$250K',
+      '250k_500k': '$250K-$500K',
       '500k_plus': '$500K+',
     };
     const cashLabel = cashMap[survey.cash_out_amount] ?? 'cash';
-    bullets.push({ text: `Your goal to pull ${cashLabel} in cash is achievable — no income verification required` });
+    bullets.push({ text: `Your goal to pull ${cashLabel} in cash is achievable -- no income verification required` });
   } else if (survey.is_rented === 'yes') {
-    bullets.push({ text: 'You have documented rental income — that is the cleanest possible profile for this type of loan' });
+    bullets.push({ text: 'You have documented rental income -- that is the cleanest possible profile for this type of loan' });
   } else if (hasStrongEquity(survey)) {
-    bullets.push({ text: 'Your equity position gives you real leverage — more options, better terms' });
+    bullets.push({ text: 'Your equity position gives you real leverage -- more options, better terms' });
   } else {
-    bullets.push({ text: 'Your personal income is irrelevant to qualification — the property cash flow is what matters' });
+    bullets.push({ text: 'Your personal income is irrelevant to qualification -- the property cash flow is what matters' });
   }
 
   // Bullet 3: credit / self-employed / speed
   if (survey.credit_score === '720_plus') {
-    bullets.push({ text: 'Your credit score puts you in the top tier — best available rates and terms' });
+    bullets.push({ text: 'Your credit score puts you in the top tier -- best available rates and terms' });
   } else if (survey.credit_score === '680_720') {
-    bullets.push({ text: 'Your credit score puts you in a solid range — good options available' });
+    bullets.push({ text: 'Your credit score puts you in a solid range -- good options available' });
   } else if (survey.self_employed === 'yes') {
-    bullets.push({ text: 'Self-employed investors are exactly who this loan type is built for — no tax return headaches, no W-2 required' });
+    bullets.push({ text: 'Self-employed investors are exactly who this loan type is built for -- no tax return headaches, no W-2 required' });
   } else {
     bullets.push({ text: 'These loans close faster than conventional financing with significantly less documentation' });
   }
@@ -176,14 +176,14 @@ export default function QualifyPage() {
           angle: 60,
           spread: 55,
           origin: { x: 0, y: 0.7 },
-          colors: ['#C9A84C', '#a87d1e', '#d4b06a', '#1B2A4A', '#ffffff'],
+          colors: ['#C9A84C', '#a87d1e', '#d4b06a', '#1B2A4A', '#F8F7F4'],
         });
         confetti({
           particleCount: 3,
           angle: 120,
           spread: 55,
           origin: { x: 1, y: 0.7 },
-          colors: ['#C9A84C', '#a87d1e', '#d4b06a', '#1B2A4A', '#ffffff'],
+          colors: ['#C9A84C', '#a87d1e', '#d4b06a', '#1B2A4A', '#F8F7F4'],
         });
         if (Date.now() < end) requestAnimationFrame(frame);
       };
@@ -206,88 +206,90 @@ export default function QualifyPage() {
       >
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div>
-            <p className="font-bold text-white text-sm tracking-tight">James Miller</p>
+            <p className="font-bold text-white text-sm" style={{ letterSpacing: '-0.02em' }}>James Miller</p>
             <p className="text-gray-400 text-[11px] tracking-wide">West Capital Lending &middot; Investment Property Loans</p>
           </div>
           <span
-            className="text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase tracking-widest"
-            style={{ background: 'rgba(201, 168, 76, 0.12)', color: '#C9A84C', border: '1px solid rgba(201, 168, 76, 0.2)' }}
+            className="text-label px-2.5 py-1 rounded-full"
+            style={{ fontSize: '10px', background: 'rgba(201, 168, 76, 0.12)', color: '#C9A84C', border: '1px solid rgba(201, 168, 76, 0.2)' }}
           >
             Your Results
           </span>
         </div>
       </header>
 
-      <main className="flex-1 px-4 py-10 sm:py-14">
+      <main className="flex-1 px-4 py-12 sm:py-16">
         <div className="max-w-2xl mx-auto">
 
-          {/* Result card — success moment */}
+          {/* Result card -- success moment */}
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, ease: [0.32, 0.72, 0, 1] }}
-            className="rounded-2xl overflow-hidden mb-7"
+            className="rounded-2xl overflow-hidden mb-8"
             style={{
               background: '#fff',
               border: '1px solid rgba(229, 231, 235, 0.8)',
-              boxShadow: '0 12px 40px rgba(27,42,74,0.08), 0 2px 6px rgba(0,0,0,0.03)',
+              boxShadow: '0 16px 48px rgba(27,42,74,0.08), 0 2px 6px rgba(0,0,0,0.03)',
             }}
           >
             {/* Navy top accent bar with animated sweep */}
-            <div className="h-2 w-full success-bar" />
+            <div className="h-1.5 w-full success-bar" />
 
-            <div className="p-8 sm:p-10">
+            <div className="p-8 sm:p-12">
               {/* Success icon */}
-              <div className="flex justify-center mb-7">
+              <div className="flex justify-center mb-8">
                 <div
-                  className="icon-ring-pulse w-[72px] h-[72px] rounded-full flex items-center justify-center"
+                  className="icon-ring-pulse w-20 h-20 rounded-full flex items-center justify-center"
                   style={{
                     background: 'linear-gradient(135deg, rgba(201,168,76,0.15) 0%, rgba(201,168,76,0.06) 100%)',
                     border: '2px solid rgba(201,168,76,0.4)',
                   }}
                 >
-                  <svg className="w-9 h-9" fill="none" viewBox="0 0 24 24" stroke="#C9A84C" strokeWidth={2.25}>
+                  <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="#C9A84C" strokeWidth={2.25}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
                 </div>
               </div>
 
-              {/* Headline */}
-              <h1 className="font-display text-[1.75rem] sm:text-4xl font-bold text-brand-text-primary text-center tracking-tight mb-2">
+              {/* Headline -- large, confident */}
+              <h1
+                className="heading-display font-display text-[2rem] sm:text-[2.75rem] text-brand-text-primary text-center mb-3"
+              >
                 {contact?.firstName ? `Good news, ${contact.firstName}.` : 'Good news.'}
               </h1>
-              <p className="text-center text-brand-text-secondary text-base mb-8 max-w-sm mx-auto leading-relaxed">
+              <p className="body-relaxed text-center text-brand-text-secondary text-base sm:text-lg mb-10 max-w-md mx-auto">
                 Based on your answers, your property looks like a strong fit for a {loanTypeLabel}.
               </p>
 
               {/* Why bullets */}
               <div
-                className="rounded-xl p-5 mb-7"
+                className="rounded-xl p-6 sm:p-7 mb-8"
                 style={{
                   background: 'linear-gradient(135deg, rgba(27,42,74,0.025) 0%, rgba(27,42,74,0.04) 100%)',
                   border: '1px solid rgba(27, 42, 74, 0.08)',
                 }}
               >
-                <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: '#C9A84C' }}>
+                <p className="text-label mb-5" style={{ color: '#C9A84C', fontSize: '11px' }}>
                   Why this is the right fit
                 </p>
-                <div className="space-y-4">
+                <div className="space-y-5">
                   {bullets.map((bullet, i) => (
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.4, delay: 0.15 + i * 0.1, ease: [0.32, 0.72, 0, 1] }}
-                      className="flex items-start gap-3"
+                      className="flex items-start gap-3.5"
                     >
                       <div
-                        className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 bullet-check-icon"
+                        className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 bullet-check-icon"
                       >
-                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="#C9A84C" strokeWidth={3}>
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="#C9A84C" strokeWidth={3}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                         </svg>
                       </div>
-                      <p className="text-sm leading-relaxed text-brand-text-secondary">{bullet.text}</p>
+                      <p className="body-relaxed text-sm sm:text-[15px] text-brand-text-secondary">{bullet.text}</p>
                     </motion.div>
                   ))}
                 </div>
@@ -297,7 +299,7 @@ export default function QualifyPage() {
               <motion.button
                 onClick={() => router.push('/book')}
                 whileTap={{ scale: 0.96 }}
-                className="cta-pulse btn-tactile w-full flex items-center justify-center gap-2 font-bold text-base py-[18px] rounded-2xl cursor-pointer"
+                className="cta-pulse btn-tactile w-full flex items-center justify-center gap-2 font-bold text-base sm:text-lg py-5 rounded-2xl cursor-pointer"
                 style={{
                   background: 'linear-gradient(135deg, #C9A84C 0%, #b8922e 50%, #a87d1e 100%)',
                   color: '#fff',
@@ -310,7 +312,7 @@ export default function QualifyPage() {
                 </svg>
               </motion.button>
 
-              <p className="text-center text-xs text-brand-text-muted mt-3">
+              <p className="text-center text-xs text-brand-text-muted mt-4">
                 Free. No obligation. James reviews your profile before the call.
               </p>
             </div>
@@ -321,17 +323,17 @@ export default function QualifyPage() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2, ease: [0.32, 0.72, 0, 1] }}
-            className="rounded-2xl p-7 sm:p-9"
+            className="rounded-2xl p-8 sm:p-10"
             style={{
               background: '#fff',
               border: '1px solid #E5E7EB',
               boxShadow: '0 4px 16px rgba(27,42,74,0.05)',
             }}
           >
-            <h2 className="text-xs font-bold uppercase tracking-widest text-brand-text-primary mb-6">
+            <h2 className="text-label text-brand-text-primary mb-7" style={{ fontSize: '11px' }}>
               What to expect on the call
             </h2>
-            <div className="space-y-5">
+            <div className="space-y-6">
               {expectItems.map((item, i) => (
                 <motion.div
                   key={item.title}
@@ -341,14 +343,14 @@ export default function QualifyPage() {
                   className="flex gap-4 items-start"
                 >
                   <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                     style={{ background: 'rgba(27,42,74,0.06)', color: '#1B2A4A' }}
                   >
                     {item.icon}
                   </div>
                   <div className="pt-0.5">
-                    <p className="font-semibold text-sm text-brand-text-primary">{item.title}</p>
-                    <p className="text-sm text-brand-text-secondary mt-0.5 leading-relaxed">{item.desc}</p>
+                    <p className="font-semibold text-[15px] text-brand-text-primary" style={{ letterSpacing: '-0.01em' }}>{item.title}</p>
+                    <p className="body-relaxed text-sm text-brand-text-secondary mt-1">{item.desc}</p>
                   </div>
                 </motion.div>
               ))}
@@ -357,7 +359,7 @@ export default function QualifyPage() {
         </div>
       </main>
 
-      <footer className="py-4 px-4 text-center">
+      <footer className="py-6 px-4 text-center">
         <p className="text-brand-text-muted text-xs">
           &copy; {new Date().getFullYear()} James Miller &middot; West Capital Lending &middot; NMLS 2024710
         </p>

@@ -42,7 +42,7 @@ function VSLVideo() {
               </svg>
             </div>
             <div className="text-center">
-              <p className="font-semibold text-white text-sm">James&apos; Story — Video Coming Soon</p>
+              <p className="font-semibold text-white text-sm">James&apos; Story</p>
               <p className="text-xs mt-1" style={{ color: 'rgba(201,168,76,0.7)' }}>
                 Set <code className="font-mono">NEXT_PUBLIC_VSL_VIDEO_URL</code> to activate
               </p>
@@ -121,12 +121,13 @@ function Header() {
     >
       <div className="max-w-5xl mx-auto flex items-center justify-between">
         <div>
-          <p className="font-bold text-white text-base tracking-tight">James Miller</p>
+          <p className="font-bold text-white text-base" style={{ letterSpacing: '-0.02em' }}>James Miller</p>
           <p className="text-gray-400 text-xs tracking-wide">West Capital Lending &middot; NMLS 2024710</p>
         </div>
         <span
-          className="hidden sm:inline text-[10px] font-semibold px-3 py-1.5 rounded-full uppercase tracking-widest"
+          className="hidden sm:inline text-label px-3 py-1.5 rounded-full"
           style={{
+            fontSize: '10px',
             background: 'rgba(201, 168, 76, 0.12)',
             color: '#C9A84C',
             border: '1px solid rgba(201, 168, 76, 0.2)',
@@ -148,9 +149,9 @@ export default function HomePage() {
     <div className="min-h-[100dvh] flex flex-col" style={{ background: '#F8F7F4' }}>
       <Header />
 
-      {/* Hero — textured navy section, left-aligned split layout */}
+      {/* Hero -- textured navy section, left-aligned split layout */}
       <section
-        className="relative overflow-hidden hero-grid"
+        className="relative overflow-hidden hero-grid hero-noise"
         style={{
           background: 'linear-gradient(160deg, #1B2A4A 0%, #0f1c30 60%, #162238 100%)',
         }}
@@ -159,9 +160,9 @@ export default function HomePage() {
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            backgroundImage: 'radial-gradient(circle, rgba(201,168,76,0.1) 1px, transparent 1px)',
-            backgroundSize: '32px 32px',
-            opacity: 0.5,
+            backgroundImage: 'radial-gradient(circle, rgba(201,168,76,0.08) 1px, transparent 1px)',
+            backgroundSize: '36px 36px',
+            opacity: 0.6,
           }}
         />
         {/* Gold radial glow bottom-right */}
@@ -170,7 +171,7 @@ export default function HomePage() {
           style={{
             width: '55%',
             height: '100%',
-            background: 'radial-gradient(ellipse at 85% 75%, rgba(201,168,76,0.08) 0%, transparent 55%)',
+            background: 'radial-gradient(ellipse at 85% 75%, rgba(201,168,76,0.06) 0%, transparent 55%)',
           }}
         />
         {/* Top-left navy glow for depth */}
@@ -183,7 +184,7 @@ export default function HomePage() {
           }}
         />
 
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-20 sm:py-28">
           {/* Two-column: left hero copy, right VSL */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
 
@@ -196,7 +197,7 @@ export default function HomePage() {
             >
               {/* Badge */}
               <div
-                className="inline-flex items-center gap-2 mb-5 px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-widest"
+                className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-widest"
                 style={{
                   background: 'rgba(201, 168, 76, 0.1)',
                   color: '#C9A84C',
@@ -208,7 +209,7 @@ export default function HomePage() {
               </div>
 
               <h1
-                className="font-display text-[2.5rem] sm:text-[3.25rem] lg:text-[3.75rem] font-bold text-white tracking-tighter leading-[1.04] mb-6"
+                className="heading-display font-display text-[2.5rem] sm:text-[3.25rem] lg:text-[3.75rem] text-white mb-7"
                 style={{ textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}
               >
                 No W-2s. No Tax Returns.{' '}
@@ -216,7 +217,7 @@ export default function HomePage() {
                 <span style={{ color: '#C9A84C' }}>Just Your Property.</span>
               </h1>
 
-              <p className="text-gray-300 text-lg leading-relaxed mb-10 max-w-lg">
+              <p className="body-relaxed text-gray-300 text-lg mb-12 max-w-lg">
                 We specialize in investment property loans that qualify based on rental income — not your personal income or employment status. Find out if you qualify in 60 seconds.
               </p>
 
@@ -253,7 +254,7 @@ export default function HomePage() {
       </section>
 
       {/* Trust bar */}
-      <section className="py-10 px-4" style={{ background: '#fff', borderBottom: '1px solid #E5E7EB' }}>
+      <section className="py-12 px-4" style={{ background: '#fff', borderBottom: '1px solid #E5E7EB' }}>
         <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 8 }}
@@ -269,13 +270,13 @@ export default function HomePage() {
             ].map((stat) => (
               <div
                 key={stat.label}
-                className="stat-card flex flex-col items-center py-5 px-3 rounded-2xl"
+                className="stat-card flex flex-col items-center py-6 px-4 rounded-2xl"
                 style={{ background: '#F8F7F4', border: '1px solid #E5E7EB' }}
               >
-                <p className="font-bold text-2xl tracking-tight font-display" style={{ color: '#C9A84C' }}>
+                <p className="font-bold text-2xl font-display" style={{ color: '#C9A84C', letterSpacing: '-0.03em' }}>
                   {stat.number}{stat.unit ? <span className="text-lg ml-0.5">{stat.unit}</span> : null}
                 </p>
-                <p className="text-brand-text-muted text-[11px] text-center mt-1 font-medium uppercase tracking-wider">{stat.label}</p>
+                <p className="text-label text-brand-text-muted text-center mt-1.5" style={{ fontSize: '10px' }}>{stat.label}</p>
                 {stat.placeholder && (
                   <span className="placeholder-badge mt-2">Update with real data</span>
                 )}
@@ -286,7 +287,7 @@ export default function HomePage() {
       </section>
 
       {/* Main content */}
-      <main className="flex-1 px-4 py-12 sm:py-16">
+      <main className="flex-1 px-4 py-16 sm:py-20">
         <div className="max-w-2xl mx-auto w-full">
 
           {/* How it works */}
@@ -294,17 +295,17 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3, ease: [0.32, 0.72, 0, 1] }}
-            className="rounded-2xl p-8 sm:p-10"
+            className="rounded-2xl p-8 sm:p-12"
             style={{
               background: '#fff',
               border: '1px solid rgba(229, 231, 235, 0.8)',
               boxShadow: '0 8px 32px rgba(27,42,74,0.05), 0 1px 3px rgba(0,0,0,0.02)',
             }}
           >
-            <h2 className="text-[11px] font-bold text-brand-text-primary mb-7 text-center uppercase tracking-[0.2em]">
+            <h2 className="text-label text-brand-text-primary mb-8 text-center" style={{ fontSize: '11px' }}>
               How It Works
             </h2>
-            <div className="space-y-7">
+            <div className="space-y-8">
               {[
                 { n: '1', title: 'Answer 7 quick questions', desc: 'Takes about 60 seconds. No personal info required upfront.' },
                 { n: '2', title: 'See your qualification results', desc: 'Know immediately whether your property is a good fit and what loan structure makes sense.' },
@@ -315,22 +316,22 @@ export default function HomePage() {
                   initial={{ opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.4, delay: 0.35 + i * 0.08, ease: [0.32, 0.72, 0, 1] }}
-                  className="flex gap-4 items-start"
+                  className="flex gap-5 items-start"
                 >
                   <div
-                    className="step-orb w-9 h-9 rounded-full flex items-center justify-center shrink-0 font-bold text-sm text-white"
+                    className="step-orb w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-bold text-sm text-white"
                   >
                     {step.n}
                   </div>
-                  <div className="pt-0.5">
-                    <p className="font-semibold text-brand-text-primary text-sm">{step.title}</p>
-                    <p className="text-brand-text-secondary text-sm mt-1 leading-relaxed">{step.desc}</p>
+                  <div className="pt-1">
+                    <p className="font-semibold text-brand-text-primary text-[15px]" style={{ letterSpacing: '-0.01em' }}>{step.title}</p>
+                    <p className="body-relaxed text-brand-text-secondary text-sm mt-1">{step.desc}</p>
                   </div>
                 </motion.div>
               ))}
             </div>
 
-            <div className="divider-gold my-8" />
+            <div className="divider-gold my-10" />
 
             <motion.button
               onClick={() => router.push('/survey')}
@@ -347,13 +348,13 @@ export default function HomePage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
               </svg>
             </motion.button>
-            <p className="mt-3 text-center text-xs text-brand-text-muted">No credit check. No obligation. Takes 60 seconds.</p>
+            <p className="mt-4 text-center text-xs text-brand-text-muted">No credit check. No obligation. Takes 60 seconds.</p>
           </motion.div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="py-6 px-4 text-center border-t" style={{ borderColor: '#E5E7EB' }}>
+      <footer className="py-8 px-4 text-center border-t" style={{ borderColor: '#E5E7EB' }}>
         <p className="text-brand-text-muted text-xs">
           &copy; {new Date().getFullYear()} James Miller &middot; West Capital Lending &middot; NMLS 2024710 &middot;{' '}
           <a href="/privacy-policy" className="underline hover:text-brand-text-secondary transition-colors">Privacy Policy</a>

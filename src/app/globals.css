@@ -5,7 +5,14 @@
 :root {
   --background: #F8F7F4;
   --foreground: #111827;
+  --navy: #1B2A4A;
+  --navy-dark: #0f1c30;
+  --gold: #C9A84C;
+  --gold-dark: #a87d1e;
+  --gold-light: #d4b06a;
 }
+
+/* ─── Base Typography ─────────────────────────────────────────────────────── */
 
 body {
   color: var(--foreground);
@@ -13,15 +20,28 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   letter-spacing: -0.01em;
+  line-height: 1.65;
 }
 
-/* Form input focus states */
-input:focus,
-select:focus,
-textarea:focus {
-  outline: none;
-  border-color: #C9A84C;
-  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
+/* Display headings: tight tracking, compressed leading for large sizes */
+.heading-display {
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  font-weight: 700;
+}
+
+/* Body paragraphs: generous line-height for readability */
+.body-relaxed {
+  line-height: 1.7;
+  letter-spacing: -0.005em;
+}
+
+/* Caption/label text */
+.text-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
 }
 
 /* Smooth scrolling */
@@ -29,9 +49,18 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Custom checkbox styling */
+/* ─── Form States ─────────────────────────────────────────────────────────── */
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.12), 0 1px 2px rgba(0,0,0,0.04) !important;
+}
+
 input[type="checkbox"] {
-  accent-color: #C9A84C;
+  accent-color: var(--gold);
 }
 
 /* Calendar iframe responsive */
@@ -48,32 +77,48 @@ input[type="checkbox"] {
   }
 }
 
-/* Hero noise texture overlay — lightweight grain for depth */
+/* ─── Hero Visual Depth ───────────────────────────────────────────────────── */
+
+/* Noise grain overlay -- fixed, pointer-events-none for GPU safety */
 .hero-noise::after {
   content: '';
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.04;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 128px 128px;
   mix-blend-mode: overlay;
 }
 
-/* Dot pattern for hero background depth */
-.dot-pattern {
-  background-image: radial-gradient(circle, rgba(201,168,76,0.18) 1px, transparent 1px);
-  background-size: 28px 28px;
+/* Geometric grid lines -- subtle architectural feel */
+.hero-grid::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(201,168,76,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,168,76,0.05) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse 60% 70% at 30% 50%, black, transparent);
+  -webkit-mask-image: radial-gradient(ellipse 60% 70% at 30% 50%, black, transparent);
 }
 
-/* Progress bar track */
+/* Dot pattern -- finer, subtler */
+.dot-pattern {
+  background-image: radial-gradient(circle, rgba(201,168,76,0.14) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* ─── Progress Bar ────────────────────────────────────────────────────────── */
+
 .progress-track {
-  background: rgba(201, 168, 76, 0.12);
+  background: rgba(27, 42, 74, 0.06);
   border-radius: 99px;
 }
 
-/* Progress bar shimmer on the fill */
 @keyframes progress-shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
@@ -82,27 +127,73 @@ input[type="checkbox"] {
 .progress-fill {
   background: linear-gradient(
     90deg,
-    #a87d1e 0%,
-    #C9A84C 40%,
-    #d4b06a 50%,
-    #C9A84C 60%,
-    #a87d1e 100%
+    var(--gold-dark) 0%,
+    var(--gold) 40%,
+    var(--gold-light) 50%,
+    var(--gold) 60%,
+    var(--gold-dark) 100%
   );
   background-size: 200% 100%;
   animation: progress-shimmer 3s ease-in-out infinite;
 }
 
-/* CTA pulse animation — gentle scale loop to signal interactivity */
+/* Step tracker dots */
+.step-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.step-dot-completed {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(201, 168, 76, 0.3);
+}
+
+.step-dot-active {
+  background: var(--navy);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(27, 42, 74, 0.25);
+}
+
+.step-dot-upcoming {
+  background: rgba(27, 42, 74, 0.06);
+  color: #9CA3AF;
+  border: 1.5px solid rgba(27, 42, 74, 0.1);
+}
+
+.step-connector {
+  height: 2px;
+  flex: 1;
+  border-radius: 2px;
+  transition: background 0.35s ease;
+}
+
+.step-connector-done {
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+}
+
+.step-connector-pending {
+  background: rgba(27, 42, 74, 0.08);
+}
+
+/* ─── CTA Button ──────────────────────────────────────────────────────────── */
+
 @keyframes pulse-scale {
   0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.025); }
+  50% { transform: scale(1.02); }
 }
 
 .cta-pulse {
   animation: pulse-scale 2.4s ease-in-out infinite;
 }
 
-/* Arrow icon inside CTA — slides right on hover */
 .cta-arrow {
   display: inline-block;
   transition: transform 0.2s ease;
@@ -112,7 +203,43 @@ input[type="checkbox"] {
   transform: translateX(4px);
 }
 
-/* Gold shimmer sweep */
+/* Button tactile press */
+.btn-tactile {
+  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.12s ease,
+              filter 0.12s ease;
+}
+
+.btn-tactile:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 6px 28px rgba(201, 168, 76, 0.45), 0 2px 4px rgba(0,0,0,0.08);
+}
+
+.btn-tactile:active {
+  transform: scale(0.97) translateY(1px);
+  box-shadow: 0 2px 8px rgba(201, 168, 76, 0.25);
+}
+
+/* ─── Survey Option Cards ─────────────────────────────────────────────────── */
+
+.option-card-lift {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.18s ease;
+}
+
+.option-card-lift:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(27, 42, 74, 0.08), 0 1px 3px rgba(0,0,0,0.04);
+}
+
+/* Survey card container */
+.survey-card {
+  box-shadow: 0 12px 40px rgba(27, 42, 74, 0.06), 0 2px 4px rgba(0,0,0,0.02);
+}
+
+/* ─── Gold Shimmer Card ───────────────────────────────────────────────────── */
+
 @keyframes gold-shimmer {
   0% { transform: translateX(-100%) skewX(-15deg); }
   100% { transform: translateX(200%) skewX(-15deg); }
@@ -133,9 +260,9 @@ input[type="checkbox"] {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(201, 168, 76, 0.07),
-    rgba(201, 168, 76, 0.12),
-    rgba(201, 168, 76, 0.07),
+    rgba(201, 168, 76, 0.06),
+    rgba(201, 168, 76, 0.1),
+    rgba(201, 168, 76, 0.06),
     transparent
   );
   animation: gold-shimmer 4s ease-in-out infinite;
@@ -143,7 +270,8 @@ input[type="checkbox"] {
   z-index: 1;
 }
 
-/* Stat card hover lift */
+/* ─── Stat Card Hover ─────────────────────────────────────────────────────── */
+
 .stat-card {
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -153,54 +281,60 @@ input[type="checkbox"] {
   box-shadow: 0 8px 24px rgba(27, 42, 74, 0.08);
 }
 
-/* Option card hover — directional fill from left */
-.option-card-hover {
-  position: relative;
-  overflow: hidden;
+/* ─── Step Orb (How It Works) ─────────────────────────────────────────────── */
+
+.step-orb {
+  background: linear-gradient(135deg, #1B2A4A 0%, #223563 100%);
+  box-shadow: 0 2px 8px rgba(27, 42, 74, 0.25);
 }
 
-/* Option card premium hover lift */
-.option-card-lift {
-  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.18s ease;
+/* ─── Divider ─────────────────────────────────────────────────────────────── */
+
+.divider-gold {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent);
 }
 
-.option-card-lift:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(27, 42, 74, 0.08), 0 1px 3px rgba(0,0,0,0.04);
+/* ─── Success / Qualify Page ──────────────────────────────────────────────── */
+
+@keyframes success-sweep {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
-/* Selected option card — gold left accent bar */
-.option-card-selected {
-  border-left: 3px solid #C9A84C !important;
+.success-bar {
+  background: linear-gradient(90deg, #1B2A4A 0%, #C9A84C 25%, #d4b06a 50%, #C9A84C 75%, #1B2A4A 100%);
+  background-size: 200% 100%;
+  animation: success-sweep 4s ease-in-out infinite;
 }
 
-/* Button tactile press */
-.btn-tactile {
-  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.12s ease,
-              filter 0.12s ease;
+/* Confirmation icon ring pulse */
+@keyframes ring-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0.4); }
+  70% { box-shadow: 0 0 0 14px rgba(201, 168, 76, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0); }
 }
 
-.btn-tactile:hover {
-  filter: brightness(1.05);
-  box-shadow: 0 6px 28px rgba(201, 168, 76, 0.45), 0 2px 4px rgba(0,0,0,0.08);
+.icon-ring-pulse {
+  animation: ring-pulse 2.5s cubic-bezier(0.66, 0, 0, 1) infinite;
 }
 
-.btn-tactile:active {
-  transform: scale(0.97) translateY(1px);
-  box-shadow: 0 2px 8px rgba(201, 168, 76, 0.25);
+/* Qualify bullet check icon */
+.bullet-check-icon {
+  background: linear-gradient(135deg, rgba(201,168,76,0.2) 0%, rgba(201,168,76,0.1) 100%);
+  border: 1.5px solid rgba(201,168,76,0.35);
 }
 
-/* Input group clean spacing */
+/* ─── Input Group ─────────────────────────────────────────────────────────── */
+
 .input-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-/* Trust badge placeholder marking */
+/* ─── Placeholder Badge ───────────────────────────────────────────────────── */
+
 .placeholder-badge {
   display: inline-flex;
   align-items: center;
@@ -216,70 +350,20 @@ input[type="checkbox"] {
   border-radius: 4px;
 }
 
-/* Confirmation icon ring pulse */
-@keyframes ring-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0.4); }
-  70% { box-shadow: 0 0 0 12px rgba(201, 168, 76, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0); }
-}
+/* ─── Section Texture Overlays ────────────────────────────────────────────── */
 
-.icon-ring-pulse {
-  animation: ring-pulse 2.5s cubic-bezier(0.66, 0, 0, 1) infinite;
-}
-
-/* Step number in How It Works — navy gradient orb */
-.step-orb {
-  background: linear-gradient(135deg, #1B2A4A 0%, #223563 100%);
-  box-shadow: 0 2px 8px rgba(27, 42, 74, 0.25);
-}
-
-/* Section divider line with gold center */
-.divider-gold {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent);
-}
-
-/* Hero subtle geometric grid overlay */
-.hero-grid::before {
+/* Faint diagonal lines for dark sections -- adds depth without noise */
+.texture-lines::after {
   content: '';
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image:
-    linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
-  background-size: 64px 64px;
-  mask-image: radial-gradient(ellipse 70% 60% at 30% 50%, black, transparent);
-  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 30% 50%, black, transparent);
-}
-
-/* Qualify page success shimmer on the top bar */
-@keyframes success-sweep {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-.success-bar {
-  background: linear-gradient(90deg, #1B2A4A 0%, #C9A84C 25%, #d4b06a 50%, #C9A84C 75%, #1B2A4A 100%);
-  background-size: 200% 100%;
-  animation: success-sweep 4s ease-in-out infinite;
-}
-
-/* Survey card container shadow */
-.survey-card {
-  box-shadow: 0 8px 32px rgba(27, 42, 74, 0.06), 0 1px 2px rgba(0,0,0,0.03);
-}
-
-/* Qualify bullet check icon */
-.bullet-check-icon {
-  background: linear-gradient(135deg, rgba(201,168,76,0.2) 0%, rgba(201,168,76,0.1) 100%);
-  border: 1.5px solid rgba(201,168,76,0.35);
-}
-
-/* Form inputs premium focus */
-input:focus,
-select:focus,
-textarea:focus {
-  border-color: #C9A84C !important;
-  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.12), 0 1px 2px rgba(0,0,0,0.04) !important;
+  opacity: 0.025;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 14px,
+    rgba(201,168,76,0.5) 14px,
+    rgba(201,168,76,0.5) 15px
+  );
 }
