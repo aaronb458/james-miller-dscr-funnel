@@ -81,15 +81,12 @@ export default function ThanksPage() {
             className="rounded-2xl overflow-hidden"
             style={{
               background: '#fff',
-              border: '1px solid #E5E7EB',
-              boxShadow: '0 8px 32px rgba(27,42,74,0.08)',
+              border: '1px solid rgba(229, 231, 235, 0.8)',
+              boxShadow: '0 12px 40px rgba(27,42,74,0.08), 0 2px 6px rgba(0,0,0,0.03)',
             }}
           >
-            {/* Gold top accent */}
-            <div
-              className="h-1.5 w-full"
-              style={{ background: 'linear-gradient(90deg, #1B2A4A, #C9A84C, #1B2A4A)' }}
-            />
+            {/* Gold top accent with animated sweep */}
+            <div className="h-2 w-full success-bar" />
 
             <div className="p-8 sm:p-10 text-center">
               {/* Confirmation icon with pulse ring */}

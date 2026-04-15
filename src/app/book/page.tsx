@@ -186,9 +186,9 @@ export default function BookPage() {
             transition={{ duration: 0.5, delay: 0.2, ease: [0.32, 0.72, 0, 1] }}
             className="rounded-2xl overflow-hidden"
             style={{
-              border: '1px solid #E5E7EB',
+              border: '1px solid rgba(229, 231, 235, 0.8)',
               background: '#fff',
-              boxShadow: '0 4px 24px rgba(27,42,74,0.06)',
+              boxShadow: '0 8px 32px rgba(27,42,74,0.07), 0 2px 6px rgba(0,0,0,0.03)',
             }}
           >
             {/* Calendar header bar */}

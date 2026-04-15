@@ -97,22 +97,21 @@ function ProgressBar({ step }: { step: number }) {
   return (
     <div className="flex items-center gap-3">
       <div
-        className="flex-1 h-2 rounded-full overflow-hidden"
-        style={{ background: 'rgba(201, 168, 76, 0.12)', border: '1px solid rgba(201,168,76,0.1)' }}
+        className="flex-1 h-2.5 rounded-full overflow-hidden"
+        style={{ background: 'rgba(27, 42, 74, 0.06)', border: '1px solid rgba(201,168,76,0.08)' }}
       >
         <motion.div
-          className="h-full rounded-full"
-          style={{ background: 'linear-gradient(90deg, #a87d1e 0%, #C9A84C 70%, #d4b06a 100%)' }}
+          className="h-full rounded-full progress-fill"
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
-          transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
+          transition={{ duration: 0.45, ease: [0.32, 0.72, 0, 1] }}
         />
       </div>
       <span
-        className="text-xs font-semibold tabular-nums shrink-0"
-        style={{ color: '#C9A84C', minWidth: '40px', textAlign: 'right' }}
+        className="text-xs font-bold tabular-nums shrink-0 tracking-wide"
+        style={{ color: '#C9A84C', minWidth: '44px', textAlign: 'right' }}
       >
-        {current}/{TOTAL_STEPS}
+        {current} / {TOTAL_STEPS}
       </span>
     </div>
   );
@@ -130,27 +129,27 @@ function OptionCard({
   return (
     <motion.button
       onClick={onClick}
-      whileHover={{ scale: selected ? 1 : 1.008 }}
-      whileTap={{ scale: 0.985 }}
+      whileHover={{ scale: selected ? 1 : 1.01 }}
+      whileTap={{ scale: 0.98 }}
       transition={{ type: 'spring', stiffness: 400, damping: 28 }}
-      className="w-full text-left rounded-xl px-5 py-4 cursor-pointer"
+      className={`w-full text-left rounded-[14px] px-5 py-[18px] cursor-pointer option-card-lift ${selected ? 'option-card-selected' : ''}`}
       style={{
-        background: selected ? 'rgba(201, 168, 76, 0.07)' : '#ffffff',
-        border: selected ? '2px solid #C9A84C' : '2px solid #E5E7EB',
+        background: selected ? 'rgba(201, 168, 76, 0.05)' : '#ffffff',
+        border: selected ? '2px solid #C9A84C' : '1.5px solid #E5E7EB',
         boxShadow: selected
-          ? '0 2px 12px rgba(201,168,76,0.15)'
-          : '0 1px 3px rgba(0,0,0,0.04)',
-        transition: 'background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease',
+          ? '0 4px 16px rgba(201,168,76,0.12), 0 1px 2px rgba(201,168,76,0.08)'
+          : '0 1px 3px rgba(0,0,0,0.03)',
       }}
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3.5">
         {/* Selection indicator */}
         <div
-          className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0"
+          className="w-[22px] h-[22px] rounded-full border-2 flex items-center justify-center shrink-0"
           style={{
             borderColor: selected ? '#C9A84C' : '#D1D5DB',
-            background: selected ? '#C9A84C' : 'transparent',
-            transition: 'all 0.18s ease',
+            background: selected ? 'linear-gradient(135deg, #C9A84C 0%, #a87d1e 100%)' : 'transparent',
+            transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+            boxShadow: selected ? '0 2px 6px rgba(201,168,76,0.3)' : 'none',
           }}
         >
           {selected && (
@@ -160,14 +159,14 @@ function OptionCard({
           )}
         </div>
         <p
-          className="font-semibold text-sm leading-snug flex-1"
+          className="font-semibold text-[15px] leading-snug flex-1"
           style={{ color: selected ? '#1B2A4A' : '#374151' }}
         >
           {label}
         </p>
         {/* Right arrow indicator on unselected hover hint */}
         {!selected && (
-          <svg className="w-4 h-4 opacity-25 shrink-0" fill="none" viewBox="0 0 24 24" stroke="#1B2A4A" strokeWidth={2}>
+          <svg className="w-4 h-4 opacity-20 shrink-0" fill="none" viewBox="0 0 24 24" stroke="#1B2A4A" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
           </svg>
         )}
@@ -193,7 +192,7 @@ function BackButton({ onClick }: { onClick: () => void }) {
 
 function StepLabel({ step }: { step: number }) {
   return (
-    <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: '#C9A84C' }}>
+    <p className="text-[11px] font-bold uppercase tracking-[0.15em] mb-4" style={{ color: '#C9A84C' }}>
       Question {step + 1} of {TOTAL_STEPS}
     </p>
   );
@@ -430,8 +429,8 @@ export default function SurveyPage() {
             <h1 className="text-xl sm:text-2xl font-bold text-brand-text-primary tracking-tight leading-snug mb-2">
               What are you looking to do with your investment property?
             </h1>
-            <p className="text-sm text-brand-text-secondary mb-6">We&apos;ll match you to the right loan structure.</p>
-            <div className="space-y-3">
+            <p className="text-sm text-brand-text-secondary mb-7">We&apos;ll match you to the right loan structure.</p>
+            <div className="space-y-3.5">
               {loanTypeOptions.map((opt) => (
                 <OptionCard
                   key={opt.value}
@@ -452,8 +451,8 @@ export default function SurveyPage() {
             <h1 className="text-xl sm:text-2xl font-bold text-brand-text-primary tracking-tight leading-snug mb-2">
               What&apos;s your best estimate of the property&apos;s current value?
             </h1>
-            <p className="text-sm text-brand-text-secondary mb-6">Ballpark is fine.</p>
-            <div className="space-y-3">
+            <p className="text-sm text-brand-text-secondary mb-7">Ballpark is fine.</p>
+            <div className="space-y-3.5">
               {propertyValueOptions.map((opt) => (
                 <OptionCard
                   key={opt.value}
@@ -475,8 +474,8 @@ export default function SurveyPage() {
             <h1 className="text-xl sm:text-2xl font-bold text-brand-text-primary tracking-tight leading-snug mb-2">
               Roughly how much do you currently owe on the property?
             </h1>
-            <p className="text-sm text-brand-text-secondary mb-6">Current mortgage balance, or select free and clear if there&apos;s no mortgage.</p>
-            <div className="space-y-3">
+            <p className="text-sm text-brand-text-secondary mb-7">Current mortgage balance, or select free and clear if there&apos;s no mortgage.</p>
+            <div className="space-y-3.5">
               {currentBalanceOptions.map((opt) => (
                 <OptionCard
                   key={opt.value}
@@ -498,8 +497,8 @@ export default function SurveyPage() {
             <h1 className="text-xl sm:text-2xl font-bold text-brand-text-primary tracking-tight leading-snug mb-2">
               Are you looking to pull any cash out?
             </h1>
-            <p className="text-sm text-brand-text-secondary mb-6">This helps James find the right loan structure for your situation.</p>
-            <div className="space-y-3">
+            <p className="text-sm text-brand-text-secondary mb-7">This helps James find the right loan structure for your situation.</p>
+            <div className="space-y-3.5">
               {cashOutOptions.map((opt) => (
                 <OptionCard
                   key={opt.value}
@@ -521,8 +520,8 @@ export default function SurveyPage() {
             <h1 className="text-xl sm:text-2xl font-bold text-brand-text-primary tracking-tight leading-snug mb-2">
               What&apos;s your estimated credit score?
             </h1>
-            <p className="text-sm text-brand-text-secondary mb-6">All scores welcome — we have programs starting at 500. This just helps James find the best product match for you.</p>
-            <div className="space-y-3">
+            <p className="text-sm text-brand-text-secondary mb-7">All scores welcome — we have programs starting at 500. This just helps James find the best product match for you.</p>
+            <div className="space-y-3.5">
               {creditScoreOptions.map((opt) => (
                 <OptionCard
                   key={opt.value}
@@ -639,12 +638,12 @@ export default function SurveyPage() {
             <div className="mt-6 flex flex-col gap-3">
               <motion.button
                 onClick={advanceStep}
-                whileTap={{ scale: 0.97 }}
-                className="w-full flex items-center justify-center gap-2 font-semibold text-base py-4 rounded-2xl transition-all duration-200 cursor-pointer"
+                whileTap={{ scale: 0.96 }}
+                className="btn-tactile w-full flex items-center justify-center gap-2 font-bold text-base py-[18px] rounded-2xl cursor-pointer"
                 style={{
-                  background: 'linear-gradient(135deg, #C9A84C 0%, #a87d1e 100%)',
+                  background: 'linear-gradient(135deg, #C9A84C 0%, #b8922e 50%, #a87d1e 100%)',
                   color: '#fff',
-                  boxShadow: '0 4px 20px rgba(201, 168, 76, 0.3)',
+                  boxShadow: '0 6px 24px rgba(201, 168, 76, 0.35), 0 1px 0 rgba(255,255,255,0.12) inset',
                 }}
               >
                 Continue
@@ -665,7 +664,7 @@ export default function SurveyPage() {
             <h1 className="text-xl sm:text-2xl font-bold text-brand-text-primary tracking-tight leading-snug mb-2">
               Almost there. Where should we send your results?
             </h1>
-            <p className="text-sm text-brand-text-secondary mb-6">
+            <p className="text-sm text-brand-text-secondary mb-7">
               James will review your profile before reaching out. No spam, ever.
             </p>
             <div className="space-y-4">
@@ -785,14 +784,14 @@ export default function SurveyPage() {
               <motion.button
                 onClick={handleSubmit}
                 disabled={submitting}
-                whileTap={{ scale: 0.97 }}
-                className="w-full flex items-center justify-center gap-2 font-semibold text-base py-4 rounded-2xl transition-all duration-200 cursor-pointer mt-2"
+                whileTap={{ scale: 0.96 }}
+                className="btn-tactile w-full flex items-center justify-center gap-2 font-bold text-base py-[18px] rounded-2xl cursor-pointer mt-2"
                 style={{
                   background: submitting
                     ? 'rgba(201, 168, 76, 0.5)'
-                    : 'linear-gradient(135deg, #C9A84C 0%, #a87d1e 100%)',
+                    : 'linear-gradient(135deg, #C9A84C 0%, #b8922e 50%, #a87d1e 100%)',
                   color: '#fff',
-                  boxShadow: submitting ? 'none' : '0 4px 20px rgba(201, 168, 76, 0.3)',
+                  boxShadow: submitting ? 'none' : '0 6px 24px rgba(201, 168, 76, 0.35), 0 1px 0 rgba(255,255,255,0.12) inset',
                 }}
               >
                 {submitting ? (
@@ -856,13 +855,12 @@ export default function SurveyPage() {
       </div>
 
       {/* Survey card */}
-      <main className="flex-1 flex items-start justify-center px-4 pt-6 pb-12">
+      <main className="flex-1 flex items-start justify-center px-4 pt-8 pb-14">
         <div
-          className="w-full max-w-lg rounded-2xl p-6 sm:p-8 overflow-hidden"
+          className="w-full max-w-lg rounded-2xl p-7 sm:p-9 overflow-hidden survey-card"
           style={{
             background: '#fff',
-            border: '1px solid #E5E7EB',
-            boxShadow: '0 4px 24px rgba(27,42,74,0.05)',
+            border: '1px solid rgba(229, 231, 235, 0.8)',
           }}
         >
           <div className="relative">

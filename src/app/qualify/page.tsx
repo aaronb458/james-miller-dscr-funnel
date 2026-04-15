@@ -226,37 +226,34 @@ export default function QualifyPage() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, ease: [0.32, 0.72, 0, 1] }}
-            className="rounded-2xl overflow-hidden mb-5"
+            className="rounded-2xl overflow-hidden mb-7"
             style={{
               background: '#fff',
-              border: '1px solid #E5E7EB',
-              boxShadow: '0 8px 32px rgba(27,42,74,0.08)',
+              border: '1px solid rgba(229, 231, 235, 0.8)',
+              boxShadow: '0 12px 40px rgba(27,42,74,0.08), 0 2px 6px rgba(0,0,0,0.03)',
             }}
           >
-            {/* Navy top accent bar */}
-            <div
-              className="h-1.5 w-full"
-              style={{ background: 'linear-gradient(90deg, #1B2A4A, #C9A84C, #1B2A4A)' }}
-            />
+            {/* Navy top accent bar with animated sweep */}
+            <div className="h-2 w-full success-bar" />
 
-            <div className="p-7 sm:p-9">
+            <div className="p-8 sm:p-10">
               {/* Success icon */}
-              <div className="flex justify-center mb-6">
+              <div className="flex justify-center mb-7">
                 <div
-                  className="icon-ring-pulse w-16 h-16 rounded-full flex items-center justify-center"
+                  className="icon-ring-pulse w-[72px] h-[72px] rounded-full flex items-center justify-center"
                   style={{
-                    background: 'linear-gradient(135deg, rgba(201,168,76,0.15) 0%, rgba(201,168,76,0.08) 100%)',
+                    background: 'linear-gradient(135deg, rgba(201,168,76,0.15) 0%, rgba(201,168,76,0.06) 100%)',
                     border: '2px solid rgba(201,168,76,0.4)',
                   }}
                 >
-                  <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="#C9A84C" strokeWidth={2.5}>
+                  <svg className="w-9 h-9" fill="none" viewBox="0 0 24 24" stroke="#C9A84C" strokeWidth={2.25}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
                 </div>
               </div>
 
               {/* Headline */}
-              <h1 className="font-display text-3xl sm:text-4xl font-bold text-brand-text-primary text-center tracking-tight mb-2">
+              <h1 className="font-display text-[1.75rem] sm:text-4xl font-bold text-brand-text-primary text-center tracking-tight mb-2">
                 {contact?.firstName ? `Good news, ${contact.firstName}.` : 'Good news.'}
               </h1>
               <p className="text-center text-brand-text-secondary text-base mb-8 max-w-sm mx-auto leading-relaxed">
@@ -284,10 +281,9 @@ export default function QualifyPage() {
                       className="flex items-start gap-3"
                     >
                       <div
-                        className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5"
-                        style={{ background: 'rgba(201, 168, 76, 0.18)', border: '1px solid rgba(201,168,76,0.25)' }}
+                        className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 bullet-check-icon"
                       >
-                        <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="#C9A84C" strokeWidth={3}>
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="#C9A84C" strokeWidth={3}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                         </svg>
                       </div>
@@ -300,12 +296,12 @@ export default function QualifyPage() {
               {/* CTA */}
               <motion.button
                 onClick={() => router.push('/book')}
-                whileTap={{ scale: 0.97 }}
-                className="cta-pulse btn-tactile w-full flex items-center justify-center gap-2 font-bold text-base py-4 rounded-2xl cursor-pointer"
+                whileTap={{ scale: 0.96 }}
+                className="cta-pulse btn-tactile w-full flex items-center justify-center gap-2 font-bold text-base py-[18px] rounded-2xl cursor-pointer"
                 style={{
-                  background: 'linear-gradient(135deg, #C9A84C 0%, #a87d1e 100%)',
+                  background: 'linear-gradient(135deg, #C9A84C 0%, #b8922e 50%, #a87d1e 100%)',
                   color: '#fff',
-                  boxShadow: '0 4px 24px rgba(201, 168, 76, 0.4)',
+                  boxShadow: '0 6px 28px rgba(201, 168, 76, 0.4), 0 1px 0 rgba(255,255,255,0.12) inset',
                 }}
               >
                 Book Your Free Strategy Call with James

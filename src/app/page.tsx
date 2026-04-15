@@ -113,7 +113,7 @@ function VSLVideo() {
 function Header() {
   return (
     <header
-      className="py-4 px-4 sm:px-6 relative overflow-hidden"
+      className="py-5 px-4 sm:px-6 relative overflow-hidden"
       style={{
         background: 'linear-gradient(160deg, #1B2A4A 0%, #0f1c30 100%)',
         borderBottom: '1px solid rgba(201, 168, 76, 0.15)',
@@ -150,7 +150,7 @@ export default function HomePage() {
 
       {/* Hero — textured navy section, left-aligned split layout */}
       <section
-        className="relative overflow-hidden"
+        className="relative overflow-hidden hero-grid"
         style={{
           background: 'linear-gradient(160deg, #1B2A4A 0%, #0f1c30 60%, #162238 100%)',
         }}
@@ -159,22 +159,31 @@ export default function HomePage() {
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            backgroundImage: 'radial-gradient(circle, rgba(201,168,76,0.13) 1px, transparent 1px)',
-            backgroundSize: '28px 28px',
-            opacity: 0.6,
+            backgroundImage: 'radial-gradient(circle, rgba(201,168,76,0.1) 1px, transparent 1px)',
+            backgroundSize: '32px 32px',
+            opacity: 0.5,
           }}
         />
         {/* Gold radial glow bottom-right */}
         <div
           className="absolute bottom-0 right-0 pointer-events-none"
           style={{
-            width: '50%',
+            width: '55%',
             height: '100%',
-            background: 'radial-gradient(ellipse at 90% 80%, rgba(201,168,76,0.07) 0%, transparent 60%)',
+            background: 'radial-gradient(ellipse at 85% 75%, rgba(201,168,76,0.08) 0%, transparent 55%)',
+          }}
+        />
+        {/* Top-left navy glow for depth */}
+        <div
+          className="absolute top-0 left-0 pointer-events-none"
+          style={{
+            width: '40%',
+            height: '60%',
+            background: 'radial-gradient(ellipse at 15% 20%, rgba(34,53,99,0.4) 0%, transparent 60%)',
           }}
         />
 
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-14 sm:py-20">
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
           {/* Two-column: left hero copy, right VSL */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
 
@@ -199,25 +208,26 @@ export default function HomePage() {
               </div>
 
               <h1
-                className="font-display text-4xl sm:text-5xl lg:text-[3.25rem] font-bold text-white tracking-tight leading-[1.08] mb-5"
-                style={{ textShadow: '0 2px 16px rgba(0,0,0,0.3)' }}
+                className="font-display text-[2.5rem] sm:text-[3.25rem] lg:text-[3.75rem] font-bold text-white tracking-tighter leading-[1.04] mb-6"
+                style={{ textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}
               >
                 No W-2s. No Tax Returns.{' '}
+                <br className="hidden sm:block" />
                 <span style={{ color: '#C9A84C' }}>Just Your Property.</span>
               </h1>
 
-              <p className="text-gray-300 text-lg leading-relaxed mb-8 max-w-lg">
+              <p className="text-gray-300 text-lg leading-relaxed mb-10 max-w-lg">
                 We specialize in investment property loans that qualify based on rental income — not your personal income or employment status. Find out if you qualify in 60 seconds.
               </p>
 
               <motion.button
                 onClick={() => router.push('/survey')}
-                whileTap={{ scale: 0.97 }}
-                className="cta-pulse btn-tactile inline-flex items-center gap-3 font-bold text-lg px-8 py-4 rounded-2xl cursor-pointer"
+                whileTap={{ scale: 0.96 }}
+                className="cta-pulse btn-tactile inline-flex items-center gap-3 font-bold text-lg px-10 py-[18px] rounded-2xl cursor-pointer"
                 style={{
-                  background: 'linear-gradient(135deg, #C9A84C 0%, #a87d1e 100%)',
+                  background: 'linear-gradient(135deg, #C9A84C 0%, #b8922e 50%, #a87d1e 100%)',
                   color: '#fff',
-                  boxShadow: '0 4px 28px rgba(201, 168, 76, 0.4), 0 1px 0 rgba(255,255,255,0.1) inset',
+                  boxShadow: '0 6px 32px rgba(201, 168, 76, 0.4), 0 1px 0 rgba(255,255,255,0.15) inset, 0 -1px 0 rgba(0,0,0,0.1) inset',
                 }}
               >
                 Check My Property Now
@@ -226,7 +236,7 @@ export default function HomePage() {
                 </svg>
               </motion.button>
 
-              <p className="mt-4 text-sm text-gray-500">No credit check. No obligation. Takes 60 seconds.</p>
+              <p className="mt-5 text-sm text-gray-500">No credit check. No obligation. Takes 60 seconds.</p>
             </motion.div>
 
             {/* Right: VSL */}
@@ -243,7 +253,7 @@ export default function HomePage() {
       </section>
 
       {/* Trust bar */}
-      <section className="py-8 px-4" style={{ background: '#fff', borderBottom: '1px solid #E5E7EB' }}>
+      <section className="py-10 px-4" style={{ background: '#fff', borderBottom: '1px solid #E5E7EB' }}>
         <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 8 }}
@@ -276,7 +286,7 @@ export default function HomePage() {
       </section>
 
       {/* Main content */}
-      <main className="flex-1 px-4 py-10 sm:py-14">
+      <main className="flex-1 px-4 py-12 sm:py-16">
         <div className="max-w-2xl mx-auto w-full">
 
           {/* How it works */}
@@ -284,17 +294,17 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3, ease: [0.32, 0.72, 0, 1] }}
-            className="rounded-2xl p-7 sm:p-9"
+            className="rounded-2xl p-8 sm:p-10"
             style={{
               background: '#fff',
-              border: '1px solid #E5E7EB',
-              boxShadow: '0 4px 24px rgba(27,42,74,0.04)',
+              border: '1px solid rgba(229, 231, 235, 0.8)',
+              boxShadow: '0 8px 32px rgba(27,42,74,0.05), 0 1px 3px rgba(0,0,0,0.02)',
             }}
           >
-            <h2 className="text-xs font-bold text-brand-text-primary mb-6 text-center uppercase tracking-widest">
+            <h2 className="text-[11px] font-bold text-brand-text-primary mb-7 text-center uppercase tracking-[0.2em]">
               How It Works
             </h2>
-            <div className="space-y-6">
+            <div className="space-y-7">
               {[
                 { n: '1', title: 'Answer 7 quick questions', desc: 'Takes about 60 seconds. No personal info required upfront.' },
                 { n: '2', title: 'See your qualification results', desc: 'Know immediately whether your property is a good fit and what loan structure makes sense.' },
@@ -320,16 +330,16 @@ export default function HomePage() {
               ))}
             </div>
 
-            <div className="divider-gold my-7" />
+            <div className="divider-gold my-8" />
 
             <motion.button
               onClick={() => router.push('/survey')}
-              whileTap={{ scale: 0.97 }}
-              className="btn-tactile w-full flex items-center justify-center gap-3 font-bold text-base px-8 py-4 rounded-2xl cursor-pointer transition-all duration-200"
+              whileTap={{ scale: 0.96 }}
+              className="btn-tactile w-full flex items-center justify-center gap-3 font-bold text-base px-8 py-[18px] rounded-2xl cursor-pointer"
               style={{
-                background: 'linear-gradient(135deg, #C9A84C 0%, #a87d1e 100%)',
+                background: 'linear-gradient(135deg, #C9A84C 0%, #b8922e 50%, #a87d1e 100%)',
                 color: '#fff',
-                boxShadow: '0 4px 20px rgba(201, 168, 76, 0.35)',
+                boxShadow: '0 6px 24px rgba(201, 168, 76, 0.38), 0 1px 0 rgba(255,255,255,0.12) inset',
               }}
             >
               Check My Property Now
